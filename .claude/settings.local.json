@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wsl -d Debian -e bash -c \"source ~/.bashrc 2>/dev/null; export NVM_DIR=\"\"$HOME/.nvm\"\" && [ -s \"\"$NVM_DIR/nvm.sh\"\" ] && . \"\"$NVM_DIR/nvm.sh\"\" 2>&1; npm info @eslint/config-array 2>&1 | head -3 && npm info @eslint/config-array dependencies 2>&1\")",
+      "Bash(wsl:*)"
+    ]
+  }
+}

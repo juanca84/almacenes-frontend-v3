@@ -1,0 +1,84 @@
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { LayoutDashboard, LogOut, Package } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/hooks/useAuth'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
+
+const navItems = [
+  { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
+]
+
+export function MainLayout() {
+  const { usuario, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await logout()
+    toast.success('Sesión cerrada')
+    navigate('/login')
+  }
+
+  return (
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <aside className="w-64 border-r bg-card flex flex-col shrink-0">
+        <div className="h-16 flex items-center px-6 border-b">
+          <Package className="size-5 mr-2 text-primary" />
+          <span className="font-bold text-lg">Almacenes</span>
+        </div>
+
+        <nav className="flex-1 p-4 space-y-1">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                )
+              }
+            >
+              <item.icon className="size-4" />
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <Separator />
+        <div className="p-4 flex items-center gap-3">
+          <Avatar className="size-8">
+            <AvatarFallback className="text-xs">
+              {usuario?.usuario?.slice(0, 2).toUpperCase() ?? 'US'}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{usuario?.usuario ?? 'Usuario'}</p>
+            <p className="text-xs text-muted-foreground truncate">
+              {usuario?.roles?.[0] ?? ''}
+            </p>
+          </div>
+          <Button variant="ghost" size="icon" onClick={handleLogout} title="Cerrar sesión">
+            <LogOut className="size-4" />
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="h-16 border-b bg-card flex items-center px-6 shrink-0">
+          <h1 className="text-sm font-medium text-muted-foreground">Sistema de Almacenes</h1>
+        </header>
+        <main className="flex-1 overflow-auto p-6">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  )
+}
