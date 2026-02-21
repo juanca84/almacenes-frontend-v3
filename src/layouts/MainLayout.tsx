@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -64,9 +65,17 @@ export function MainLayout() {
               {usuario?.roles?.[0]?.nombre ?? ''}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleLogout} title="Cerrar sesión">
-            <LogOut className="size-4" />
-          </Button>
+          <ConfirmDialog
+            trigger={
+              <Button variant="ghost" size="icon" title="Cerrar sesión">
+                <LogOut className="size-4" />
+              </Button>
+            }
+            title="¿Cerrar sesión?"
+            description="¿Estás seguro de que quieres cerrar sesión?"
+            confirmLabel="Cerrar sesión"
+            onConfirm={handleLogout}
+          />
         </div>
       </aside>
 
