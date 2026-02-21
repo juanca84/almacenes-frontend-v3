@@ -61,7 +61,7 @@ export function MainLayout() {
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{usuario?.usuario ?? 'Usuario'}</p>
             <p className="text-xs text-muted-foreground truncate">
-              {usuario?.roles?.[0] ?? ''}
+              {usuario?.roles?.[0]?.nombre ?? ''}
             </p>
           </div>
           <Button variant="ghost" size="icon" onClick={handleLogout} title="Cerrar sesión">

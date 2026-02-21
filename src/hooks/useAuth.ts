@@ -8,8 +8,9 @@ export function useAuth() {
   const login = async (payload: LoginPayload) => {
     const { data } = await authService.login(payload)
     if (data.finalizado) {
-      setToken(data.datos.access_token)
-      setUsuario(data.datos.usuario)
+      const { access_token, ...userData } = data.datos
+      setToken(access_token)
+      setUsuario(userData)
     }
     return data
   }

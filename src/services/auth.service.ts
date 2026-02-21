@@ -4,7 +4,7 @@ import type { LoginPayload, LoginResponse } from '@/types/auth.types'
 
 export const authService = {
   login: (payload: LoginPayload) =>
-    api.post<BaseResponse<LoginResponse>>('/auth', payload),
+    api.post<BaseResponse<LoginResponse>>('/login', payload),
 
   logout: () => api.get<BaseResponse<null>>('/logout'),
 
