@@ -1,5 +1,5 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, LogOut, Package } from 'lucide-react'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { LogOut, Package } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useAuth } from '@/hooks/useAuth'
@@ -7,11 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
-import { cn } from '@/lib/utils'
-
-const navItems = [
-  { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
-]
+import { NavSidebar } from '@/components/NavSidebar'
+import { getMergedModulos } from '@/hooks/usePermissions'
 
 export function MainLayout() {
   const { usuario, logout } = useAuth()
@@ -23,6 +20,8 @@ export function MainLayout() {
     navigate('/login')
   }
 
+  const modulos = getMergedModulos(usuario?.roles?.map((r) => r.modulos) ?? [])
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
@@ -32,25 +31,7 @@ export function MainLayout() {
           <span className="font-bold text-lg">Almacenes</span>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-                )
-              }
-            >
-              <item.icon className="size-4" />
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+        <NavSidebar modulos={modulos} />
 
         <Separator />
         <div className="p-4 flex items-center gap-3">

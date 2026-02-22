@@ -3,6 +3,8 @@ export interface LoginPayload {
   contrasena: string
 }
 
+export type Accion = 'read' | 'create' | 'update' | 'delete'
+
 export interface SubModulo {
   id: string
   label: string
@@ -15,6 +17,7 @@ export interface SubModulo {
     descripcion?: string
   }
   estado: string
+  accion: Accion[]
 }
 
 export interface Modulo {
@@ -29,6 +32,7 @@ export interface Modulo {
   }
   estado: string
   subModulo: SubModulo[]
+  accion: Accion[]
 }
 
 export interface Rol {
