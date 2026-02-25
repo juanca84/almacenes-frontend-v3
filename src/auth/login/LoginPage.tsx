@@ -62,10 +62,7 @@ export function LoginPage() {
           <Package className="size-6 text-white" />
         </div>
         <div className="text-center">
-          <h1
-            className="text-2xl font-bold text-foreground tracking-tight"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
             Almacenes
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">

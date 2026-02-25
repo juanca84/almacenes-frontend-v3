@@ -5,7 +5,7 @@ export function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">Bienvenido al Sistema de Almacenes</p>
+        <p className="text-sm text-muted-foreground">Bienvenido al Sistema de Almacenes</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
