@@ -5,6 +5,7 @@ import { AuthLayout } from '@/layouts/AuthLayout'
 import { MainLayout } from '@/layouts/MainLayout'
 import { LoginPage } from '@/auth/login/LoginPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
+import { UsuariosPage } from '@/pages/usuarios/UsuariosPage'
 
 export function AppRouter() {
   return (
@@ -18,6 +19,7 @@ export function AppRouter() {
       <Route element={<AuthGuard />}>
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/usuarios" element={<UsuariosPage />} />
         </Route>
       </Route>
 

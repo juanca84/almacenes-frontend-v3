@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { Package } from 'lucide-react'
 import type { ControllerRenderProps } from 'react-hook-form'
 
 import { useAuth } from '@/hooks/useAuth'
@@ -54,53 +55,72 @@ export function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-sm shadow-lg">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Almacenes</CardTitle>
-        <CardDescription className="text-center">
-          Ingresa tus credenciales para continuar
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="usuario"
-              render={({ field }: { field: ControllerRenderProps<LoginForm, 'usuario'> }) => (
-                <FormItem>
-                  <FormLabel>Usuario</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Tu usuario" autoComplete="username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="contrasena"
-              render={({ field }: { field: ControllerRenderProps<LoginForm, 'contrasena'> }) => (
-                <FormItem>
-                  <FormLabel>Contraseña</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      autoComplete="current-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Ingresando...' : 'Ingresar'}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <div className="w-full max-w-sm space-y-6">
+      {/* Marca */}
+      <div className="flex flex-col items-center gap-3">
+        <div className="size-12 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25">
+          <Package className="size-6 text-white" />
+        </div>
+        <div className="text-center">
+          <h1
+            className="text-2xl font-bold text-foreground tracking-tight"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Almacenes
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Sistema de gestión de inventario
+          </p>
+        </div>
+      </div>
+
+      {/* Card */}
+      <Card className="shadow-xl shadow-slate-200/60 border-slate-200/80">
+        <CardHeader className="space-y-1 pb-4">
+          <CardTitle className="text-base font-semibold">Iniciar sesión</CardTitle>
+          <CardDescription>Ingresa tus credenciales para continuar</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="usuario"
+                render={({ field }: { field: ControllerRenderProps<LoginForm, 'usuario'> }) => (
+                  <FormItem>
+                    <FormLabel>Usuario</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Tu usuario" autoComplete="username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="contrasena"
+                render={({ field }: { field: ControllerRenderProps<LoginForm, 'contrasena'> }) => (
+                  <FormItem>
+                    <FormLabel>Contraseña</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full shadow-sm" disabled={loading}>
+                {loading ? 'Ingresando...' : 'Ingresar'}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
