@@ -1,11 +1,17 @@
+import { LayoutDashboard } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function DashboardPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-sm text-muted-foreground">Bienvenido al Sistema de Almacenes</p>
+      <div className="flex items-center gap-3">
+        <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+          <LayoutDashboard className="size-5 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-sm text-muted-foreground">Bienvenido al Sistema de Almacenes</p>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
