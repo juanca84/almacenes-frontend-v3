@@ -9,8 +9,8 @@ interface AuthState {
 }
 
 interface AuthActions {
-  setToken: (token: string) => void
-  setUsuario: (usuario: Usuario) => void
+  setAuth: (token: string, usuario: Usuario) => void
+  updateToken: (token: string) => void
   logout: () => void
 }
 
@@ -21,13 +21,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       usuario: null,
       isAuthenticated: false,
 
-      setToken: (token) => set({ token, isAuthenticated: true }),
-      setUsuario: (usuario) => set({ usuario }),
+      setAuth: (token, usuario) => set({ token, usuario, isAuthenticated: true }),
+      updateToken: (token) => set({ token }),
       logout: () => set({ token: null, usuario: null, isAuthenticated: false }),
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ token: state.token, usuario: state.usuario, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({ usuario: state.usuario, isAuthenticated: state.isAuthenticated }),
     },
   ),
 )

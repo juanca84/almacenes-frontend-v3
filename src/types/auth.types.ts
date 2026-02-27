@@ -1,3 +1,6 @@
+export type TipoDocumento = 'CI' | 'PASAPORTE' | 'DNI' | 'RUC'
+export type EstadoEntidad = 'ACTIVO' | 'INACTIVO'
+
 export interface LoginPayload {
   usuario: string
   contrasena: string
@@ -16,7 +19,7 @@ export interface SubModulo {
     color_light: string
     descripcion?: string
   }
-  estado: string
+  estado: EstadoEntidad
   accion: Accion[]
 }
 
@@ -30,7 +33,7 @@ export interface Modulo {
     color_dark: string
     color_light: string
   }
-  estado: string
+  estado: EstadoEntidad
   subModulo: SubModulo[]
   accion: Accion[]
 }
@@ -46,7 +49,7 @@ export interface Persona {
   nombres: string
   primerApellido: string
   segundoApellido: string
-  tipoDocumento: string
+  tipoDocumento: TipoDocumento
   nroDocumento: string
   fechaNacimiento: string
 }
@@ -54,7 +57,7 @@ export interface Persona {
 export interface Usuario {
   id: string
   usuario: string
-  estado: string
+  estado: EstadoEntidad
   roles: Rol[]
   persona: Persona
 }

@@ -1,5 +1,8 @@
-export type EstadoUsuario = 'ACTIVO' | 'INACTIVO'
-export type TipoDocumento = 'CI' | 'PASAPORTE' | 'DNI' | 'RUC'
+import type { Persona, TipoDocumento, EstadoEntidad } from './auth.types'
+
+// Re-exportamos para que los consumidores sigan importando desde aquí
+export type { Persona, TipoDocumento }
+export type EstadoUsuario = EstadoEntidad
 
 export interface UsuarioItem {
   id: string
@@ -7,14 +10,7 @@ export interface UsuarioItem {
   correoElectronico?: string
   estado: EstadoUsuario
   roles?: { idRol: string; nombre: string }[]
-  persona: {
-    nombres: string
-    primerApellido: string
-    segundoApellido: string
-    tipoDocumento: TipoDocumento
-    nroDocumento: string
-    fechaNacimiento: string
-  }
+  persona: Persona
 }
 
 export interface CreateUsuarioPayload {

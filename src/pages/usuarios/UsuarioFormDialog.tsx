@@ -95,10 +95,12 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
     },
   })
 
-  // Cargar datos al abrir en modo edición
+  const { reset: resetCrear } = crearForm
+  const { reset: resetEditar } = editarForm
+
   useEffect(() => {
     if (usuario) {
-      editarForm.reset({
+      resetEditar({
         correoElectronico: usuario.correoElectronico ?? '',
         nombres: usuario.persona.nombres,
         primerApellido: usuario.persona.primerApellido,
@@ -106,9 +108,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
         fechaNacimiento: usuario.persona.fechaNacimiento ?? '',
       })
     } else {
-      crearForm.reset()
+      resetCrear()
     }
-  }, [usuario, open])
+  }, [usuario, open, resetCrear, resetEditar])
 
   const onSubmitCrear = async (values: CrearValues) => {
     try {

@@ -3,17 +3,13 @@ import { authService } from '@/services/auth.service'
 import type { LoginPayload } from '@/types/auth.types'
 
 export function useAuth() {
-  const { token, usuario, isAuthenticated, setToken, setUsuario, logout: clearAuth } = useAuthStore()
+  const { token, usuario, isAuthenticated, setAuth, logout: clearAuth } = useAuthStore()
 
   const login = async (payload: LoginPayload) => {
-    const { data } = await authService.login({
-      ...payload,
-      contrasena: btoa(payload.contrasena),
-    })
+    const { data } = await authService.login(payload)
     if (data.finalizado) {
       const { access_token, ...userData } = data.datos
-      setToken(access_token)
-      setUsuario(userData)
+      setAuth(access_token, userData)
     }
     return data
   }

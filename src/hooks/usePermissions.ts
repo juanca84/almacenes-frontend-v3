@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useAuthStore } from '@/store/auth.store'
 import type { Accion, Modulo } from '@/types/auth.types'
 
@@ -25,7 +26,6 @@ export function getMergedModulos(roles: Modulo[][] ): Modulo[] {
         if (!subExistente) {
           moduloExistente.subModulo.push({ ...sub, accion: [...sub.accion] })
         } else {
-          // Unir acciones sin duplicados
           const accionesUnidas = new Set([...subExistente.accion, ...sub.accion])
           subExistente.accion = Array.from(accionesUnidas) as Accion[]
         }
@@ -48,19 +48,19 @@ export function getMergedModulos(roles: Modulo[][] ): Modulo[] {
 export function usePermissions() {
   const usuario = useAuthStore((state) => state.usuario)
 
-  // Mapa: nombre del submódulo → Set de acciones (fusión de todos los roles)
-  const permisosMap = new Map<string, Set<Accion>>()
-
-  usuario?.roles?.forEach((rol) => {
-    rol.modulos.forEach((modulo) => {
-      modulo.subModulo.forEach((sub) => {
-        if (!permisosMap.has(sub.nombre)) {
-          permisosMap.set(sub.nombre, new Set())
-        }
-        sub.accion.forEach((a) => permisosMap.get(sub.nombre)!.add(a))
+  const permisosMap = useMemo(() => {
+    const map = new Map<string, Set<Accion>>()
+    usuario?.roles?.forEach((rol) => {
+      rol.modulos.forEach((modulo) => {
+        modulo.subModulo.forEach((sub) => {
+          const acciones = map.get(sub.nombre) ?? new Set<Accion>()
+          sub.accion.forEach((a) => acciones.add(a))
+          map.set(sub.nombre, acciones)
+        })
       })
     })
-  })
+    return map
+  }, [usuario])
 
   const tieneAccion = (subModuloNombre: string, accion: Accion): boolean => {
     return permisosMap.get(subModuloNombre)?.has(accion) ?? false
