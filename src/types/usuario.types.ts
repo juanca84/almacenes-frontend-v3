@@ -13,15 +13,22 @@ export interface UsuarioItem {
   persona: Persona
 }
 
+export interface RolDisponible {
+  id: string
+  rol: string
+  nombre: string
+}
+
 export interface CreateUsuarioPayload {
-  usuario: string
-  contrasena: string
-  nombres: string
-  primerApellido: string
-  segundoApellido?: string
-  tipoDocumento: TipoDocumento
-  nroDocumento: string
-  fechaNacimiento: string
+  correoElectronico: string
+  roles: string[]
+  persona: {
+    nroDocumento: string
+    nombres: string
+    primerApellido: string
+    segundoApellido?: string
+    fechaNacimiento: string
+  }
 }
 
 // estado se gestiona con endpoints dedicados: /activacion | /inactivacion

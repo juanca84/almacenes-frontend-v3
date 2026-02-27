@@ -1,11 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { UserPen, UserPlus } from 'lucide-react'
 
 import { usuariosService } from '@/services/usuarios.service'
-import type { UsuarioItem } from '@/types/usuario.types'
+import type { UsuarioItem, RolDisponible } from '@/types/usuario.types'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -23,25 +24,19 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
-// ── Schemas ──────────────────────────────────────────────────────────────────
+// ── Schemas ───────────────────────────────────────────────────────────────────
 
 const crearSchema = z.object({
-  usuario: z.string().min(3, 'Mínimo 3 caracteres'),
-  contrasena: z.string().min(6, 'Mínimo 6 caracteres'),
-  nombres: z.string().min(2, 'Requerido'),
-  primerApellido: z.string().min(2, 'Requerido'),
-  segundoApellido: z.string().optional(),
-  tipoDocumento: z.enum(['CI', 'PASAPORTE', 'DNI', 'RUC']),
-  nroDocumento: z.string().min(5, 'Mínimo 5 caracteres'),
-  fechaNacimiento: z.string().min(1, 'Requerido'),
+  correoElectronico: z.string().email('Email inválido'),
+  roles: z.array(z.string()).min(1, 'Seleccione al menos un rol'),
+  persona: z.object({
+    nroDocumento: z.string().min(5, 'Mínimo 5 caracteres'),
+    nombres: z.string().min(2, 'Requerido'),
+    primerApellido: z.string().min(2, 'Requerido'),
+    segundoApellido: z.string().optional(),
+    fechaNacimiento: z.string().min(1, 'Requerido'),
+  }),
 })
 
 // estado se cambia desde la tabla con endpoints dedicados (/activacion | /inactivacion)
@@ -69,18 +64,21 @@ interface UsuarioFormDialogProps {
 
 export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: UsuarioFormDialogProps) {
   const esEdicion = !!usuario
+  const [roles, setRoles] = useState<RolDisponible[]>([])
+  const [loadingRoles, setLoadingRoles] = useState(false)
 
   const crearForm = useForm<CrearValues>({
     resolver: zodResolver(crearSchema),
     defaultValues: {
-      usuario: '',
-      contrasena: '',
-      nombres: '',
-      primerApellido: '',
-      segundoApellido: '',
-      tipoDocumento: 'CI',
-      nroDocumento: '',
-      fechaNacimiento: '',
+      correoElectronico: '',
+      roles: [],
+      persona: {
+        nroDocumento: '',
+        nombres: '',
+        primerApellido: '',
+        segundoApellido: '',
+        fechaNacimiento: '',
+      },
     },
   })
 
@@ -99,6 +97,8 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
   const { reset: resetEditar } = editarForm
 
   useEffect(() => {
+    if (!open) return
+
     if (usuario) {
       resetEditar({
         correoElectronico: usuario.correoElectronico ?? '',
@@ -109,6 +109,13 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
       })
     } else {
       resetCrear()
+      setLoadingRoles(true)
+      usuariosService.listarRoles()
+        .then(({ data }) => {
+          if (data.finalizado) setRoles(data.datos)
+        })
+        .catch(() => toast.error('Error al cargar los roles'))
+        .finally(() => setLoadingRoles(false))
     }
   }, [usuario, open, resetCrear, resetEditar])
 
@@ -153,10 +160,16 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{esEdicion ? 'Editar usuario' : 'Nuevo usuario'}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${esEdicion ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-primary/10 text-primary'}`}>
+              {esEdicion ? <UserPen className="size-4" /> : <UserPlus className="size-4" />}
+            </div>
+            {esEdicion ? 'Editar usuario' : 'Nuevo usuario'}
+          </DialogTitle>
         </DialogHeader>
 
         {esEdicion ? (
+          /* ── Editar ─────────────────────────────────────────────────────── */
           <Form {...editarForm}>
             <form onSubmit={editarForm.handleSubmit(onSubmitEditar)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -226,34 +239,24 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
             </form>
           </Form>
         ) : (
+          /* ── Crear ──────────────────────────────────────────────────────── */
           <Form {...crearForm}>
             <form onSubmit={crearForm.handleSubmit(onSubmitCrear)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={crearForm.control}
-                  name="usuario"
+                  name="correoElectronico"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Usuario</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
+                    <FormItem className="col-span-2">
+                      <FormLabel>Correo electrónico</FormLabel>
+                      <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={crearForm.control}
-                  name="contrasena"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contraseña</FormLabel>
-                      <FormControl><Input type="password" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="nombres"
+                  name="persona.nombres"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nombres</FormLabel>
@@ -264,7 +267,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                 />
                 <FormField
                   control={crearForm.control}
-                  name="primerApellido"
+                  name="persona.primerApellido"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Primer apellido</FormLabel>
@@ -275,7 +278,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                 />
                 <FormField
                   control={crearForm.control}
-                  name="segundoApellido"
+                  name="persona.segundoApellido"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Segundo apellido</FormLabel>
@@ -286,33 +289,10 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                 />
                 <FormField
                   control={crearForm.control}
-                  name="tipoDocumento"
+                  name="persona.nroDocumento"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo documento</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Tipo" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="CI">CI</SelectItem>
-                          <SelectItem value="PASAPORTE">Pasaporte</SelectItem>
-                          <SelectItem value="DNI">DNI</SelectItem>
-                          <SelectItem value="RUC">RUC</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="nroDocumento"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nro. documento</FormLabel>
+                      <FormLabel>Nro. documento (CI)</FormLabel>
                       <FormControl><Input {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -320,7 +300,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                 />
                 <FormField
                   control={crearForm.control}
-                  name="fechaNacimiento"
+                  name="persona.fechaNacimiento"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Fecha de nacimiento</FormLabel>
@@ -329,11 +309,49 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={crearForm.control}
+                  name="roles"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>Roles</FormLabel>
+                      <FormControl>
+                        <div className="border rounded-md p-3 space-y-2 max-h-36 overflow-y-auto">
+                          {loadingRoles ? (
+                            <p className="text-sm text-muted-foreground">Cargando roles...</p>
+                          ) : roles.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">No hay roles disponibles</p>
+                          ) : (
+                            roles.map((rol) => (
+                              <label key={rol.id} className="flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  value={rol.id}
+                                  checked={field.value.includes(rol.id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      field.onChange([...field.value, rol.id])
+                                    } else {
+                                      field.onChange(field.value.filter((id) => id !== rol.id))
+                                    }
+                                  }}
+                                  className="size-4 accent-primary"
+                                />
+                                <span className="text-sm">{rol.nombre}</span>
+                              </label>
+                            ))
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-                <Button type="submit" disabled={crearForm.formState.isSubmitting}>
+                <Button type="submit" disabled={crearForm.formState.isSubmitting || loadingRoles}>
                   {crearForm.formState.isSubmitting ? 'Creando...' : 'Crear usuario'}
                 </Button>
               </DialogFooter>

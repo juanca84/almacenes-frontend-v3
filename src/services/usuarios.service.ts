@@ -2,12 +2,17 @@ import api from './axios'
 import type { BaseResponse, PaginatedResponse } from '@/types/api.types'
 import type {
   UsuarioItem,
+  RolDisponible,
   CreateUsuarioPayload,
   UpdateUsuarioPayload,
   CambiarContrasenaPayload,
 } from '@/types/usuario.types'
 
 export const usuariosService = {
+  // ── Roles disponibles ──────────────────────────────────────────────────────
+  listarRoles: () =>
+    api.get<BaseResponse<RolDisponible[]>>('/autorizacion/roles'),
+
   // ── CRUD principal ─────────────────────────────────────────────────────────
   listar: (params?: { pagina?: number; limite?: number }) =>
     api.get<PaginatedResponse<UsuarioItem>>('/usuarios', { params }),
