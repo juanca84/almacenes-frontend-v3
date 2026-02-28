@@ -1,5 +1,5 @@
 export type TipoDocumento = 'CI' | 'PASAPORTE' | 'DNI' | 'RUC'
-export type EstadoEntidad = 'ACTIVO' | 'INACTIVO'
+export type EstadoEntidad = 'ACTIVO' | 'INACTIVO' | 'PENDIENTE'
 
 export interface LoginPayload {
   usuario: string

@@ -6,6 +6,7 @@ import type {
   CreateUsuarioPayload,
   UpdateUsuarioPayload,
   CambiarContrasenaPayload,
+  ValidarContrasenaResult,
 } from '@/types/usuario.types'
 
 export const usuariosService = {
@@ -39,6 +40,9 @@ export const usuariosService = {
   // ── Cuenta propia ──────────────────────────────────────────────────────────
   obtenerPerfil: () =>
     api.get<BaseResponse<UsuarioItem>>('/usuarios/cuenta/perfil'),
+
+  validarContrasena: (contrasena: string) =>
+    api.post<BaseResponse<ValidarContrasenaResult>>('/usuarios/cuenta/validar-contrasena', { contrasena }),
 
   cambiarContrasena: (payload: CambiarContrasenaPayload) =>
     api.patch<BaseResponse<null>>('/usuarios/cuenta/contrasena', payload),

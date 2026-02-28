@@ -47,3 +47,9 @@ export interface CambiarContrasenaPayload {
   contrasenaActual: string
   contrasenaNueva: string
 }
+
+export interface ValidarContrasenaResult {
+  valida: boolean
+  score: number   // 0-4
+  nivel: string   // "Muy débil" | "Débil" | "Regular" | "Fuerte" | "Muy fuerte"
+}
