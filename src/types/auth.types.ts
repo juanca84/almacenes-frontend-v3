@@ -51,6 +51,7 @@ export interface Persona {
   segundoApellido: string
   tipoDocumento: TipoDocumento
   nroDocumento: string
+  genero?: string
   fechaNacimiento: string
 }
 

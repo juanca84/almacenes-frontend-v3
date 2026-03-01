@@ -24,9 +24,9 @@ export function getMergedModulos(roles: Modulo[][] ): Modulo[] {
       modulo.subModulo.forEach((sub) => {
         const subExistente = moduloExistente.subModulo.find((s) => s.id === sub.id)
         if (!subExistente) {
-          moduloExistente.subModulo.push({ ...sub, accion: [...sub.accion] })
+          moduloExistente.subModulo.push({ ...sub, accion: [...(sub.accion ?? [])] })
         } else {
-          const accionesUnidas = new Set([...subExistente.accion, ...sub.accion])
+          const accionesUnidas = new Set([...subExistente.accion, ...(sub.accion ?? [])])
           subExistente.accion = Array.from(accionesUnidas) as Accion[]
         }
       })
@@ -54,7 +54,7 @@ export function usePermissions() {
       rol.modulos.forEach((modulo) => {
         modulo.subModulo.forEach((sub) => {
           const acciones = map.get(sub.nombre) ?? new Set<Accion>()
-          sub.accion.forEach((a) => acciones.add(a))
+          ;(sub.accion ?? []).forEach((a) => acciones.add(a))
           map.set(sub.nombre, acciones)
         })
       })

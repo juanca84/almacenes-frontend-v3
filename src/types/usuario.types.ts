@@ -9,7 +9,7 @@ export interface UsuarioItem {
   usuario: string
   correoElectronico?: string
   estado: EstadoUsuario
-  roles?: { idRol: string; nombre: string }[]
+  usuarioRol?: { id: string; estado: string; rol: { id: string; rol: string } }[]
   persona: Persona
 }
 
@@ -23,7 +23,9 @@ export interface CreateUsuarioPayload {
   correoElectronico: string
   roles: string[]
   persona: {
+    tipoDocumento: string
     nroDocumento: string
+    genero?: string
     nombres: string
     primerApellido: string
     segundoApellido?: string
@@ -36,6 +38,7 @@ export interface UpdateUsuarioPayload {
   correoElectronico?: string
   roles?: string[]
   persona?: {
+    genero?: string
     nombres?: string
     primerApellido?: string
     segundoApellido?: string
