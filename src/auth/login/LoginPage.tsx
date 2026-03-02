@@ -10,6 +10,7 @@ import type { ControllerRenderProps } from 'react-hook-form'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Form,
@@ -100,8 +101,7 @@ export function LoginPage() {
                   <FormItem>
                     <FormLabel>Contraseña</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <PasswordInput
                         placeholder="••••••••"
                         autoComplete="current-password"
                         {...field}

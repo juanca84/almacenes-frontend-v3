@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,9 +14,11 @@ import {
 interface ConfirmDialogProps {
   trigger: React.ReactNode
   title: string
-  description?: string
+  description?: React.ReactNode
   confirmLabel?: string
   cancelLabel?: string
+  variant?: 'default' | 'destructive'
+  icon?: React.ReactNode
   onConfirm: () => void
 }
 
@@ -25,6 +28,8 @@ export function ConfirmDialog({
   description,
   confirmLabel = 'Confirmar',
   cancelLabel = 'Cancelar',
+  variant = 'default',
+  icon,
   onConfirm,
 }: ConfirmDialogProps) {
   return (
@@ -32,14 +37,31 @@ export function ConfirmDialog({
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogTitle className="flex items-center gap-3">
+            {icon && (
+              <div className={cn(
+                'size-9 rounded-lg flex items-center justify-center shrink-0',
+                variant === 'destructive'
+                  ? 'bg-destructive/10 text-destructive'
+                  : 'bg-primary/10 text-primary',
+              )}>
+                {icon}
+              </div>
+            )}
+            {title}
+          </AlertDialogTitle>
           {description && (
             <AlertDialogDescription>{description}</AlertDialogDescription>
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>{confirmLabel}</AlertDialogAction>
+          <AlertDialogAction
+            onClick={onConfirm}
+            className={variant === 'destructive' ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : undefined}
+          >
+            {confirmLabel}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

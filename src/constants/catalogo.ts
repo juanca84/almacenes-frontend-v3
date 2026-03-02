@@ -1,4 +1,5 @@
 export const CATALOGO_GRUPOS = {
   TIPO_DOCUMENTO: 'TDOC',
   GENERO: 'GENERO',
+  ESTADO_USUARIO: 'ESTADO_USUARIO',
 } as const

@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { KeyRound, Pencil, Plus, PowerOff, ToggleLeft, Users } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { usuariosService } from '@/services/usuarios.service'
 import type { UsuarioItem } from '@/types/usuario.types'
 import { usePermissions } from '@/hooks/usePermissions'
+import { getCatalogoGrupo } from '@/lib/catalogo'
+import { CATALOGO_GRUPOS } from '@/constants/catalogo'
+import { ESTADO_USUARIO_VARIANTE } from '@/constants/usuario'
 import { UsuarioFormDialog } from './UsuarioFormDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -29,6 +32,11 @@ export function UsuariosPage() {
 
   const puedeEditar = tieneAccion('usuarios', 'update')
   const puedeDesactivar = tieneAccion('usuarios', 'delete')
+
+  const estadoLabels = useMemo(() => {
+    const items = getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO)
+    return Object.fromEntries(items.map((e) => [e.codigo, e.nombre]))
+  }, [])
 
   const cargarUsuarios = async () => {
     setLoading(true)
@@ -162,8 +170,8 @@ export function UsuariosPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={u.estado === 'ACTIVO' ? 'success' : 'warning'}>
-                        {u.estado === 'ACTIVO' ? 'Activo' : 'Inactivo'}
+                      <Badge variant={ESTADO_USUARIO_VARIANTE[u.estado]}>
+                        {estadoLabels[u.estado] ?? u.estado}
                       </Badge>
                     </TableCell>
                     {hayAcciones && (
@@ -180,17 +188,24 @@ export function UsuariosPage() {
                                 <Pencil className="size-4" />
                               </Button>
 
-                              <ConfirmDialog
-                                trigger={
-                                  <Button variant="ghost" size="icon" title="Restaurar contraseña">
-                                    <KeyRound className="size-4" />
-                                  </Button>
-                                }
-                                title="¿Restaurar contraseña?"
-                                description={`Se restaurará la contraseña de "${nombreCompleto(u)}" a la contraseña por defecto.`}
-                                confirmLabel="Restaurar"
-                                onConfirm={() => handleRestaurarContrasena(u.id)}
-                              />
+                              {(u.estado === 'ACTIVO' || u.estado === 'PENDIENTE') && (
+                                <ConfirmDialog
+                                  trigger={
+                                    <Button variant="ghost" size="icon" title="Restaurar contraseña">
+                                      <KeyRound className="size-4" />
+                                    </Button>
+                                  }
+                                  icon={<KeyRound className="size-4" />}
+                                  title="¿Restaurar contraseña?"
+                                  description={
+                                    u.correoElectronico
+                                      ? <>Se enviará un correo a <strong>{u.correoElectronico}</strong> para que <strong>{nombreCompleto(u)}</strong> establezca una nueva contraseña.</>
+                                      : <>Se restaurará la contraseña de <strong>{nombreCompleto(u)}</strong>. El usuario no tiene correo registrado.</>
+                                  }
+                                  confirmLabel="Restaurar"
+                                  onConfirm={() => handleRestaurarContrasena(u.id)}
+                                />
+                              )}
                             </>
                           )}
 
@@ -209,13 +224,21 @@ export function UsuariosPage() {
                                   )}
                                 </Button>
                               }
-                              title={u.estado === 'ACTIVO' ? '¿Inactivar usuario?' : '¿Activar usuario?'}
+                              icon={
+                                u.estado === 'ACTIVO'
+                                  ? <PowerOff className="size-4" />
+                                  : <ToggleLeft className="size-4" />
+                              }
+                              title={u.estado === 'ACTIVO' ? `¿Inactivar a ${nombreCompleto(u)}?` : `¿Activar a ${nombreCompleto(u)}?`}
                               description={
                                 u.estado === 'ACTIVO'
-                                  ? `"${nombreCompleto(u)}" no podrá iniciar sesión mientras esté inactivo.`
-                                  : `"${nombreCompleto(u)}" podrá volver a iniciar sesión.`
+                                  ? <>El usuario <strong>{nombreCompleto(u)}</strong> perderá el acceso al sistema de forma inmediata. Podrás reactivarlo en cualquier momento desde esta misma tabla.</>
+                                  : u.correoElectronico
+                                    ? <>El usuario <strong>{nombreCompleto(u)}</strong> será activado y recibirá un correo a <strong>{u.correoElectronico}</strong> con una contraseña temporal para que pueda ingresar al sistema y establecer una nueva contraseña.</>
+                                    : <>El usuario <strong>{nombreCompleto(u)}</strong> será activado y podrá volver a iniciar sesión. No tiene correo registrado, por lo que deberás asignarle una contraseña manualmente.</>
                               }
                               confirmLabel={u.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
+                              variant={u.estado === 'ACTIVO' ? 'destructive' : 'default'}
                               onConfirm={() => handleToggleEstado(u)}
                             />
                           )}

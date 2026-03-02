@@ -34,6 +34,43 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+// ── Subcomponentes ────────────────────────────────────────────────────────────
+
+interface RolesCheckboxListProps {
+  roles: RolDisponible[]
+  loading: boolean
+  value: string[]
+  onChange: (ids: string[]) => void
+}
+
+function RolesCheckboxList({ roles, loading, value, onChange }: RolesCheckboxListProps) {
+  if (loading) return <p className="text-sm text-muted-foreground">Cargando roles...</p>
+  if (roles.length === 0) return <p className="text-sm text-muted-foreground">No hay roles disponibles</p>
+
+  return (
+    <>
+      {roles.map((rol) => (
+        <label key={rol.id} className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            value={rol.id}
+            checked={value.includes(rol.id)}
+            onChange={(e) => {
+              if (e.target.checked) {
+                onChange([...value, rol.id])
+              } else {
+                onChange(value.filter((id) => id !== rol.id))
+              }
+            }}
+            className="size-4 accent-primary"
+          />
+          <span className="text-sm">{rol.nombre}</span>
+        </label>
+      ))}
+    </>
+  )
+}
+
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
 const crearSchema = z.object({
@@ -288,30 +325,12 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       <FormLabel>Roles</FormLabel>
                       <FormControl>
                         <div className="border rounded-md p-3 space-y-2 max-h-36 overflow-y-auto">
-                          {loadingRoles ? (
-                            <p className="text-sm text-muted-foreground">Cargando roles...</p>
-                          ) : roles.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No hay roles disponibles</p>
-                          ) : (
-                            roles.map((rol) => (
-                              <label key={rol.id} className="flex items-center gap-2 cursor-pointer select-none">
-                                <input
-                                  type="checkbox"
-                                  value={rol.id}
-                                  checked={field.value.includes(rol.id)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      field.onChange([...field.value, rol.id])
-                                    } else {
-                                      field.onChange(field.value.filter((id) => id !== rol.id))
-                                    }
-                                  }}
-                                  className="size-4 accent-primary"
-                                />
-                                <span className="text-sm">{rol.nombre}</span>
-                              </label>
-                            ))
-                          )}
+                          <RolesCheckboxList
+                            roles={roles}
+                            loading={loadingRoles}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -455,30 +474,12 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       <FormLabel>Roles</FormLabel>
                       <FormControl>
                         <div className="border rounded-md p-3 space-y-2 max-h-36 overflow-y-auto">
-                          {loadingRoles ? (
-                            <p className="text-sm text-muted-foreground">Cargando roles...</p>
-                          ) : roles.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No hay roles disponibles</p>
-                          ) : (
-                            roles.map((rol) => (
-                              <label key={rol.id} className="flex items-center gap-2 cursor-pointer select-none">
-                                <input
-                                  type="checkbox"
-                                  value={rol.id}
-                                  checked={field.value.includes(rol.id)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      field.onChange([...field.value, rol.id])
-                                    } else {
-                                      field.onChange(field.value.filter((id) => id !== rol.id))
-                                    }
-                                  }}
-                                  className="size-4 accent-primary"
-                                />
-                                <span className="text-sm">{rol.nombre}</span>
-                              </label>
-                            ))
-                          )}
+                          <RolesCheckboxList
+                            roles={roles}
+                            loading={loadingRoles}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         </div>
                       </FormControl>
                       <FormMessage />
