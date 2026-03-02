@@ -80,6 +80,7 @@ const crearSchema = z.object({
     tipoDocumento: z.string().min(1, 'Requerido'),
     nroDocumento: z.string().min(5, 'Mínimo 5 caracteres'),
     genero: z.string().optional(),
+    telefono: z.string().optional(),
     nombres: z.string().min(2, 'Requerido'),
     primerApellido: z.string().min(2, 'Requerido'),
     segundoApellido: z.string().optional(),
@@ -92,6 +93,7 @@ const editarSchema = z.object({
   correoElectronico: z.email('Email inválido').optional().or(z.literal('')),
   roles: z.array(z.string()).min(1, 'Seleccione al menos un rol'),
   genero: z.string().optional(),
+  telefono: z.string().optional(),
   nombres: z.string().min(2, 'Requerido'),
   primerApellido: z.string().min(2, 'Requerido'),
   segundoApellido: z.string().optional(),
@@ -126,6 +128,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
         tipoDocumento: '',
         nroDocumento: '',
         genero: '',
+        telefono: '',
         nombres: '',
         primerApellido: '',
         segundoApellido: '',
@@ -140,6 +143,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
       correoElectronico: '',
       roles: [],
       genero: '',
+      telefono: '',
       nombres: '',
       primerApellido: '',
       segundoApellido: '',
@@ -158,6 +162,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
         correoElectronico: usuario.correoElectronico ?? '',
         roles: (usuario.usuarioRol ?? []).map((r) => r.rol.id),
         genero: usuario.persona.genero ?? '',
+        telefono: usuario.persona.telefono ?? '',
         nombres: usuario.persona.nombres,
         primerApellido: usuario.persona.primerApellido,
         segundoApellido: usuario.persona.segundoApellido ?? '',
@@ -198,6 +203,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
         roles: values.roles,
         persona: {
           genero: values.genero || undefined,
+          telefono: values.telefono || undefined,
           nombres: values.nombres,
           primerApellido: values.primerApellido,
           segundoApellido: values.segundoApellido || undefined,
@@ -313,6 +319,17 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editarForm.control}
+                  name="telefono"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Teléfono</FormLabel>
+                      <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -462,6 +479,17 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={crearForm.control}
+                  name="persona.telefono"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Teléfono</FormLabel>
+                      <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

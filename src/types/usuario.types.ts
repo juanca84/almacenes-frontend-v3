@@ -26,6 +26,7 @@ export interface CreateUsuarioPayload {
     tipoDocumento: string
     nroDocumento: string
     genero?: string
+    telefono?: string
     nombres: string
     primerApellido: string
     segundoApellido?: string
@@ -39,6 +40,7 @@ export interface UpdateUsuarioPayload {
   roles?: string[]
   persona?: {
     genero?: string
+    telefono?: string
     nombres?: string
     primerApellido?: string
     segundoApellido?: string

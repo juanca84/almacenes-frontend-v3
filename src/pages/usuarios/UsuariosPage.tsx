@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { KeyRound, Pencil, Plus, PowerOff, ToggleLeft, Users } from 'lucide-react'
+import { Eye, KeyRound, Pencil, Plus, PowerOff, ToggleLeft, Users } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { usuariosService } from '@/services/usuarios.service'
@@ -9,6 +9,7 @@ import { getCatalogoGrupo } from '@/lib/catalogo'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { ESTADO_USUARIO_VARIANTE } from '@/constants/usuario'
 import { UsuarioFormDialog } from './UsuarioFormDialog'
+import { UsuarioDetailDialog } from './UsuarioDetailDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -29,6 +30,8 @@ export function UsuariosPage() {
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<UsuarioItem | null>(null)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [usuarioDetalle, setUsuarioDetalle] = useState<UsuarioItem | null>(null)
 
   const puedeEditar = tieneAccion('usuarios', 'update')
   const puedeDesactivar = tieneAccion('usuarios', 'delete')
@@ -177,6 +180,15 @@ export function UsuariosPage() {
                     {hayAcciones && (
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => { setUsuarioDetalle(u); setDetailOpen(true) }}
+                            title="Ver detalle"
+                          >
+                            <Eye className="size-4" />
+                          </Button>
+
                           {puedeEditar && (
                             <>
                               <Button
@@ -252,6 +264,13 @@ export function UsuariosPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Dialog detalle */}
+      <UsuarioDetailDialog
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        usuario={usuarioDetalle}
+      />
 
       {/* Dialog crear / editar */}
       <UsuarioFormDialog

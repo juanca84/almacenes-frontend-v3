@@ -52,6 +52,7 @@ export interface Persona {
   tipoDocumento: TipoDocumento
   nroDocumento: string
   genero?: string
+  telefono?: string
   fechaNacimiento: string
 }
 
