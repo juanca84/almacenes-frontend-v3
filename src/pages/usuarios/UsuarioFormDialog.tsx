@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { UserPen, UserPlus } from 'lucide-react'
+import { Calendar, CreditCard, Mail, Phone, ShieldCheck, UserPen, UserPlus } from 'lucide-react'
 
 import { usuariosService } from '@/services/usuarios.service'
 import type { UsuarioItem, RolDisponible } from '@/types/usuario.types'
 import { getCatalogoGrupo } from '@/lib/catalogo'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
+import { avatarClases, iniciales } from '@/lib/avatar'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import {
   Dialog,
   DialogContent,
@@ -56,11 +58,8 @@ function RolesCheckboxList({ roles, loading, value, onChange }: RolesCheckboxLis
             value={rol.id}
             checked={value.includes(rol.id)}
             onChange={(e) => {
-              if (e.target.checked) {
-                onChange([...value, rol.id])
-              } else {
-                onChange(value.filter((id) => id !== rol.id))
-              }
+              if (e.target.checked) onChange([...value, rol.id])
+              else onChange(value.filter((id) => id !== rol.id))
             }}
             className="size-4 accent-primary"
           />
@@ -68,6 +67,15 @@ function RolesCheckboxList({ roles, loading, value, onChange }: RolesCheckboxLis
         </label>
       ))}
     </>
+  )
+}
+
+function SeccionHeader({ icon, titulo }: { icon: React.ReactNode; titulo: string }) {
+  return (
+    <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+      {icon}
+      {titulo}
+    </h4>
   )
 }
 
@@ -118,6 +126,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
   const esEdicion = !!usuario
   const [roles, setRoles] = useState<RolDisponible[]>([])
   const [loadingRoles, setLoadingRoles] = useState(false)
+
+  const catalogoGenero  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
+  const catalogoTipoDoc = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO), [])
 
   const crearForm = useForm<CrearValues>({
     resolver: zodResolver(crearSchema),
@@ -170,12 +181,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
       })
     }
 
-    // Cargar roles disponibles tanto para crear como para editar
     setLoadingRoles(true)
     usuariosService.listarRoles()
-      .then(({ data }) => {
-        if (data.finalizado) setRoles(data.datos)
-      })
+      .then(({ data }) => { if (data.finalizado) setRoles(data.datos) })
       .catch(() => toast.error('Error al cargar los roles'))
       .finally(() => setLoadingRoles(false))
 
@@ -222,141 +230,193 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
     }
   }
 
+  const nombreCompleto = usuario
+    ? [usuario.persona.nombres, usuario.persona.primerApellido, usuario.persona.segundoApellido]
+        .filter(Boolean).join(' ')
+    : ''
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
+        {/* ── Header ── */}
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${esEdicion ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-primary/10 text-primary'}`}>
-              {esEdicion ? <UserPen className="size-4" /> : <UserPlus className="size-4" />}
+          <div className="flex items-center gap-3 pr-6">
+            {esEdicion ? (
+              <div className={`size-11 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${avatarClases(usuario!)}`}>
+                {iniciales(usuario!)}
+              </div>
+            ) : (
+              <div className="size-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <UserPlus className="size-5 text-primary" />
+              </div>
+            )}
+            <div className="min-w-0">
+              <DialogTitle className="text-base">
+                {esEdicion ? 'Editar usuario' : 'Nuevo usuario'}
+              </DialogTitle>
+              {esEdicion && (
+                <p className="text-sm text-muted-foreground truncate mt-0.5">
+                  {nombreCompleto} · @{usuario!.usuario}
+                </p>
+              )}
             </div>
-            {esEdicion ? 'Editar usuario' : 'Nuevo usuario'}
-          </DialogTitle>
+          </div>
         </DialogHeader>
 
         {esEdicion ? (
-          /* ── Editar ─────────────────────────────────────────────────────── */
+          /* ── Editar ──────────────────────────────────────────────────────── */
           <Form {...editarForm}>
-            <form onSubmit={editarForm.handleSubmit(onSubmitEditar)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editarForm.control}
-                  name="correoElectronico"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Correo electrónico</FormLabel>
-                      <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none">Tipo / Nro. documento</label>
-                  <Input value={`${usuario!.persona.tipoDocumento}: ${usuario!.persona.nroDocumento}`} disabled />
-                </div>
+            <form onSubmit={editarForm.handleSubmit(onSubmitEditar)}>
+              <div className="space-y-5 max-h-[60vh] overflow-y-auto px-1">
 
-                <FormField
-                  control={editarForm.control}
-                  name="nombres"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombres</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editarForm.control}
-                  name="primerApellido"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Primer apellido</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editarForm.control}
-                  name="segundoApellido"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Segundo apellido</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editarForm.control}
-                  name="fechaNacimiento"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de nacimiento</FormLabel>
-                      <FormControl><Input type="date" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editarForm.control}
-                  name="genero"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Género</FormLabel>
-                      <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                {/* Información personal */}
+                <section className="space-y-3">
+                  <SeccionHeader icon={<UserPen className="size-3.5" />} titulo="Información personal" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="col-span-2 space-y-1.5">
+                      <label className="text-xs text-muted-foreground flex items-center gap-1">
+                        <CreditCard className="size-3 opacity-60" />
+                        Tipo / Nro. documento
+                      </label>
+                      <Input value={`${usuario!.persona.tipoDocumento}: ${usuario!.persona.nroDocumento}`} disabled className="bg-muted/40" />
+                    </div>
+                    <FormField
+                      control={editarForm.control}
+                      name="nombres"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground">Nombres</FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editarForm.control}
+                      name="primerApellido"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground">Primer apellido</FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editarForm.control}
+                      name="segundoApellido"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido</FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editarForm.control}
+                      name="fechaNacimiento"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Calendar className="size-3 opacity-60" />
+                            Fecha de nacimiento
+                          </FormLabel>
+                          <FormControl><Input type="date" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editarForm.control}
+                      name="genero"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel className="text-xs text-muted-foreground">Género</FormLabel>
+                          <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Seleccione..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {catalogoGenero.map((g) => (
+                                <SelectItem key={g.codigo} value={g.codigo}>{g.nombre}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </section>
+
+                <Separator />
+
+                {/* Contacto */}
+                <section className="space-y-3">
+                  <SeccionHeader icon={<Mail className="size-3.5" />} titulo="Contacto" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      control={editarForm.control}
+                      name="correoElectronico"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Mail className="size-3 opacity-60" />
+                            Correo electrónico
+                          </FormLabel>
+                          <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editarForm.control}
+                      name="telefono"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Phone className="size-3 opacity-60" />
+                            Teléfono
+                          </FormLabel>
+                          <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </section>
+
+                <Separator />
+
+                {/* Roles */}
+                <section className="space-y-3">
+                  <SeccionHeader icon={<ShieldCheck className="size-3.5" />} titulo="Roles asignados" />
+                  <FormField
+                    control={editarForm.control}
+                    name="roles"
+                    render={({ field }) => (
+                      <FormItem>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccione..." />
-                          </SelectTrigger>
+                          <div className="border rounded-md p-3 space-y-2 max-h-32 overflow-y-auto bg-muted/20">
+                            <RolesCheckboxList
+                              roles={roles}
+                              loading={loadingRoles}
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
+                          </div>
                         </FormControl>
-                        <SelectContent>
-                          {getCatalogoGrupo(CATALOGO_GRUPOS.GENERO).map((g) => (
-                            <SelectItem key={g.codigo} value={g.codigo}>
-                              {g.nombre}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editarForm.control}
-                  name="telefono"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Teléfono</FormLabel>
-                      <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editarForm.control}
-                  name="roles"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Roles</FormLabel>
-                      <FormControl>
-                        <div className="border rounded-md p-3 space-y-2 max-h-36 overflow-y-auto">
-                          <RolesCheckboxList
-                            roles={roles}
-                            loading={loadingRoles}
-                            value={field.value}
-                            onChange={field.onChange}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </section>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="mt-5">
                 <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
                 <Button type="submit" disabled={editarForm.formState.isSubmitting}>
                   {editarForm.formState.isSubmitting ? 'Guardando...' : 'Guardar cambios'}
@@ -365,158 +425,191 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
             </form>
           </Form>
         ) : (
-          /* ── Crear ──────────────────────────────────────────────────────── */
+          /* ── Crear ───────────────────────────────────────────────────────── */
           <Form {...crearForm}>
-            <form onSubmit={crearForm.handleSubmit(onSubmitCrear)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={crearForm.control}
-                  name="correoElectronico"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Correo electrónico</FormLabel>
-                      <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.nombres"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombres</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.primerApellido"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Primer apellido</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.segundoApellido"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Segundo apellido</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.tipoDocumento"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tipo de documento</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+            <form onSubmit={crearForm.handleSubmit(onSubmitCrear)}>
+              <div className="space-y-5 max-h-[60vh] overflow-y-auto px-1">
+
+                {/* Información personal */}
+                <section className="space-y-3">
+                  <SeccionHeader icon={<UserPlus className="size-3.5" />} titulo="Información personal" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.nombres"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground">Nombres</FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.primerApellido"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground">Primer apellido</FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.segundoApellido"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido</FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.tipoDocumento"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <CreditCard className="size-3 opacity-60" />
+                            Tipo de documento
+                          </FormLabel>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Seleccione..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {catalogoTipoDoc.map((t) => (
+                                <SelectItem key={t.codigo} value={t.codigo}>{t.nombre}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.nroDocumento"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <CreditCard className="size-3 opacity-60" />
+                            Nro. documento
+                          </FormLabel>
+                          <FormControl><Input {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.fechaNacimiento"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Calendar className="size-3 opacity-60" />
+                            Fecha de nacimiento
+                          </FormLabel>
+                          <FormControl><Input type="date" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.genero"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-muted-foreground">Género</FormLabel>
+                          <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Seleccione..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {catalogoGenero.map((g) => (
+                                <SelectItem key={g.codigo} value={g.codigo}>{g.nombre}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </section>
+
+                <Separator />
+
+                {/* Contacto */}
+                <section className="space-y-3">
+                  <SeccionHeader icon={<Mail className="size-3.5" />} titulo="Contacto" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      control={crearForm.control}
+                      name="correoElectronico"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Mail className="size-3 opacity-60" />
+                            Correo electrónico
+                          </FormLabel>
+                          <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={crearForm.control}
+                      name="persona.telefono"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Phone className="size-3 opacity-60" />
+                            Teléfono
+                          </FormLabel>
+                          <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </section>
+
+                <Separator />
+
+                {/* Roles */}
+                <section className="space-y-3">
+                  <SeccionHeader icon={<ShieldCheck className="size-3.5" />} titulo="Roles asignados" />
+                  <FormField
+                    control={crearForm.control}
+                    name="roles"
+                    render={({ field }) => (
+                      <FormItem>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccione..." />
-                          </SelectTrigger>
+                          <div className="border rounded-md p-3 space-y-2 max-h-32 overflow-y-auto bg-muted/20">
+                            <RolesCheckboxList
+                              roles={roles}
+                              loading={loadingRoles}
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
+                          </div>
                         </FormControl>
-                        <SelectContent>
-                          {getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO).map((t) => (
-                            <SelectItem key={t.codigo} value={t.codigo}>
-                              {t.nombre}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.nroDocumento"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nro. documento</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.fechaNacimiento"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de nacimiento</FormLabel>
-                      <FormControl><Input type="date" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.genero"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Género</FormLabel>
-                      <Select value={field.value ?? ''} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccione..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {getCatalogoGrupo(CATALOGO_GRUPOS.GENERO).map((g) => (
-                            <SelectItem key={g.codigo} value={g.codigo}>
-                              {g.nombre}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="persona.telefono"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Teléfono</FormLabel>
-                      <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={crearForm.control}
-                  name="roles"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Roles</FormLabel>
-                      <FormControl>
-                        <div className="border rounded-md p-3 space-y-2 max-h-36 overflow-y-auto">
-                          <RolesCheckboxList
-                            roles={roles}
-                            loading={loadingRoles}
-                            value={field.value}
-                            onChange={field.onChange}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </section>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="mt-5">
                 <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
                 <Button type="submit" disabled={crearForm.formState.isSubmitting || loadingRoles}>
                   {crearForm.formState.isSubmitting ? 'Creando...' : 'Crear usuario'}

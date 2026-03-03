@@ -1,10 +1,12 @@
 import { useMemo } from 'react'
-import { User } from 'lucide-react'
+import { Calendar, CreditCard, Mail, Phone, ShieldCheck } from 'lucide-react'
 
 import type { UsuarioItem } from '@/types/usuario.types'
 import { getCatalogoGrupo } from '@/lib/catalogo'
+import { formatFecha } from '@/lib/format'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { ESTADO_USUARIO_VARIANTE } from '@/constants/usuario'
+import { avatarClases, iniciales } from '@/lib/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -23,12 +25,16 @@ interface UsuarioDetailDialogProps {
 interface CampoProps {
   label: string
   value?: string | null
+  icon?: React.ReactNode
 }
 
-function Campo({ label, value }: CampoProps) {
+function Campo({ label, value, icon }: CampoProps) {
   return (
     <div className="space-y-1">
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-xs text-muted-foreground flex items-center gap-1">
+        {icon && <span className="opacity-60">{icon}</span>}
+        {label}
+      </p>
       <p className="text-sm font-medium">
         {value || <span className="text-muted-foreground italic font-normal">No registrado</span>}
       </p>
@@ -37,9 +43,9 @@ function Campo({ label, value }: CampoProps) {
 }
 
 export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDialogProps) {
-  const catalogoEstado   = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO), [])
-  const catalogoGenero   = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
-  const catalogoTipoDoc  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO), [])
+  const catalogoEstado  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO), [])
+  const catalogoGenero  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
+  const catalogoTipoDoc = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO), [])
 
   if (!usuario) return null
 
@@ -49,22 +55,23 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
     .filter(Boolean)
     .join(' ')
 
-  const estadoLabel   = catalogoEstado.find((e) => e.codigo === usuario.estado)?.nombre ?? usuario.estado
-  const generoLabel   = catalogoGenero.find((g) => g.codigo === persona.genero)?.nombre ?? persona.genero
-  const tipoDocLabel  = catalogoTipoDoc.find((t) => t.codigo === persona.tipoDocumento)?.nombre ?? persona.tipoDocumento
+  const estadoLabel  = catalogoEstado.find((e)  => e.codigo === usuario.estado)?.nombre  ?? usuario.estado
+  const generoLabel  = catalogoGenero.find((g)  => g.codigo === persona.genero)?.nombre  ?? persona.genero
+  const tipoDocLabel = catalogoTipoDoc.find((t) => t.codigo === persona.tipoDocumento)?.nombre ?? persona.tipoDocumento
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <div className="flex items-center gap-3 pr-6">
-            <div className="size-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <User className="size-5 text-primary" />
+          {/* Avatar + nombre + estado */}
+          <div className="flex items-center gap-4 pr-6">
+            <div className={`size-14 rounded-full flex items-center justify-center shrink-0 text-lg font-bold ${avatarClases(usuario)}`}>
+              {iniciales(usuario)}
             </div>
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-base leading-tight truncate">{nombreCompleto}</DialogTitle>
-              <div className="flex items-center gap-2 mt-0.5">
-                <p className="text-sm text-muted-foreground">@{usuario.usuario}</p>
+              <DialogTitle className="text-base leading-snug truncate">{nombreCompleto}</DialogTitle>
+              <p className="text-sm text-muted-foreground mt-0.5">@{usuario.usuario}</p>
+              <div className="mt-1.5">
                 <Badge variant={ESTADO_USUARIO_VARIANTE[usuario.estado]}>
                   {estadoLabel}
                 </Badge>
@@ -74,30 +81,58 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
         </DialogHeader>
 
         <div className="space-y-4 pt-1">
+          {/* Contacto */}
+          <section className="space-y-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Contacto
+            </h4>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="size-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                  <Mail className="size-3.5 text-muted-foreground" />
+                </div>
+                {usuario.correoElectronico
+                  ? <span className="truncate">{usuario.correoElectronico}</span>
+                  : <span className="text-muted-foreground italic">Sin correo registrado</span>}
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <div className="size-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                  <Phone className="size-3.5 text-muted-foreground" />
+                </div>
+                {persona.telefono
+                  ? <span>{persona.telefono}</span>
+                  : <span className="text-muted-foreground italic">Sin teléfono registrado</span>}
+              </div>
+            </div>
+          </section>
+
+          <Separator />
+
           {/* Información personal */}
           <section className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Información personal
             </h4>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <Campo label="Tipo de documento" value={tipoDocLabel} />
-              <Campo label="Nro. documento"    value={persona.nroDocumento} />
-              <Campo label="Género"            value={generoLabel} />
-              <Campo label="Teléfono"          value={persona.telefono} />
-              <Campo label="Fecha de nacimiento" value={persona.fechaNacimiento} />
-            </div>
-          </section>
-
-          <Separator />
-
-          {/* Acceso */}
-          <section className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Acceso
-            </h4>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <Campo label="Usuario"            value={usuario.usuario} />
-              <Campo label="Correo electrónico" value={usuario.correoElectronico} />
+              <Campo
+                label="Tipo de documento"
+                value={tipoDocLabel}
+                icon={<CreditCard className="size-3" />}
+              />
+              <Campo
+                label="Nro. documento"
+                value={persona.nroDocumento}
+                icon={<CreditCard className="size-3" />}
+              />
+              <Campo
+                label="Género"
+                value={generoLabel}
+              />
+              <Campo
+                label="Fecha de nacimiento"
+                value={formatFecha(persona.fechaNacimiento)}
+                icon={<Calendar className="size-3" />}
+              />
             </div>
           </section>
 
@@ -105,7 +140,8 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
 
           {/* Roles */}
           <section className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+              <ShieldCheck className="size-3.5" />
               Roles asignados
             </h4>
             {(usuario.usuarioRol ?? []).length === 0 ? (

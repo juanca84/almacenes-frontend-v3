@@ -6,7 +6,7 @@ export interface BaseResponse<T> {
 
 export interface PaginatedData<T> {
   filas: T[]
-  totalFilas: number
+  total: number
 }
 
 export type PaginatedResponse<T> = BaseResponse<PaginatedData<T>>

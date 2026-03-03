@@ -15,7 +15,7 @@ export const usuariosService = {
     api.get<BaseResponse<RolDisponible[]>>('/autorizacion/roles'),
 
   // ── CRUD principal ─────────────────────────────────────────────────────────
-  listar: (params?: { pagina?: number; limite?: number }) =>
+  listar: (params?: { pagina?: number; limite?: number; filtro?: string; rol?: string; estado?: string }) =>
     api.get<PaginatedResponse<UsuarioItem>>('/usuarios', { params }),
 
   obtener: (id: string) =>
