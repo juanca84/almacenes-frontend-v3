@@ -53,6 +53,15 @@ export interface CambiarContrasenaPayload {
   contrasenaNueva: string
 }
 
+export interface ActualizarPerfilPayload {
+  correoElectronico?: string
+  telefono?: string
+}
+
+export interface ActualizarPerfilResult {
+  id: string
+}
+
 export interface ValidarContrasenaResult {
   valida: boolean
   score: number   // 0-4

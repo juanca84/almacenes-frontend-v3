@@ -10,6 +10,7 @@ import type { UsuarioItem, RolDisponible } from '@/types/usuario.types'
 import { getCatalogoGrupo } from '@/lib/catalogo'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { avatarClases, iniciales } from '@/lib/avatar'
+import { getNombreCompleto } from '@/lib/usuario'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -136,7 +137,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
       correoElectronico: '',
       roles: [],
       persona: {
-        tipoDocumento: '',
+        tipoDocumento: 'CI',
         nroDocumento: '',
         genero: '',
         telefono: '',
@@ -230,10 +231,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
     }
   }
 
-  const nombreCompleto = usuario
-    ? [usuario.persona.nombres, usuario.persona.primerApellido, usuario.persona.segundoApellido]
-        .filter(Boolean).join(' ')
-    : ''
+  const nombreCompleto = usuario ? getNombreCompleto(usuario.persona) : ''
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -271,11 +269,11 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Información personal */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<UserPen className="size-3.5" />} titulo="Información personal" />
+                  <SeccionHeader icon={<UserPen className="size-3.5 text-blue-500 dark:text-blue-400" />} titulo="Información personal" />
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2 space-y-1.5">
                       <label className="text-xs text-muted-foreground flex items-center gap-1">
-                        <CreditCard className="size-3 opacity-60" />
+                        <CreditCard className="size-3 text-blue-500 dark:text-blue-400 opacity-60" />
                         Tipo / Nro. documento
                       </label>
                       <Input value={`${usuario!.persona.tipoDocumento}: ${usuario!.persona.nroDocumento}`} disabled className="bg-muted/40" />
@@ -319,7 +317,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Calendar className="size-3 opacity-60" />
+                            <Calendar className="size-3 text-blue-500 dark:text-blue-400" />
                             Fecha de nacimiento
                           </FormLabel>
                           <FormControl><Input type="date" {...field} /></FormControl>
@@ -356,7 +354,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Contacto */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<Mail className="size-3.5" />} titulo="Contacto" />
+                  <SeccionHeader icon={<Mail className="size-3.5 text-sky-500 dark:text-sky-400" />} titulo="Contacto" />
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={editarForm.control}
@@ -364,7 +362,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Mail className="size-3 opacity-60" />
+                            <Mail className="size-3 text-sky-500 dark:text-sky-400" />
                             Correo electrónico
                           </FormLabel>
                           <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
@@ -378,7 +376,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Phone className="size-3 opacity-60" />
+                            <Phone className="size-3 text-emerald-500 dark:text-emerald-400" />
                             Teléfono
                           </FormLabel>
                           <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
@@ -393,7 +391,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Roles */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<ShieldCheck className="size-3.5" />} titulo="Roles asignados" />
+                  <SeccionHeader icon={<ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />} titulo="Roles asignados" />
                   <FormField
                     control={editarForm.control}
                     name="roles"
@@ -432,7 +430,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Información personal */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<UserPlus className="size-3.5" />} titulo="Información personal" />
+                  <SeccionHeader icon={<UserPlus className="size-3.5 text-blue-500 dark:text-blue-400" />} titulo="Información personal" />
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={crearForm.control}
@@ -473,7 +471,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <CreditCard className="size-3 opacity-60" />
+                            <CreditCard className="size-3 text-blue-500 dark:text-blue-400" />
                             Tipo de documento
                           </FormLabel>
                           <Select value={field.value} onValueChange={field.onChange}>
@@ -498,7 +496,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <CreditCard className="size-3 opacity-60" />
+                            <CreditCard className="size-3 text-blue-500 dark:text-blue-400" />
                             Nro. documento
                           </FormLabel>
                           <FormControl><Input {...field} /></FormControl>
@@ -512,7 +510,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Calendar className="size-3 opacity-60" />
+                            <Calendar className="size-3 text-blue-500 dark:text-blue-400" />
                             Fecha de nacimiento
                           </FormLabel>
                           <FormControl><Input type="date" {...field} /></FormControl>
@@ -549,7 +547,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Contacto */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<Mail className="size-3.5" />} titulo="Contacto" />
+                  <SeccionHeader icon={<Mail className="size-3.5 text-sky-500 dark:text-sky-400" />} titulo="Contacto" />
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={crearForm.control}
@@ -557,7 +555,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Mail className="size-3 opacity-60" />
+                            <Mail className="size-3 text-sky-500 dark:text-sky-400" />
                             Correo electrónico
                           </FormLabel>
                           <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
@@ -571,7 +569,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Phone className="size-3 opacity-60" />
+                            <Phone className="size-3 text-emerald-500 dark:text-emerald-400" />
                             Teléfono
                           </FormLabel>
                           <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
@@ -586,7 +584,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Roles */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<ShieldCheck className="size-3.5" />} titulo="Roles asignados" />
+                  <SeccionHeader icon={<ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />} titulo="Roles asignados" />
                   <FormField
                     control={crearForm.control}
                     name="roles"

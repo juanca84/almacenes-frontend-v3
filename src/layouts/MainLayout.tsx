@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { LogOut, Package, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { NavSidebar } from '@/components/NavSidebar'
-import { getMergedModulos } from '@/hooks/usePermissions'
+import { getMergedModulos } from '@/lib/permissions'
 import { cn } from '@/lib/utils'
 
 export function MainLayout() {
@@ -32,7 +32,10 @@ export function MainLayout() {
     })
   }
 
-  const modulos = getMergedModulos(usuario?.roles?.map((r) => r.modulos) ?? [])
+  const modulos = useMemo(
+    () => getMergedModulos(usuario?.roles?.map((r) => r.modulos) ?? []),
+    [usuario]
+  )
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -79,21 +82,30 @@ export function MainLayout() {
             collapsed ? 'p-2 flex flex-col items-center gap-2' : 'p-4 flex items-center gap-3'
           )}
         >
-          <Avatar className="size-8 ring-1 ring-white/10 shrink-0">
-            <AvatarFallback className="text-xs bg-white/10 text-slate-300">
-              {usuario?.usuario?.slice(0, 2).toUpperCase() ?? 'US'}
-            </AvatarFallback>
-          </Avatar>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-200 truncate">
-                {usuario?.usuario ?? 'Usuario'}
-              </p>
-              <p className="text-xs text-slate-500 truncate">
-                {usuario?.roles?.[0]?.nombre ?? ''}
-              </p>
-            </div>
-          )}
+          <Link
+            to="/perfil"
+            title="Mi perfil"
+            className={cn(
+              'flex items-center gap-3 rounded-md transition-colors hover:bg-white/5 min-w-0',
+              collapsed ? 'shrink-0' : 'flex-1'
+            )}
+          >
+            <Avatar className="size-8 ring-1 ring-white/10 shrink-0">
+              <AvatarFallback className="text-xs bg-white/10 text-slate-300">
+                {usuario?.usuario?.slice(0, 2).toUpperCase() ?? 'US'}
+              </AvatarFallback>
+            </Avatar>
+            {!collapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-200 truncate">
+                  {usuario?.usuario ?? 'Usuario'}
+                </p>
+                <p className="text-xs text-slate-500 truncate">
+                  {usuario?.roles?.[0]?.nombre ?? ''}
+                </p>
+              </div>
+            )}
+          </Link>
           <ConfirmDialog
             trigger={
               <Button

@@ -7,6 +7,7 @@ import { formatFecha } from '@/lib/format'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { ESTADO_USUARIO_VARIANTE } from '@/constants/usuario'
 import { avatarClases, iniciales } from '@/lib/avatar'
+import { getNombreCompleto } from '@/lib/usuario'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -32,7 +33,7 @@ function Campo({ label, value, icon }: CampoProps) {
   return (
     <div className="space-y-1">
       <p className="text-xs text-muted-foreground flex items-center gap-1">
-        {icon && <span className="opacity-60">{icon}</span>}
+        {icon}
         {label}
       </p>
       <p className="text-sm font-medium">
@@ -51,9 +52,7 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
 
   const { persona } = usuario
 
-  const nombreCompleto = [persona.nombres, persona.primerApellido, persona.segundoApellido]
-    .filter(Boolean)
-    .join(' ')
+  const nombreCompleto = getNombreCompleto(persona)
 
   const estadoLabel  = catalogoEstado.find((e)  => e.codigo === usuario.estado)?.nombre  ?? usuario.estado
   const generoLabel  = catalogoGenero.find((g)  => g.codigo === persona.genero)?.nombre  ?? persona.genero
@@ -83,21 +82,22 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
         <div className="space-y-4 pt-1">
           {/* Contacto */}
           <section className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+              <Mail className="size-3.5 text-sky-500 dark:text-sky-400" />
               Contacto
             </h4>
             <div className="space-y-2">
               <div className="flex items-center gap-3 text-sm">
-                <div className="size-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                  <Mail className="size-3.5 text-muted-foreground" />
+                <div className="size-8 rounded-lg bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center shrink-0">
+                  <Mail className="size-3.5 text-sky-500 dark:text-sky-400" />
                 </div>
                 {usuario.correoElectronico
                   ? <span className="truncate">{usuario.correoElectronico}</span>
                   : <span className="text-muted-foreground italic">Sin correo registrado</span>}
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <div className="size-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                  <Phone className="size-3.5 text-muted-foreground" />
+                <div className="size-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center shrink-0">
+                  <Phone className="size-3.5 text-emerald-500 dark:text-emerald-400" />
                 </div>
                 {persona.telefono
                   ? <span>{persona.telefono}</span>
@@ -110,19 +110,20 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
 
           {/* Información personal */}
           <section className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+              <CreditCard className="size-3.5 text-blue-500 dark:text-blue-400" />
               Información personal
             </h4>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
               <Campo
                 label="Tipo de documento"
                 value={tipoDocLabel}
-                icon={<CreditCard className="size-3" />}
+                icon={<CreditCard className="size-3 text-blue-500 dark:text-blue-400" />}
               />
               <Campo
                 label="Nro. documento"
                 value={persona.nroDocumento}
-                icon={<CreditCard className="size-3" />}
+                icon={<CreditCard className="size-3 text-blue-500 dark:text-blue-400" />}
               />
               <Campo
                 label="Género"
@@ -131,7 +132,7 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
               <Campo
                 label="Fecha de nacimiento"
                 value={formatFecha(persona.fechaNacimiento)}
-                icon={<Calendar className="size-3" />}
+                icon={<Calendar className="size-3 text-blue-500 dark:text-blue-400" />}
               />
             </div>
           </section>
@@ -141,7 +142,7 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
           {/* Roles */}
           <section className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
-              <ShieldCheck className="size-3.5" />
+              <ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />
               Roles asignados
             </h4>
             {(usuario.usuarioRol ?? []).length === 0 ? (

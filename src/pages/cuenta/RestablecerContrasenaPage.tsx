@@ -6,9 +6,10 @@ import { KeyRound, ShieldCheck } from 'lucide-react'
 
 import { usuariosService } from '@/services/usuarios.service'
 import { useValidarContrasena } from '@/hooks/useValidarContrasena'
-import { FORTALEZA_CONTRASENA } from '@/constants/contrasena'
+import { getErrorMensaje } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { PasswordInput } from '@/components/ui/password-input'
+import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import {
   Form,
@@ -20,8 +21,12 @@ import {
 } from '@/components/ui/form'
 
 const schema = z.object({
-  contrasenaActual: z.string().min(1, 'Requerida'),
-  contrasenaNueva:  z.string().min(1, 'Requerida'),
+  contrasenaActual:    z.string().min(1, 'Requerida'),
+  contrasenaNueva:     z.string().min(1, 'Requerida'),
+  confirmarContrasena: z.string().min(1, 'Requerida'),
+}).refine((d) => d.contrasenaNueva === d.confirmarContrasena, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirmarContrasena'],
 })
 
 type FormValues = z.infer<typeof schema>
@@ -29,14 +34,14 @@ type FormValues = z.infer<typeof schema>
 export function RestablecerContrasenaPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { contrasenaActual: '', contrasenaNueva: '' },
+    defaultValues: { contrasenaActual: '', contrasenaNueva: '', confirmarContrasena: '' },
   })
 
-  const contrasenaNueva = form.watch('contrasenaNueva')
+  const contrasenaNueva     = form.watch('contrasenaNueva')
+  const confirmarContrasena = form.watch('confirmarContrasena')
   const { validacion, validando, errorValidacion } = useValidarContrasena(contrasenaNueva)
 
-  const puedeGuardar = validacion?.valida === true && !validando
-  const fortaleza    = validacion != null ? FORTALEZA_CONTRASENA[validacion.score] : null
+  const puedeGuardar = validacion?.valida === true && !validando && contrasenaNueva === confirmarContrasena
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -51,9 +56,7 @@ export function RestablecerContrasenaPage() {
         toast.error(data.mensaje)
       }
     } catch (error: unknown) {
-      const mensaje = (error as { response?: { data?: { mensaje?: string } } })
-        ?.response?.data?.mensaje
-      toast.error(mensaje ?? 'Error al cambiar la contraseña')
+      toast.error(getErrorMensaje(error) ?? 'Error al cambiar la contraseña')
     }
   }
 
@@ -108,38 +111,26 @@ export function RestablecerContrasenaPage() {
                       <PasswordInput placeholder="••••••••" autoComplete="new-password" {...field} />
                     </FormControl>
                     <FormMessage />
+                    <PasswordStrengthIndicator
+                      visible={!!contrasenaNueva}
+                      validacion={validacion}
+                      validando={validando}
+                      errorValidacion={errorValidacion}
+                    />
+                  </FormItem>
+                )}
+              />
 
-                    {/* Indicador de fortaleza */}
-                    {contrasenaNueva && (
-                      <div className="space-y-1.5 pt-1">
-                        <div className="flex gap-1">
-                          {FORTALEZA_CONTRASENA.map((f, i) => (
-                            <div
-                              key={i}
-                              className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-                                !validando && validacion != null && i <= validacion.score
-                                  ? ''
-                                  : validando ? 'bg-muted animate-pulse' : 'bg-muted'
-                              }`}
-                              style={
-                                !validando && validacion != null && i <= validacion.score
-                                  ? { backgroundColor: f.hex }
-                                  : undefined
-                              }
-                            />
-                          ))}
-                        </div>
-                        {validando ? (
-                          <p className="text-xs text-muted-foreground">Validando...</p>
-                        ) : errorValidacion ? (
-                          <p className="text-xs text-destructive">No se pudo validar la contraseña</p>
-                        ) : fortaleza ? (
-                          <p className="text-xs font-medium" style={{ color: fortaleza.hex }}>
-                            {validacion!.nivel}
-                          </p>
-                        ) : null}
-                      </div>
-                    )}
+              <FormField
+                control={form.control}
+                name="confirmarContrasena"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirmar nueva contraseña</FormLabel>
+                    <FormControl>
+                      <PasswordInput placeholder="••••••••" autoComplete="new-password" {...field} />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

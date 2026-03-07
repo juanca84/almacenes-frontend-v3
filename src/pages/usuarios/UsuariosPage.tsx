@@ -8,6 +8,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { useUsuarios } from '@/hooks/useUsuarios'
 import { getCatalogoGrupo } from '@/lib/catalogo'
 import { avatarClases, iniciales } from '@/lib/avatar'
+import { getNombreCompleto } from '@/lib/usuario'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { ESTADO_USUARIO_VARIANTE } from '@/constants/usuario'
 import { UsuarioFormDialog } from './UsuarioFormDialog'
@@ -156,11 +157,6 @@ export function UsuariosPage() {
   const opcionesRoles = useMemo(() =>
     rolesDisponibles.map((r) => ({ value: r.id, label: r.nombre })),
   [rolesDisponibles])
-
-  const nombreCompleto = (u: UsuarioItem) =>
-    [u.persona.nombres, u.persona.primerApellido, u.persona.segundoApellido]
-      .filter(Boolean)
-      .join(' ')
 
   const abrirCrear  = () => { setUsuarioSeleccionado(null); setDialogOpen(true) }
   const abrirEditar = (u: UsuarioItem) => { setUsuarioSeleccionado(u); setDialogOpen(true) }
@@ -344,7 +340,7 @@ export function UsuariosPage() {
                           {iniciales(u)}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium leading-none truncate">{nombreCompleto(u)}</p>
+                          <p className="font-medium leading-none truncate">{getNombreCompleto(u.persona)}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">@{u.usuario}</p>
                         </div>
                       </div>
@@ -364,13 +360,13 @@ export function UsuariosPage() {
                         <div className="space-y-1">
                           {u.correoElectronico && (
                             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                              <Mail className="size-3 shrink-0" />
+                              <Mail className="size-3 shrink-0 text-sky-500 dark:text-sky-400" />
                               <span className="truncate max-w-[180px]">{u.correoElectronico}</span>
                             </div>
                           )}
                           {u.persona.telefono && (
                             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                              <Phone className="size-3 shrink-0" />
+                              <Phone className="size-3 shrink-0 text-emerald-500 dark:text-emerald-400" />
                               <span>{u.persona.telefono}</span>
                             </div>
                           )}
@@ -400,7 +396,7 @@ export function UsuariosPage() {
 
                     {/* Acciones */}
                     {hayAcciones && (
-                      <TableCell className="text-right pr-4" onClick={(e) => e.stopPropagation()}>
+                      <TableCell className="text-right pr-4">
                         <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                           <Button
                             variant="ghost"
@@ -409,7 +405,7 @@ export function UsuariosPage() {
                             onClick={() => { setUsuarioDetalle(u); setDetailOpen(true) }}
                             title="Ver detalle"
                           >
-                            <Eye className="size-4" />
+                            <Eye className="size-4 text-blue-500 dark:text-blue-400" />
                           </Button>
 
                           {puedeEditar && (
@@ -421,22 +417,22 @@ export function UsuariosPage() {
                                 onClick={() => abrirEditar(u)}
                                 title="Editar datos"
                               >
-                                <Pencil className="size-4" />
+                                <Pencil className="size-4 text-slate-500 dark:text-slate-400" />
                               </Button>
 
                               {(u.estado === 'ACTIVO' || u.estado === 'PENDIENTE') && (
                                 <ConfirmDialog
                                   trigger={
                                     <Button variant="ghost" size="icon" className="size-8" title="Restaurar contraseña">
-                                      <KeyRound className="size-4" />
+                                      <KeyRound className="size-4 text-amber-500 dark:text-amber-400" />
                                     </Button>
                                   }
-                                  icon={<KeyRound className="size-4" />}
+                                  icon={<KeyRound className="size-4 text-amber-500 dark:text-amber-400" />}
                                   title="¿Restaurar contraseña?"
                                   description={
                                     u.correoElectronico
-                                      ? <>Se enviará un correo a <strong>{u.correoElectronico}</strong> para que <strong>{nombreCompleto(u)}</strong> establezca una nueva contraseña.</>
-                                      : <>Se restaurará la contraseña de <strong>{nombreCompleto(u)}</strong>. El usuario no tiene correo registrado.</>
+                                      ? <>Se enviará un correo a <strong>{u.correoElectronico}</strong> para que <strong>{getNombreCompleto(u.persona)}</strong> establezca una nueva contraseña.</>
+                                      : <>Se restaurará la contraseña de <strong>{getNombreCompleto(u.persona)}</strong>. El usuario no tiene correo registrado.</>
                                   }
                                   confirmLabel="Restaurar"
                                   onConfirm={() => handleRestaurarContrasena(u.id)}
@@ -462,13 +458,13 @@ export function UsuariosPage() {
                               icon={u.estado === 'ACTIVO'
                                 ? <PowerOff className="size-4" />
                                 : <ToggleLeft className="size-4" />}
-                              title={u.estado === 'ACTIVO' ? `¿Inactivar a ${nombreCompleto(u)}?` : `¿Activar a ${nombreCompleto(u)}?`}
+                              title={u.estado === 'ACTIVO' ? `¿Inactivar a ${getNombreCompleto(u.persona)}?` : `¿Activar a ${getNombreCompleto(u.persona)}?`}
                               description={
                                 u.estado === 'ACTIVO'
-                                  ? <>El usuario <strong>{nombreCompleto(u)}</strong> perderá el acceso al sistema de forma inmediata. Podrás reactivarlo en cualquier momento desde esta misma tabla.</>
+                                  ? <>El usuario <strong>{getNombreCompleto(u.persona)}</strong> perderá el acceso al sistema de forma inmediata. Podrás reactivarlo en cualquier momento desde esta misma tabla.</>
                                   : u.correoElectronico
-                                    ? <>El usuario <strong>{nombreCompleto(u)}</strong> será activado y recibirá un correo a <strong>{u.correoElectronico}</strong> con una contraseña temporal para que pueda ingresar al sistema y establecer una nueva contraseña.</>
-                                    : <>El usuario <strong>{nombreCompleto(u)}</strong> será activado y podrá volver a iniciar sesión. No tiene correo registrado, por lo que deberás asignarle una contraseña manualmente.</>
+                                    ? <>El usuario <strong>{getNombreCompleto(u.persona)}</strong> será activado y recibirá un correo a <strong>{u.correoElectronico}</strong> con una contraseña temporal para que pueda ingresar al sistema y establecer una nueva contraseña.</>
+                                    : <>El usuario <strong>{getNombreCompleto(u.persona)}</strong> será activado y podrá volver a iniciar sesión. No tiene correo registrado, por lo que deberás asignarle una contraseña manualmente.</>
                               }
                               confirmLabel={u.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
                               variant={u.estado === 'ACTIVO' ? 'destructive' : 'default'}
