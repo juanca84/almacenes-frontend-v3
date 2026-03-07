@@ -65,6 +65,7 @@ export function MainLayout() {
             variant="ghost"
             size="icon"
             onClick={toggleCollapsed}
+            aria-label={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
             title={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
             className="text-slate-400 hover:text-slate-200 hover:bg-white/5 shrink-0"
           >
@@ -100,7 +101,7 @@ export function MainLayout() {
                 <p className="text-sm font-medium text-slate-200 truncate">
                   {usuario?.usuario ?? 'Usuario'}
                 </p>
-                <p className="text-xs text-slate-500 truncate">
+                <p className="text-xs text-slate-400 truncate">
                   {usuario?.roles?.[0]?.nombre ?? ''}
                 </p>
               </div>
@@ -111,6 +112,7 @@ export function MainLayout() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Cerrar sesión"
                 title="Cerrar sesión"
                 className="text-slate-400 hover:text-slate-200 hover:bg-white/5 shrink-0"
               >

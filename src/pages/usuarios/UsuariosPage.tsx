@@ -415,6 +415,7 @@ export function UsuariosPage() {
                                 size="icon"
                                 className="size-8"
                                 onClick={() => abrirEditar(u)}
+                                aria-label="Editar datos"
                                 title="Editar datos"
                               >
                                 <Pencil className="size-4 text-slate-500 dark:text-slate-400" />
@@ -423,7 +424,7 @@ export function UsuariosPage() {
                               {(u.estado === 'ACTIVO' || u.estado === 'PENDIENTE') && (
                                 <ConfirmDialog
                                   trigger={
-                                    <Button variant="ghost" size="icon" className="size-8" title="Restaurar contraseña">
+                                    <Button variant="ghost" size="icon" className="size-8" aria-label="Restaurar contraseña" title="Restaurar contraseña">
                                       <KeyRound className="size-4 text-amber-500 dark:text-amber-400" />
                                     </Button>
                                   }
@@ -448,6 +449,7 @@ export function UsuariosPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="size-8"
+                                  aria-label={u.estado === 'ACTIVO' ? 'Inactivar usuario' : 'Activar usuario'}
                                   title={u.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
                                 >
                                   {u.estado === 'ACTIVO'
@@ -493,6 +495,7 @@ export function UsuariosPage() {
                 className="size-8"
                 onClick={() => setPagina(pagina - 1)}
                 disabled={pagina === 1 || loading}
+                aria-label="Página anterior"
               >
                 <ChevronLeft className="size-4" />
               </Button>
@@ -505,6 +508,7 @@ export function UsuariosPage() {
                 className="size-8"
                 onClick={() => setPagina(pagina + 1)}
                 disabled={pagina === totalPaginas || loading}
+                aria-label="Página siguiente"
               >
                 <ChevronRight className="size-4" />
               </Button>

@@ -4,21 +4,21 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthGuard } from '@/auth/guards/AuthGuard'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import { MainLayout } from '@/layouts/MainLayout'
-import { LoginPage } from '@/auth/login/LoginPage'
-import { CambiarContrasenaPage } from '@/auth/cambiar-contrasena/CambiarContrasenaPage'
 
-const DashboardPage          = lazy(() => import('@/pages/dashboard/DashboardPage').then(({ DashboardPage })                   => ({ default: DashboardPage })))
-const UsuariosPage           = lazy(() => import('@/pages/usuarios/UsuariosPage').then(({ UsuariosPage })                     => ({ default: UsuariosPage })))
-const RestablecerContrasenaPage = lazy(() => import('@/pages/cuenta/RestablecerContrasenaPage').then(({ RestablecerContrasenaPage }) => ({ default: RestablecerContrasenaPage })))
-const PerfilPage             = lazy(() => import('@/pages/perfil/PerfilPage').then(({ PerfilPage })                           => ({ default: PerfilPage })))
+const LoginPage                 = lazy(() => import('@/auth/login/LoginPage').then(({ LoginPage })                                     => ({ default: LoginPage })))
+const CambiarContrasenaPage     = lazy(() => import('@/auth/cambiar-contrasena/CambiarContrasenaPage').then(({ CambiarContrasenaPage }) => ({ default: CambiarContrasenaPage })))
+const DashboardPage             = lazy(() => import('@/pages/dashboard/DashboardPage').then(({ DashboardPage })                        => ({ default: DashboardPage })))
+const UsuariosPage              = lazy(() => import('@/pages/usuarios/UsuariosPage').then(({ UsuariosPage })                           => ({ default: UsuariosPage })))
+const RestablecerContrasenaPage = lazy(() => import('@/pages/cuenta/RestablecerContrasenaPage').then(({ RestablecerContrasenaPage })   => ({ default: RestablecerContrasenaPage })))
+const PerfilPage                = lazy(() => import('@/pages/perfil/PerfilPage').then(({ PerfilPage })                                 => ({ default: PerfilPage })))
 
 export function AppRouter() {
   return (
     <Routes>
       {/* Rutas públicas */}
       <Route element={<AuthLayout />}>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/cambiar-contrasena" element={<CambiarContrasenaPage />} />
+        <Route path="/login" element={<Suspense fallback={null}><LoginPage /></Suspense>} />
+        <Route path="/cambiar-contrasena" element={<Suspense fallback={null}><CambiarContrasenaPage /></Suspense>} />
       </Route>
 
       {/* Rutas privadas */}

@@ -21,7 +21,7 @@ export function NavSidebar({ modulos, collapsed = false }: NavSidebarProps) {
         return (
           <div key={modulo.id}>
             {!collapsed && (
-              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
                 {modulo.label}
               </p>
             )}
