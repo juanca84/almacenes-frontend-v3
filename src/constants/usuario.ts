@@ -2,6 +2,6 @@ import type { BadgeProps } from '@/components/ui/badge'
 
 export const ESTADO_USUARIO_VARIANTE: Record<string, BadgeProps['variant']> = {
   ACTIVO:   'success',     // verde
-  INACTIVO: 'destructive', // rojo
+  INACTIVO: 'secondary',   // gris
   PENDIENTE: 'warning',    // ámbar
 }

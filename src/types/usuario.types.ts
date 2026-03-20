@@ -17,6 +17,7 @@ export interface RolDisponible {
   id: string
   rol: string
   nombre: string
+  estado: EstadoEntidad
 }
 
 export interface CreateUsuarioPayload {

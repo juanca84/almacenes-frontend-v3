@@ -7,3 +7,9 @@ export function getNombreCompleto(
     .filter(Boolean)
     .join(' ')
 }
+
+export function formatDocumento(
+  persona: Pick<Persona, 'tipoDocumento' | 'nroDocumento'>
+): string {
+  return `${persona.tipoDocumento}: ${persona.nroDocumento}`
+}

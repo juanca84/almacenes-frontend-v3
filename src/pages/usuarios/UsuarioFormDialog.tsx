@@ -2,6 +2,7 @@ import { Calendar, CreditCard, Mail, Phone, ShieldCheck, UserPen, UserPlus } fro
 
 import type { UsuarioItem } from '@/types/usuario.types'
 import { avatarClases, iniciales } from '@/lib/avatar'
+import { formatDocumento } from '@/lib/usuario'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -45,21 +46,33 @@ function RolesCheckboxList({ roles, loading, value, onChange }: RolesCheckboxLis
 
   return (
     <>
-      {roles.map((rol) => (
-        <label key={rol.id} className="flex items-center gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            value={rol.id}
-            checked={value.includes(rol.id)}
-            onChange={(e) => {
-              if (e.target.checked) onChange([...value, rol.id])
-              else onChange(value.filter((id) => id !== rol.id))
-            }}
-            className="size-4 accent-primary"
-          />
-          <span className="text-sm">{rol.nombre}</span>
-        </label>
-      ))}
+      {roles.map((rol) => {
+        const inactivo = rol.estado === 'INACTIVO'
+        return (
+          <label
+            key={rol.id}
+            className={`flex items-center gap-2 select-none ${inactivo ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+          >
+            <input
+              type="checkbox"
+              value={rol.id}
+              checked={value.includes(rol.id)}
+              disabled={inactivo}
+              onChange={(e) => {
+                if (e.target.checked) onChange([...value, rol.id])
+                else onChange(value.filter((id) => id !== rol.id))
+              }}
+              className="size-4 accent-primary"
+            />
+            <span className="text-sm flex-1">{rol.nombre}</span>
+            {inactivo && (
+              <span className="text-[10px] bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-medium">
+                Inactivo
+              </span>
+            )}
+          </label>
+        )
+      })}
     </>
   )
 }
@@ -141,14 +154,14 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <CreditCard className="size-3 text-blue-500 dark:text-blue-400 opacity-60" />
                         Tipo / Nro. documento
                       </label>
-                      <Input value={`${usuario!.persona.tipoDocumento}: ${usuario!.persona.nroDocumento}`} disabled className="bg-muted/40" />
+                      <Input value={formatDocumento(usuario!.persona)} disabled className="bg-muted/40" />
                     </div>
                     <FormField
                       control={editarForm.control}
                       name="nombres"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Nombres</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Nombres <span className="text-destructive">*</span></FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -159,7 +172,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="primerApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Primer apellido</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Primer apellido <span className="text-destructive">*</span></FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -170,7 +183,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="segundoApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -183,7 +196,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <Calendar className="size-3 text-blue-500 dark:text-blue-400" />
-                            Fecha de nacimiento
+                            Fecha de nacimiento <span className="text-destructive">*</span>
                           </FormLabel>
                           <FormControl><Input type="date" {...field} /></FormControl>
                           <FormMessage />
@@ -195,7 +208,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="genero"
                       render={({ field }) => (
                         <FormItem className="col-span-2">
-                          <FormLabel className="text-xs text-muted-foreground">Género</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Género <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
                           <Select value={field.value ?? ''} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger>
@@ -228,7 +241,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <Mail className="size-3 text-sky-500 dark:text-sky-400" />
-                            Correo electrónico
+                            Correo electrónico <span className="text-destructive">*</span>
                           </FormLabel>
                           <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
                           <FormMessage />
@@ -242,7 +255,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <Phone className="size-3 text-emerald-500 dark:text-emerald-400" />
-                            Teléfono
+                            Teléfono <span className="text-muted-foreground/60">(opcional)</span>
                           </FormLabel>
                           <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
                           <FormMessage />
@@ -302,7 +315,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="persona.nombres"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Nombres</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Nombres <span className="text-destructive">*</span></FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -313,7 +326,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="persona.primerApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Primer apellido</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Primer apellido <span className="text-destructive">*</span></FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -324,7 +337,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="persona.segundoApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -337,7 +350,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <CreditCard className="size-3 text-blue-500 dark:text-blue-400" />
-                            Tipo de documento
+                            Tipo de documento <span className="text-destructive">*</span>
                           </FormLabel>
                           <Select value={field.value} onValueChange={field.onChange}>
                             <FormControl>
@@ -362,7 +375,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <CreditCard className="size-3 text-blue-500 dark:text-blue-400" />
-                            Nro. documento
+                            Nro. documento <span className="text-destructive">*</span>
                           </FormLabel>
                           <FormControl><Input {...field} /></FormControl>
                           <FormMessage />
@@ -376,7 +389,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <Calendar className="size-3 text-blue-500 dark:text-blue-400" />
-                            Fecha de nacimiento
+                            Fecha de nacimiento <span className="text-destructive">*</span>
                           </FormLabel>
                           <FormControl><Input type="date" {...field} /></FormControl>
                           <FormMessage />
@@ -388,7 +401,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="persona.genero"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Género</FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">Género <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
                           <Select value={field.value ?? ''} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger>
@@ -421,7 +434,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <Mail className="size-3 text-sky-500 dark:text-sky-400" />
-                            Correo electrónico
+                            Correo electrónico <span className="text-destructive">*</span>
                           </FormLabel>
                           <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
                           <FormMessage />
@@ -435,7 +448,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                         <FormItem className="col-span-2">
                           <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
                             <Phone className="size-3 text-emerald-500 dark:text-emerald-400" />
-                            Teléfono
+                            Teléfono <span className="text-muted-foreground/60">(opcional)</span>
                           </FormLabel>
                           <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
                           <FormMessage />

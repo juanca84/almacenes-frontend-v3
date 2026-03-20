@@ -9,6 +9,7 @@ import type { UsuarioItem, RolDisponible } from '@/types/usuario.types'
 import { getCatalogoGrupo } from '@/lib/catalogo'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { getNombreCompleto } from '@/lib/usuario'
+import { getErrorMensaje } from '@/lib/utils'
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ export const crearSchema = z.object({
 
 // estado se cambia desde la tabla con endpoints dedicados (/activacion | /inactivacion)
 export const editarSchema = z.object({
-  correoElectronico: z.email('Email inválido').optional().or(z.literal('')),
+  correoElectronico: z.email('Email inválido'),
   roles: z.array(z.string()).min(1, 'Seleccione al menos un rol'),
   genero: z.string().optional(),
   telefono: z.string().optional(),
@@ -108,15 +109,17 @@ export function useUsuarioForm({ open, usuario, onClose, onSuccess }: UseUsuario
         segundoApellido: usuario.persona.segundoApellido ?? '',
         fechaNacimiento: usuario.persona.fechaNacimiento ?? '',
       })
+    } else {
+      resetCrear()
     }
 
+    let cancelled = false
     setLoadingRoles(true)
     usuariosService.listarRoles()
-      .then(({ data }) => { if (data.finalizado) setRoles(data.datos) })
-      .catch(() => toast.error('Error al cargar los roles'))
-      .finally(() => setLoadingRoles(false))
-
-    if (!usuario) resetCrear()
+      .then(({ data }) => { if (!cancelled && data.finalizado) setRoles(data.datos) })
+      .catch(() => { if (!cancelled) toast.error('Error al cargar los roles') })
+      .finally(() => { if (!cancelled) setLoadingRoles(false) })
+    return () => { cancelled = true }
   }, [usuario, open, resetCrear, resetEditar])
 
   const onSubmitCrear = async (values: CrearValues) => {
@@ -128,8 +131,8 @@ export function useUsuarioForm({ open, usuario, onClose, onSuccess }: UseUsuario
       } else {
         toast.error(data.mensaje)
       }
-    } catch {
-      toast.error('Error al crear el usuario')
+    } catch (error: unknown) {
+      toast.error(getErrorMensaje(error) ?? 'Error al crear el usuario')
     }
   }
 
@@ -154,8 +157,8 @@ export function useUsuarioForm({ open, usuario, onClose, onSuccess }: UseUsuario
       } else {
         toast.error(data.mensaje)
       }
-    } catch {
-      toast.error('Error al actualizar el usuario')
+    } catch (error: unknown) {
+      toast.error(getErrorMensaje(error) ?? 'Error al actualizar el usuario')
     }
   }
 

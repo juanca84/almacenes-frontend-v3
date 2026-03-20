@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { ChevronDown, ChevronLeft, ChevronRight, Eye, KeyRound, Mail, Pencil, Phone, Plus, PowerOff, Search, ToggleLeft, Users, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { ChevronDown, ChevronLeft, ChevronRight, Eye, KeyRound, Mail, Pencil, Phone, Plus, Search, ToggleLeft, ToggleRight, Users, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { usuariosService } from '@/services/usuarios.service'
@@ -59,11 +60,11 @@ function FiltroMultiSelect({ label, options, value, onChange }: FiltroMultiSelec
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className={[
+          className={cn(
             'flex items-center gap-1.5 text-sm px-3 h-10 transition-colors',
             'hover:bg-muted/60 focus-visible:outline-none focus-visible:bg-muted/60',
             active ? 'text-foreground font-medium' : 'text-muted-foreground',
-          ].join(' ')}
+          )}
         >
           {label}
           {active && (
@@ -143,20 +144,22 @@ export function UsuariosPage() {
   const puedeDesactivar = tieneAccion('usuarios', 'delete')
   const hayAcciones     = puedeEditar || puedeDesactivar
 
-  const estadoLabels = useMemo(() => {
+  const { estadoLabels, opcionesEstado } = useMemo(() => {
     const items = getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO)
-    return Object.fromEntries(items.map((e) => [e.codigo, e.nombre]))
+    return {
+      estadoLabels: Object.fromEntries(items.map((e) => [e.codigo, e.nombre])),
+      opcionesEstado: items
+        .filter((e) => e.codigo in ESTADO_USUARIO_VARIANTE)
+        .map((e) => ({ value: e.codigo, label: e.nombre })),
+    }
   }, [])
-
-  const opcionesEstado = useMemo(() =>
-    getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO)
-      .filter((e) => e.codigo in ESTADO_USUARIO_VARIANTE)
-      .map((e) => ({ value: e.codigo, label: e.nombre })),
-  [])
 
   const opcionesRoles = useMemo(() =>
     rolesDisponibles.map((r) => ({ value: r.id, label: r.nombre })),
   [rolesDisponibles])
+
+  const labelRol    = useMemo(() => new Map(opcionesRoles.map((r) => [r.value, r.label])), [opcionesRoles])
+  const labelEstado = useMemo(() => new Map(opcionesEstado.map((e) => [e.value, e.label])), [opcionesEstado])
 
   const abrirCrear  = () => { setUsuarioSeleccionado(null); setDialogOpen(true) }
   const abrirEditar = (u: UsuarioItem) => { setUsuarioSeleccionado(u); setDialogOpen(true) }
@@ -266,7 +269,7 @@ export function UsuariosPage() {
         {hayFiltros && (
           <div className="flex items-center gap-1.5 flex-wrap">
             {roles.map((id) => {
-              const label = opcionesRoles.find((r) => r.value === id)?.label ?? id
+              const label = labelRol.get(id) ?? id
               return (
                 <span key={id} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium">
                   {label}
@@ -277,7 +280,7 @@ export function UsuariosPage() {
               )
             })}
             {estados.map((codigo) => {
-              const label = opcionesEstado.find((e) => e.value === codigo)?.label ?? codigo
+              const label = labelEstado.get(codigo) ?? codigo
               return (
                 <span key={codigo} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium">
                   {label}
@@ -453,13 +456,13 @@ export function UsuariosPage() {
                                   title={u.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
                                 >
                                   {u.estado === 'ACTIVO'
-                                    ? <PowerOff className="size-4 text-destructive" />
-                                    : <ToggleLeft className="size-4 text-primary" />}
+                                    ? <ToggleLeft className="size-4 text-muted-foreground" />
+                                    : <ToggleRight className="size-4 text-emerald-600 dark:text-emerald-400" />}
                                 </Button>
                               }
                               icon={u.estado === 'ACTIVO'
-                                ? <PowerOff className="size-4" />
-                                : <ToggleLeft className="size-4" />}
+                                ? <ToggleLeft className="size-4" />
+                                : <ToggleRight className="size-4" />}
                               title={u.estado === 'ACTIVO' ? `¿Inactivar a ${getNombreCompleto(u.persona)}?` : `¿Activar a ${getNombreCompleto(u.persona)}?`}
                               description={
                                 u.estado === 'ACTIVO'
