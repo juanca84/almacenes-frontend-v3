@@ -1,6 +1,7 @@
 import type { Catalogo, CatalogoItem } from '@/types/catalogo.types'
+import { APP_CONFIG } from '@/config/app'
 
-const STORAGE_KEY = 'catalogo'
+const STORAGE_KEY = `${APP_CONFIG.storagePrefix}-catalogo`
 
 export function getCatalogoGrupo(grupo: string): CatalogoItem[] {
   try {

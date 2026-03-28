@@ -1,5 +1,6 @@
 import { LayoutDashboard } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { APP_CONFIG } from '@/config/app'
 
 export function DashboardPage() {
   return (
@@ -10,7 +11,7 @@ export function DashboardPage() {
         </div>
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-sm text-muted-foreground">Bienvenido al Sistema de Almacenes</p>
+          <p className="text-sm text-muted-foreground">Bienvenido al {APP_CONFIG.subtitle}</p>
         </div>
       </div>
 

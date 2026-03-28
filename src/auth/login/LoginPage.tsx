@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Package } from 'lucide-react'
+import { APP_CONFIG } from '@/config/app'
 import type { ControllerRenderProps } from 'react-hook-form'
 
 import { useAuth } from '@/hooks/useAuth'
@@ -60,14 +60,14 @@ export function LoginPage() {
       {/* Marca */}
       <div className="flex flex-col items-center gap-3">
         <div className="size-12 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25">
-          <Package className="size-6 text-white" />
+          <APP_CONFIG.icon className="size-6 text-white" />
         </div>
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground tracking-tight">
-            Almacenes
+            {APP_CONFIG.name}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Sistema de gestión de inventario
+            {APP_CONFIG.description}
           </p>
         </div>
       </div>

@@ -3,7 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { KeyRound, Package } from 'lucide-react'
+import { KeyRound } from 'lucide-react'
+
+import { APP_CONFIG } from '@/config/app'
 
 import { useAuthStore } from '@/store/auth.store'
 import { usuariosService } from '@/services/usuarios.service'
@@ -72,11 +74,11 @@ export function CambiarContrasenaPage() {
       {/* Marca */}
       <div className="flex flex-col items-center gap-3">
         <div className="size-12 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25">
-          <Package className="size-6 text-white" />
+          <APP_CONFIG.icon className="size-6 text-white" />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Almacenes</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Sistema de gestión de inventario</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">{APP_CONFIG.name}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{APP_CONFIG.description}</p>
         </div>
       </div>
 

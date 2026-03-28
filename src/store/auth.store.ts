@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { EstadoEntidad, Usuario } from '@/types/auth.types'
+import { APP_CONFIG } from '@/config/app'
 
 interface AuthState {
   token: string | null
@@ -29,7 +30,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       logout: () => set({ token: null, usuario: null, isAuthenticated: false }),
     }),
     {
-      name: 'auth-storage',
+      name: `${APP_CONFIG.storagePrefix}-auth`,
       partialize: (state) => ({
         token: state.token,
         usuario: state.usuario,

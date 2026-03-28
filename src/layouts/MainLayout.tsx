@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { LogOut, Package, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
+
+import { APP_CONFIG } from '@/config/app'
 
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
@@ -14,8 +16,9 @@ import { cn } from '@/lib/utils'
 export function MainLayout() {
   const { usuario, logout } = useAuth()
   const navigate = useNavigate()
+  const sidebarKey = `${APP_CONFIG.storagePrefix}-sidebar-collapsed`
   const [collapsed, setCollapsed] = useState(
-    () => localStorage.getItem('sidebar-collapsed') === 'true'
+    () => localStorage.getItem(sidebarKey) === 'true'
   )
 
   const handleLogout = async () => {
@@ -27,7 +30,7 @@ export function MainLayout() {
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
       const next = !prev
-      localStorage.setItem('sidebar-collapsed', String(next))
+      localStorage.setItem(sidebarKey, String(next))
       return next
     })
   }
@@ -50,14 +53,14 @@ export function MainLayout() {
         <div className="h-16 flex items-center border-b border-white/5 px-3 shrink-0">
           <div className={cn('flex items-center flex-1 min-w-0', collapsed ? 'justify-center' : 'gap-2.5 pl-2')}>
             <div className="size-8 rounded-md bg-primary/20 flex items-center justify-center shrink-0">
-              <Package className="size-4 text-primary" />
+              <APP_CONFIG.icon className="size-4 text-primary" />
             </div>
             {!collapsed && (
               <span
                 className="text-white font-semibold tracking-tight text-base truncate"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
-                Almacenes
+                {APP_CONFIG.name}
               </span>
             )}
           </div>
@@ -130,7 +133,7 @@ export function MainLayout() {
       {/* Contenido principal */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 border-b bg-card flex items-center px-6 shrink-0">
-          <p className="text-sm font-medium text-muted-foreground">Sistema de Almacenes</p>
+          <p className="text-sm font-medium text-muted-foreground">{APP_CONFIG.subtitle}</p>
         </header>
         <main className="flex-1 overflow-auto p-6">
           <Outlet />
