@@ -19,27 +19,28 @@ export function useRoles(): UseRolesReturn {
   const [loading, setLoading] = useState(true)
   const [tick, setTick] = useState(0)
 
-  const { loaded, loading: loadingModulos, setModulos, setLoading: setLoadingModulos } =
+  const { loaded, setModulos, setLoading: setLoadingModulos } =
     useModulosStore()
 
   // Carga el árbol de módulos en el store global (solo una vez por sesión)
   useEffect(() => {
-    if (loaded || loadingModulos) return
+    if (loaded) return
     let cancelled = false
     setLoadingModulos(true)
     rolesService
       .listarModulos()
       .then(({ data }) => {
-        if (!cancelled && data.finalizado) setModulos(data.datos.filas)
+        if (!cancelled && data.finalizado) setModulos(data.datos?.filas ?? [])
       })
       .catch(() => {
         if (!cancelled) toast.error('Error al cargar los módulos')
       })
       .finally(() => {
-        if (!cancelled) setLoadingModulos(false)
+        setLoadingModulos(false)
       })
     return () => { cancelled = true }
-  }, [loaded, loadingModulos, setModulos, setLoadingModulos])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, setModulos, setLoadingModulos])
 
   // Carga la lista de roles; se repite cuando se llama recargar()
   useEffect(() => {
@@ -94,7 +95,11 @@ export function useRoles(): UseRolesReturn {
       } else {
         toast.error(data.mensaje)
       }
-    } catch {
+    } catch (error: unknown) {
+      if (getErrorStatus(error) === 403) {
+        toast.error('No se puede modificar un rol del sistema')
+        return
+      }
       toast.error('Error al activar el rol')
     }
   }, [recargar])

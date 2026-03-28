@@ -12,14 +12,15 @@ const api = axios.create({
 // Evita que múltiples peticiones con 401 simultáneas disparen
 // varias llamadas a POST /api/token al mismo tiempo.
 let isRefreshing = false
-let refreshQueue: ((token: string) => void)[] = []
+let refreshQueue: { resolve: (token: string) => void; reject: (err: unknown) => void }[] = []
 
 function resolveQueue(token: string) {
-  refreshQueue.forEach(cb => cb(token))
+  refreshQueue.forEach(({ resolve }) => resolve(token))
   refreshQueue = []
 }
 
-function clearQueue() {
+function rejectQueue(err: unknown) {
+  refreshQueue.forEach(({ reject }) => reject(err))
   refreshQueue = []
 }
 // --------------------
@@ -43,8 +44,8 @@ api.interceptors.response.use(
 
     // Si ya hay un refresh en curso, encolar y esperar el nuevo token
     if (isRefreshing) {
-      return new Promise<string>(resolve => {
-        refreshQueue.push(resolve)
+      return new Promise<string>((resolve, reject) => {
+        refreshQueue.push({ resolve, reject })
       }).then(token => {
         originalRequest.headers.Authorization = `Bearer ${token}`
         originalRequest._retry = true
@@ -65,15 +66,16 @@ api.interceptors.response.use(
         { withCredentials: true },
       )
       newToken = data.datos.access_token as string
-    } catch {
+    } catch (refreshError) {
       isRefreshing = false
-      clearQueue()
+      rejectQueue(refreshError)
       useAuthStore.getState().logout()
       window.location.href = '/login'
       return Promise.reject(error)
     }
 
     if (!newToken) {
+      rejectQueue(error)
       useAuthStore.getState().logout()
       window.location.href = '/login'
       return Promise.reject(error)

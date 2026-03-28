@@ -248,7 +248,7 @@ export function ModuloArbol({ modulos, value, onChange, loading, disabled }: Mod
       else next.add(accion)
 
       const rest = value.filter((m) => m.id !== id)
-      onChange(next.size === 0 ? rest : [...rest, { id, acciones: [...next] as Accion[] }])
+      onChange(next.size === 0 ? rest : [...rest, { id, acciones: Array.from(next) }])
     },
     [accionesMap, value, onChange],
   )

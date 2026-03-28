@@ -52,10 +52,8 @@ export interface RolModuloRaw {
 }
 
 // Shape normalizado que usa ModuloArbol (flat: id → acciones)
-export interface RolModuloItem {
-  id: string
-  acciones: Accion[]
-}
+// Idéntico a ModuloPermiso — es el mismo contrato
+export type RolModuloItem = ModuloPermiso
 
 export interface CreateRolPayload {
   rol: string

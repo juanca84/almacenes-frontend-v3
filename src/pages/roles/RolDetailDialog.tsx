@@ -3,7 +3,7 @@ import { Shield } from 'lucide-react'
 import { useModulosStore } from '@/store/modulos.store'
 import { useRolModulos } from '@/hooks/useRolModulos'
 import { esRolSistema } from '@/constants/roles'
-import type { RolItem, ModuloPermiso } from '@/types/roles.types'
+import type { RolItem } from '@/types/roles.types'
 import { ModuloArbol } from './components/ModuloArbol'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -58,7 +58,7 @@ export function RolDetailDialog({ open, onClose, rol }: RolDetailDialogProps) {
           <div className="border rounded-lg px-2 pb-2 bg-muted/10 max-h-[60vh] overflow-y-auto">
             <ModuloArbol
               modulos={modulos}
-              value={modulosRol as ModuloPermiso[]}
+              value={modulosRol}
               onChange={() => {}}
               loading={loadingModulos || loadingModulosRol}
               disabled

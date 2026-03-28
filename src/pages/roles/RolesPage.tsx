@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Eye, Pencil, Plus, Shield, ToggleLeft, ToggleRight } from 'lucide-react'
-import { toast } from 'sonner'
 
 import { useRoles } from '@/hooks/useRoles'
 import { usePermissions } from '@/hooks/usePermissions'
@@ -63,21 +62,8 @@ export function RolesPage() {
   const abrirVer     = (rol: RolItem) => { setRolSeleccionado(rol); setDetailOpen(true) }
   const abrirEditar  = (rol: RolItem) => { setRolSeleccionado(rol); setDialogOpen(true) }
 
-  const handleInactivar = async (rol: RolItem) => {
-    try {
-      await inactivar(rol.id)
-    } catch {
-      toast.error('Error al inactivar el rol')
-    }
-  }
-
-  const handleActivar = async (rol: RolItem) => {
-    try {
-      await activar(rol.id)
-    } catch {
-      toast.error('Error al activar el rol')
-    }
-  }
+  const handleInactivar = (rol: RolItem) => inactivar(rol.id)
+  const handleActivar = (rol: RolItem) => activar(rol.id)
 
   return (
     <div className="space-y-6">

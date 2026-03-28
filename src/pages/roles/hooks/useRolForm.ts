@@ -8,7 +8,7 @@ import { rolesService } from '@/services/roles.service'
 import { useRolModulos } from '@/hooks/useRolModulos'
 import { getErrorMensaje, getErrorStatus, getErrorCodigo } from '@/lib/utils'
 import { ACCIONES_MODULO } from '@/constants/roles'
-import type { RolItem, ModuloPermiso } from '@/types/roles.types'
+import type { RolItem } from '@/types/roles.types'
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -17,25 +17,16 @@ const moduloPermisoSchema = z.object({
   acciones: z.array(z.enum(ACCIONES_MODULO)),
 })
 
-export const crearRolSchema = z.object({
-  rol: z
-    .string()
-    .min(1, 'Requerido')
-    .max(50, 'Máximo 50 caracteres'),
-  nombre: z
-    .string()
-    .min(1, 'Requerido')
-    .max(100, 'Máximo 100 caracteres'),
+const baseRolSchema = z.object({
+  nombre: z.string().min(1, 'Requerido').max(100, 'Máximo 100 caracteres'),
   modulos: z.array(moduloPermisoSchema),
 })
 
-export const editarRolSchema = z.object({
-  nombre: z
-    .string()
-    .min(1, 'Requerido')
-    .max(100, 'Máximo 100 caracteres'),
-  modulos: z.array(moduloPermisoSchema),
+export const crearRolSchema = baseRolSchema.extend({
+  rol: z.string().min(1, 'Requerido').max(50, 'Máximo 50 caracteres'),
 })
+
+export const editarRolSchema = baseRolSchema
 
 export type CrearRolValues = z.infer<typeof crearRolSchema>
 export type EditarRolValues = z.infer<typeof editarRolSchema>
@@ -83,7 +74,7 @@ export function useRolForm({ open, rol, onClose, onSuccess }: UseRolFormProps) {
     if (!open || !esEdicion || loadingModulosRol) return
     resetEditar({
       nombre: rol!.nombre,
-      modulos: modulosRol as ModuloPermiso[],
+      modulos: modulosRol,
     })
   }, [open, esEdicion, loadingModulosRol, modulosRol, rol, resetEditar])
 

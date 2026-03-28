@@ -12,6 +12,7 @@ const UsuariosPage              = lazy(() => import('@/pages/usuarios/UsuariosPa
 const RestablecerContrasenaPage = lazy(() => import('@/pages/cuenta/RestablecerContrasenaPage').then(({ RestablecerContrasenaPage })   => ({ default: RestablecerContrasenaPage })))
 const PerfilPage                = lazy(() => import('@/pages/perfil/PerfilPage').then(({ PerfilPage })                                 => ({ default: PerfilPage })))
 const RolesPage                 = lazy(() => import('@/pages/roles/RolesPage').then(({ RolesPage })                                     => ({ default: RolesPage })))
+const ParametrosPage            = lazy(() => import('@/pages/parametros/ParametrosPage').then(({ ParametrosPage })                        => ({ default: ParametrosPage })))
 
 export function AppRouter() {
   return (
@@ -30,6 +31,7 @@ export function AppRouter() {
           <Route path="/cuenta/contrasena" element={<Suspense fallback={null}><RestablecerContrasenaPage /></Suspense>} />
           <Route path="/perfil" element={<Suspense fallback={null}><PerfilPage /></Suspense>} />
           <Route path="/roles" element={<Suspense fallback={null}><RolesPage /></Suspense>} />
+          <Route path="/parametros" element={<Suspense fallback={null}><ParametrosPage /></Suspense>} />
         </Route>
       </Route>
 

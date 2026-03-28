@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { toast } from 'sonner'
 import { Calendar, CreditCard, KeyRound, Mail, Pencil, Phone, ShieldCheck, User } from 'lucide-react'
 
 import { usePerfil } from '@/hooks/usePerfil'
@@ -9,6 +8,7 @@ import { getCatalogoGrupo } from '@/lib/catalogo'
 import { getNombreCompleto } from '@/lib/usuario'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { ESTADO_USUARIO_VARIANTE } from '@/constants/usuario'
+import { Campo } from '@/components/Campo'
 import { EditarContactoDialog } from './EditarContactoDialog'
 import { CambiarContrasenaDialog } from './CambiarContrasenaDialog'
 import { Badge } from '@/components/ui/badge'
@@ -16,26 +16,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 // ── Subcomponentes locales ─────────────────────────────────────────────────────
-
-interface CampoProps {
-  label: string
-  value?: string | null
-  icon?: React.ReactNode
-}
-
-function Campo({ label, value, icon }: CampoProps) {
-  return (
-    <div className="space-y-1">
-      <p className="text-xs text-muted-foreground flex items-center gap-1">
-        {icon}
-        {label}
-      </p>
-      <p className="text-sm font-medium">
-        {value || <span className="text-muted-foreground italic font-normal">No registrado</span>}
-      </p>
-    </div>
-  )
-}
 
 function PerfilSkeleton() {
   return (

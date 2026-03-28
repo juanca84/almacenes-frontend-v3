@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { ShieldCheck, ShieldPlus } from 'lucide-react'
 
 import { useModulosStore } from '@/store/modulos.store'
