@@ -19,6 +19,9 @@ export const parametrosService = {
   }) =>
     api.get<PaginatedResponse<ParametroItem>>('/parametros', { params }),
 
+  exportar: (params?: { grupos?: string; estado?: string; orden?: string }) =>
+    api.get<BaseResponse<ParametroItem[]>>('/parametros/exportar', { params }),
+
   obtener: (id: string) =>
     api.get<BaseResponse<ParametroItem>>(`/parametros/${id}`),
 

@@ -162,7 +162,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground">Nombres <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
+                          <FormControl><Input {...field} autoFocus /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -316,7 +316,7 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs text-muted-foreground">Nombres <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
+                          <FormControl><Input {...field} autoFocus /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

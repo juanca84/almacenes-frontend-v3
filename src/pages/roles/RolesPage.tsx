@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, Pencil, Plus, Shield, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Download, Eye, Pencil, Plus, Shield, ToggleLeft, ToggleRight } from 'lucide-react'
 
 import { useRoles } from '@/hooks/useRoles'
 import { usePermissions } from '@/hooks/usePermissions'
@@ -8,6 +8,7 @@ import type { RolItem } from '@/types/roles.types'
 import { RolFormDialog } from './RolFormDialog'
 import { RolDetailDialog } from './RolDetailDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { EmptyState } from '@/components/EmptyState'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -46,7 +47,7 @@ function SkeletonRow() {
 
 export function RolesPage() {
   const { tieneAccion } = usePermissions()
-  const { roles, loading, recargar, inactivar, activar } = useRoles()
+  const { roles, loading, recargar, inactivar, activar, exportarCSV } = useRoles()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [detailOpen, setDetailOpen] = useState(false)
@@ -87,12 +88,18 @@ export function RolesPage() {
             </p>
           </div>
         </div>
-        {puedeCrear && (
-          <Button onClick={abrirCrear} className="shrink-0">
-            <Plus className="size-4 mr-2" />
-            Nuevo rol
+        <div className="flex items-center gap-2 shrink-0">
+          <Button variant="outline" size="sm" onClick={exportarCSV} disabled={roles.length === 0}>
+            <Download className="size-4 mr-2" />
+            Exportar CSV
           </Button>
-        )}
+          {puedeCrear && (
+            <Button onClick={abrirCrear}>
+              <Plus className="size-4 mr-2" />
+              Nuevo rol
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Tabla */}
@@ -116,13 +123,8 @@ export function RolesPage() {
                 Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)
               ) : roles.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={hayAcciones ? 4 : 3} className="py-16">
-                    <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                      <div className="size-12 rounded-full bg-muted flex items-center justify-center">
-                        <Shield className="size-5 opacity-50" />
-                      </div>
-                      <p className="text-sm">No hay roles registrados</p>
-                    </div>
+                  <TableCell colSpan={hayAcciones ? 4 : 3} className="p-0">
+                    <EmptyState icon={Shield} title="No hay roles registrados" />
                   </TableCell>
                 </TableRow>
               ) : (

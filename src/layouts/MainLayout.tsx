@@ -4,6 +4,8 @@ import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { APP_CONFIG } from '@/config/app'
+import { AppBreadcrumb } from '@/components/AppBreadcrumb'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
@@ -132,8 +134,9 @@ export function MainLayout() {
 
       {/* Contenido principal */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 border-b bg-card flex items-center px-6 shrink-0">
-          <p className="text-sm font-medium text-muted-foreground">{APP_CONFIG.subtitle}</p>
+        <header className="h-16 border-b bg-card flex items-center justify-between px-6 shrink-0">
+          <AppBreadcrumb />
+          <ThemeToggle />
         </header>
         <main className="flex-1 overflow-auto p-6">
           <Outlet />

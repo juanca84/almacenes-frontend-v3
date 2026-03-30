@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { Calendar, CreditCard, Mail, Phone, ShieldCheck } from 'lucide-react'
 
 import type { UsuarioItem } from '@/types/usuario.types'
@@ -10,9 +9,11 @@ import { avatarClases, iniciales } from '@/lib/avatar'
 import { getNombreCompleto } from '@/lib/usuario'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -44,15 +45,14 @@ function Campo({ label, value, icon }: CampoProps) {
 }
 
 export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDialogProps) {
-  const catalogoEstado  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO), [])
-  const catalogoGenero  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
-  const catalogoTipoDoc = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO), [])
-
   if (!usuario) return null
 
   const { persona } = usuario
 
-  const nombreCompleto = getNombreCompleto(persona)
+  const nombreCompleto  = getNombreCompleto(persona)
+  const catalogoEstado  = getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO)
+  const catalogoGenero  = getCatalogoGrupo(CATALOGO_GRUPOS.GENERO)
+  const catalogoTipoDoc = getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO)
 
   const estadoLabel  = catalogoEstado.find((e)  => e.codigo === usuario.estado)?.nombre  ?? usuario.estado
   const generoLabel  = catalogoGenero.find((g)  => g.codigo === persona.genero)?.nombre  ?? persona.genero
@@ -62,7 +62,6 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          {/* Avatar + nombre + estado */}
           <div className="flex items-center gap-4 pr-6">
             <div className={`size-14 rounded-full flex items-center justify-center shrink-0 text-lg font-bold ${avatarClases(usuario)}`}>
               {iniciales(usuario)}
@@ -80,7 +79,6 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
         </DialogHeader>
 
         <div className="space-y-4 pt-1">
-          {/* Contacto */}
           <section className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
               <Mail className="size-3.5 text-sky-500 dark:text-sky-400" />
@@ -108,7 +106,6 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
 
           <Separator />
 
-          {/* Información personal */}
           <section className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
               <CreditCard className="size-3.5 text-blue-500 dark:text-blue-400" />
@@ -139,7 +136,6 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
 
           <Separator />
 
-          {/* Roles */}
           <section className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
               <ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />
@@ -156,6 +152,10 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
             )}
           </section>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cerrar</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

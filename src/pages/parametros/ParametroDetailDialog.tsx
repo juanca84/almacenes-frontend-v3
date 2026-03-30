@@ -6,9 +6,11 @@ import { grupoClases, grupoLetra } from '@/lib/parametro'
 import { Campo } from '@/components/Campo'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -104,6 +106,10 @@ export function ParametroDetailDialog({ open, onClose, parametro }: ParametroDet
             </div>
           </section>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cerrar</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

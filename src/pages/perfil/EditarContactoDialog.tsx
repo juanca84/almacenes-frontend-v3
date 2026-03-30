@@ -2,12 +2,11 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
 import { Mail, Phone } from 'lucide-react'
 
 import { usuariosService } from '@/services/usuarios.service'
 import type { ActualizarPerfilPayload } from '@/types/usuario.types'
-import { getErrorMensaje } from '@/lib/utils'
+import { withToast } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -60,21 +59,14 @@ export function EditarContactoDialog({
   }, [open, correoActual, telefonoActual, reset])
 
   const onSubmit = async (values: ContactoValues) => {
-    try {
-      const payload: ActualizarPerfilPayload = { telefono: values.telefono }
-      if (values.correoElectronico) payload.correoElectronico = values.correoElectronico
+    const payload: ActualizarPerfilPayload = { telefono: values.telefono }
+    if (values.correoElectronico) payload.correoElectronico = values.correoElectronico
 
-      const { data } = await usuariosService.actualizarPerfil(payload)
-      if (data.finalizado) {
-        toast.success('Información de contacto actualizada')
-        onSuccess()
-        onClose()
-      } else {
-        toast.error(data.mensaje)
-      }
-    } catch (error: unknown) {
-      toast.error(getErrorMensaje(error) ?? 'Error al actualizar el contacto')
-    }
+    const ok = await withToast(
+      () => usuariosService.actualizarPerfil(payload),
+      { successMsg: 'Información de contacto actualizada', errorMsg: 'Error al actualizar el contacto' }
+    )
+    if (ok) { onSuccess(); onClose() }
   }
 
   return (
@@ -101,7 +93,7 @@ export function EditarContactoDialog({
                     Correo electrónico
                   </FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="correo@ejemplo.com" {...field} />
+                    <Input type="email" placeholder="correo@ejemplo.com" autoFocus {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react'
 import {
   ChevronDown, ChevronLeft, ChevronRight,
-  Eye, Loader2, Pencil, Plus, Settings, ToggleLeft, ToggleRight, X,
+  Download, Eye, Loader2, Pencil, Plus, Settings, ToggleLeft, ToggleRight, X,
 } from 'lucide-react'
-import { toast } from 'sonner'
 
 import { parametrosService } from '@/services/parametros.service'
 import type { ParametroItem } from '@/types/parametro.types'
@@ -11,10 +10,12 @@ import { ESTADO_PARAMETRO_VARIANTE } from '@/constants/parametro'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useParametros } from '@/hooks/useParametros'
 import { grupoClases, grupoLetra } from '@/lib/parametro'
-import { cn } from '@/lib/utils'
+import { cn, withToast } from '@/lib/utils'
 import { ParametroDetailDialog } from './ParametroDetailDialog'
 import { ParametroFormDialog } from './ParametroFormDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { EmptyState } from '@/components/EmptyState'
+import { SortableTableHead } from '@/components/SortableTableHead'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -140,15 +141,16 @@ export function ParametrosPage() {
 
   const {
     parametros, loading, total, totalPaginas,
-    pagina, limite, gruposSeleccionados, estadosSeleccionados,
+    pagina, limite, gruposSeleccionados, estadosSeleccionados, sortBy, sortDir,
     gruposDisponibles, loadingGrupos,
-    setGrupos, setEstados, setPagina, setLimite, recargar,
+    setGrupos, setEstados, setPagina, setLimite, setSort, exportarCSV, recargar,
   } = useParametros()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [parametroSeleccionado, setParametroSeleccionado] = useState<ParametroItem | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [parametroDetalle, setParametroDetalle] = useState<ParametroItem | null>(null)
+  const [exporting, setExporting] = useState(false)
 
   const puedeVer        = tieneAccion('parametros', 'read')
   const puedeEditar     = tieneAccion('parametros', 'update')
@@ -168,23 +170,15 @@ export function ParametrosPage() {
   const hayFiltros = gruposSeleccionados.length > 0 || estadosSeleccionados.length > 0
   const colSpan    = hayAcciones ? 5 : 4
 
-  const handleToggleEstado = async (p: ParametroItem) => {
-    try {
-      const { data } =
-        p.estado === 'ACTIVO'
-          ? await parametrosService.inactivar(p.id)
-          : await parametrosService.activar(p.id)
-
-      if (data.finalizado) {
-        toast.success(p.estado === 'ACTIVO' ? 'Parámetro inactivado' : 'Parámetro activado')
-        recargar()
-      } else {
-        toast.error(data.mensaje)
+  const handleToggleEstado = (p: ParametroItem) =>
+    withToast(
+      () => p.estado === 'ACTIVO' ? parametrosService.inactivar(p.id) : parametrosService.activar(p.id),
+      {
+        successMsg: p.estado === 'ACTIVO' ? 'Parámetro inactivado' : 'Parámetro activado',
+        errorMsg: 'Error al cambiar el estado del parámetro',
+        onSuccess: recargar,
       }
-    } catch {
-      toast.error('Error al cambiar el estado del parámetro')
-    }
-  }
+    )
 
   return (
     <div className="space-y-6">
@@ -208,12 +202,26 @@ export function ParametrosPage() {
             </p>
           </div>
         </div>
-        {tieneAccion('parametros', 'create') && (
-          <Button onClick={abrirCrear} className="shrink-0">
-            <Plus className="size-4 mr-2" />
-            Nuevo parámetro
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={total === 0 || exporting}
+            onClick={async () => { setExporting(true); try { await exportarCSV() } finally { setExporting(false) } }}
+          >
+            {exporting
+              ? <Loader2 className="size-4 mr-2 animate-spin" />
+              : <Download className="size-4 mr-2" />
+            }
+            {exporting ? 'Exportando...' : 'Exportar CSV'}
           </Button>
-        )}
+          {tieneAccion('parametros', 'create') && (
+            <Button onClick={abrirCrear}>
+              <Plus className="size-4 mr-2" />
+              Nuevo parámetro
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Barra de filtros */}
@@ -282,10 +290,10 @@ export function ParametrosPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
-                <TableHead className="font-semibold text-foreground pl-4">Parámetro</TableHead>
-                <TableHead className="font-semibold text-foreground">Grupo</TableHead>
+                <SortableTableHead col="nombre" sortBy={sortBy} sortDir={sortDir} onSort={setSort} className="pl-4">Parámetro</SortableTableHead>
+                <SortableTableHead col="grupo"  sortBy={sortBy} sortDir={sortDir} onSort={setSort}>Grupo</SortableTableHead>
                 <TableHead className="font-semibold text-foreground">Descripción</TableHead>
-                <TableHead className="font-semibold text-foreground">Estado</TableHead>
+                <SortableTableHead col="estado" sortBy={sortBy} sortDir={sortDir} onSort={setSort}>Estado</SortableTableHead>
                 {hayAcciones && (
                   <TableHead className="font-semibold text-foreground text-right pr-4">Acciones</TableHead>
                 )}
@@ -299,22 +307,12 @@ export function ParametrosPage() {
                 ))
               ) : parametros.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={colSpan} className="py-16">
-                    <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                      <div className="size-12 rounded-full bg-muted flex items-center justify-center">
-                        <Settings className="size-5 opacity-50" />
-                      </div>
-                      <p className="text-sm">
-                        {hayFiltros
-                          ? 'No se encontraron parámetros con los filtros aplicados'
-                          : 'No hay parámetros registrados'}
-                      </p>
-                      {hayFiltros && (
-                        <Button variant="outline" size="sm" onClick={limpiarFiltros}>
-                          Limpiar filtros
-                        </Button>
-                      )}
-                    </div>
+                  <TableCell colSpan={colSpan} className="p-0">
+                    <EmptyState
+                      icon={Settings}
+                      title={hayFiltros ? 'No se encontraron parámetros con los filtros aplicados' : 'No hay parámetros registrados'}
+                      action={hayFiltros && <Button variant="outline" size="sm" onClick={limpiarFiltros}>Limpiar filtros</Button>}
+                    />
                   </TableCell>
                 </TableRow>
               ) : (

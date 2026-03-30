@@ -121,6 +121,7 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
                             maxLength={15}
                             className="uppercase"
                             onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                            autoFocus
                           />
                         </FormControl>
                         <FormMessage />
@@ -215,6 +216,7 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
                               maxLength={15}
                               className="uppercase"
                               onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                              autoFocus
                             />
                           </FormControl>
                           <FormMessage />

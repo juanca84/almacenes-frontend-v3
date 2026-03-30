@@ -9,9 +9,11 @@ npm run dev        # Start dev server on http://localhost:5173
 npm run build      # Type-check (tsc -b) then Vite build
 npm run lint       # ESLint
 npm run preview    # Preview production build
+npm test           # Vitest in watch mode (re-runs on file save)
+npm run test:run   # Vitest single run (for CI / quick check)
 ```
 
-There are no tests configured in this project.
+Tests live alongside source files (`*.test.ts`). Currently covering: `src/lib/utils.ts`, `src/lib/usuario.ts`, `src/lib/avatar.ts`, `src/components/AppBreadcrumb.tsx`.
 
 ## Architecture
 

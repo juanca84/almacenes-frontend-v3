@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react'
-import { cn } from '@/lib/utils'
-import { ChevronDown, ChevronLeft, ChevronRight, Eye, KeyRound, Mail, Pencil, Phone, Plus, Search, ToggleLeft, ToggleRight, Users, X } from 'lucide-react'
-import { toast } from 'sonner'
+import { ChevronDown, ChevronLeft, ChevronRight, Download, Eye, KeyRound, Loader2, Mail, Pencil, Phone, Plus, Search, ToggleLeft, ToggleRight, Users, X } from 'lucide-react'
 
 import { usuariosService } from '@/services/usuarios.service'
 import type { UsuarioItem } from '@/types/usuario.types'
@@ -10,11 +8,14 @@ import { useUsuarios } from '@/hooks/useUsuarios'
 import { getCatalogoGrupo } from '@/lib/catalogo'
 import { avatarClases, iniciales } from '@/lib/avatar'
 import { getNombreCompleto } from '@/lib/usuario'
+import { cn, withToast } from '@/lib/utils'
 import { CATALOGO_GRUPOS } from '@/constants/catalogo'
 import { ESTADO_USUARIO_VARIANTE } from '@/constants/usuario'
 import { UsuarioFormDialog } from './UsuarioFormDialog'
 import { UsuarioDetailDialog } from './UsuarioDetailDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { EmptyState } from '@/components/EmptyState'
+import { SortableTableHead } from '@/components/SortableTableHead'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -131,14 +132,15 @@ export function UsuariosPage() {
 
   const {
     usuarios, loading, total, totalPaginas,
-    pagina, limite, filtro, roles, estados, rolesDisponibles,
-    setFiltro, setRoles, setEstados, setPagina, setLimite, recargar,
+    pagina, limite, filtro, roles, estados, sortBy, sortDir, rolesDisponibles,
+    setFiltro, setRoles, setEstados, setPagina, setLimite, setSort, exportarCSV, recargar,
   } = useUsuarios()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<UsuarioItem | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [usuarioDetalle, setUsuarioDetalle] = useState<UsuarioItem | null>(null)
+  const [exporting, setExporting] = useState(false)
 
   const puedeEditar     = tieneAccion('usuarios', 'update')
   const puedeDesactivar = tieneAccion('usuarios', 'delete')
@@ -166,36 +168,21 @@ export function UsuariosPage() {
 
   const limpiarFiltros = () => { setFiltro(''); setRoles([]); setEstados([]) }
 
-  const handleToggleEstado = async (u: UsuarioItem) => {
-    try {
-      const { data } =
-        u.estado === 'ACTIVO'
-          ? await usuariosService.inactivar(u.id)
-          : await usuariosService.activar(u.id)
-
-      if (data.finalizado) {
-        toast.success(u.estado === 'ACTIVO' ? 'Usuario inactivado' : 'Usuario activado')
-        recargar()
-      } else {
-        toast.error(data.mensaje)
+  const handleToggleEstado = (u: UsuarioItem) =>
+    withToast(
+      () => u.estado === 'ACTIVO' ? usuariosService.inactivar(u.id) : usuariosService.activar(u.id),
+      {
+        successMsg: u.estado === 'ACTIVO' ? 'Usuario inactivado' : 'Usuario activado',
+        errorMsg: 'Error al cambiar el estado del usuario',
+        onSuccess: recargar,
       }
-    } catch {
-      toast.error('Error al cambiar el estado del usuario')
-    }
-  }
+    )
 
-  const handleRestaurarContrasena = async (id: string) => {
-    try {
-      const { data } = await usuariosService.restaurarContrasena(id)
-      if (data.finalizado) {
-        toast.success('Contraseña restaurada correctamente')
-      } else {
-        toast.error(data.mensaje)
-      }
-    } catch {
-      toast.error('Error al restaurar la contraseña')
-    }
-  }
+  const handleRestaurarContrasena = (id: string) =>
+    withToast(
+      () => usuariosService.restaurarContrasena(id),
+      { successMsg: 'Contraseña restaurada correctamente', errorMsg: 'Error al restaurar la contraseña' }
+    )
 
   const hayFiltros = !!(filtro || roles.length > 0 || estados.length > 0)
   // columnas: usuario | documento | contacto | roles | estado | (acciones)
@@ -223,12 +210,26 @@ export function UsuariosPage() {
             </p>
           </div>
         </div>
-        {tieneAccion('usuarios', 'create') && (
-          <Button onClick={abrirCrear} className="shrink-0">
-            <Plus className="size-4 mr-2" />
-            Nuevo usuario
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={total === 0 || exporting}
+            onClick={async () => { setExporting(true); try { await exportarCSV() } finally { setExporting(false) } }}
+          >
+            {exporting
+              ? <Loader2 className="size-4 mr-2 animate-spin" />
+              : <Download className="size-4 mr-2" />
+            }
+            {exporting ? 'Exportando...' : 'Exportar CSV'}
           </Button>
-        )}
+          {tieneAccion('usuarios', 'create') && (
+            <Button onClick={abrirCrear}>
+              <Plus className="size-4 mr-2" />
+              Nuevo usuario
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Barra de filtros */}
@@ -300,11 +301,11 @@ export function UsuariosPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
-                <TableHead className="font-semibold text-foreground pl-4">Usuario</TableHead>
+                <SortableTableHead col="nombres" sortBy={sortBy} sortDir={sortDir} onSort={setSort} className="pl-4">Usuario</SortableTableHead>
                 <TableHead className="font-semibold text-foreground">Documento</TableHead>
                 <TableHead className="font-semibold text-foreground">Contacto</TableHead>
                 <TableHead className="font-semibold text-foreground">Roles</TableHead>
-                <TableHead className="font-semibold text-foreground">Estado</TableHead>
+                <SortableTableHead col="estado" sortBy={sortBy} sortDir={sortDir} onSort={setSort}>Estado</SortableTableHead>
                 {hayAcciones && <TableHead className="font-semibold text-foreground text-right pr-4">Acciones</TableHead>}
               </TableRow>
             </TableHeader>
@@ -315,22 +316,12 @@ export function UsuariosPage() {
                 ))
               ) : usuarios.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={colSpan} className="py-16">
-                    <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                      <div className="size-12 rounded-full bg-muted flex items-center justify-center">
-                        <Users className="size-5 opacity-50" />
-                      </div>
-                      <p className="text-sm">
-                        {hayFiltros
-                          ? 'No se encontraron usuarios con los filtros aplicados'
-                          : 'No hay usuarios registrados'}
-                      </p>
-                      {hayFiltros && (
-                        <Button variant="outline" size="sm" onClick={limpiarFiltros}>
-                          Limpiar filtros
-                        </Button>
-                      )}
-                    </div>
+                  <TableCell colSpan={colSpan} className="p-0">
+                    <EmptyState
+                      icon={Users}
+                      title={hayFiltros ? 'No se encontraron usuarios con los filtros aplicados' : 'No hay usuarios registrados'}
+                      action={hayFiltros && <Button variant="outline" size="sm" onClick={limpiarFiltros}>Limpiar filtros</Button>}
+                    />
                   </TableCell>
                 </TableRow>
               ) : (

@@ -1,12 +1,11 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
 import { KeyRound, ShieldCheck } from 'lucide-react'
 
 import { usuariosService } from '@/services/usuarios.service'
 import { useValidarContrasena } from '@/hooks/useValidarContrasena'
-import { getErrorMensaje } from '@/lib/utils'
+import { withToast } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { PasswordInput } from '@/components/ui/password-input'
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator'
@@ -44,20 +43,14 @@ export function RestablecerContrasenaPage() {
   const puedeGuardar = validacion?.valida === true && !validando && contrasenaNueva === confirmarContrasena
 
   const onSubmit = async (values: FormValues) => {
-    try {
-      const { data } = await usuariosService.cambiarContrasena({
+    const ok = await withToast(
+      () => usuariosService.cambiarContrasena({
         contrasenaActual: values.contrasenaActual,
         contrasenaNueva:  values.contrasenaNueva,
-      })
-      if (data.finalizado) {
-        toast.success('Contraseña actualizada correctamente')
-        form.reset()
-      } else {
-        toast.error(data.mensaje)
-      }
-    } catch (error: unknown) {
-      toast.error(getErrorMensaje(error) ?? 'Error al cambiar la contraseña')
-    }
+      }),
+      { successMsg: 'Contraseña actualizada correctamente', errorMsg: 'Error al cambiar la contraseña' }
+    )
+    if (ok) form.reset()
   }
 
   return (

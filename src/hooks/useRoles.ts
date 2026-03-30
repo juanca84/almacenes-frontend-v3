@@ -1,26 +1,25 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { rolesService } from '@/services/roles.service'
 import { useModulosStore } from '@/store/modulos.store'
-import { getErrorStatus } from '@/lib/utils'
+import { getErrorStatus, withToast } from '@/lib/utils'
+import { toCSV, downloadCSV, csvFilename } from '@/lib/export'
 import type { RolItem } from '@/types/roles.types'
 
 export interface UseRolesReturn {
-  roles: RolItem[]
-  loading: boolean
-  recargar: () => void
-  inactivar: (id: string) => Promise<void>
-  activar: (id: string) => Promise<void>
+  roles:        RolItem[]
+  loading:      boolean
+  recargar:     () => void
+  inactivar:    (id: string) => Promise<boolean>
+  activar:      (id: string) => Promise<boolean>
+  exportarCSV:  () => void
 }
 
 export function useRoles(): UseRolesReturn {
-  const [roles, setRoles] = useState<RolItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [tick, setTick] = useState(0)
-
-  const { loaded, setModulos, setLoading: setLoadingModulos } =
-    useModulosStore()
+  const queryClient = useQueryClient()
+  const { loaded, setModulos, setLoading: setLoadingModulos } = useModulosStore()
 
   // Carga el árbol de módulos en el store global (solo una vez por sesión)
   useEffect(() => {
@@ -35,74 +34,60 @@ export function useRoles(): UseRolesReturn {
       .catch(() => {
         if (!cancelled) toast.error('Error al cargar los módulos')
       })
-      .finally(() => {
-        setLoadingModulos(false)
-      })
+      .finally(() => { setLoadingModulos(false) })
     return () => { cancelled = true }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, setModulos, setLoadingModulos])
+  }, [loaded])
 
-  // Carga la lista de roles; se repite cuando se llama recargar()
-  useEffect(() => {
-    let cancelled = false
-    setLoading(true)
-    rolesService
-      .listar()
-      .then(({ data }) => {
-        if (!cancelled && data.finalizado) setRoles(data.datos)
-      })
-      .catch(() => {
-        if (!cancelled) toast.error('Error al cargar los roles')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => { cancelled = true }
-  }, [tick])
+  const { data, isLoading } = useQuery({
+    queryKey: ['roles'],
+    queryFn:  async () => {
+      const { data } = await rolesService.listar()
+      if (!data.finalizado) throw new Error(data.mensaje)
+      return data.datos
+    },
+    meta: { errorMsg: 'Error al cargar los roles' },
+  })
 
-  const recargar = useCallback(() => setTick((t) => t + 1), [])
+  const recargar = () => queryClient.invalidateQueries({ queryKey: ['roles'] })
 
-  const inactivar = useCallback(async (id: string) => {
-    try {
-      const { data } = await rolesService.inactivar(id)
-      if (data.finalizado) {
-        toast.success('Rol inactivado correctamente')
-        recargar()
-      } else {
-        toast.error(data.mensaje)
+  const inactivar = (id: string) =>
+    withToast(
+      () => rolesService.inactivar(id),
+      {
+        successMsg: 'Rol inactivado correctamente',
+        errorMsg:   'Error al inactivar el rol',
+        onSuccess:  recargar,
+        onError: (error) => {
+          const status = getErrorStatus(error)
+          if (status === 412) { recargar(); return true }
+          if (status === 403) { toast.error('No se puede modificar un rol del sistema'); return true }
+          return false
+        },
       }
-    } catch (error: unknown) {
-      const status = getErrorStatus(error)
-      if (status === 412) {
-        // Estado desincronizado — refrescar lista silenciosamente
-        recargar()
-        return
-      }
-      if (status === 403) {
-        toast.error('No se puede modificar un rol del sistema')
-        return
-      }
-      toast.error('Error al inactivar el rol')
-    }
-  }, [recargar])
+    )
 
-  const activar = useCallback(async (id: string) => {
-    try {
-      const { data } = await rolesService.activar(id)
-      if (data.finalizado) {
-        toast.success('Rol activado correctamente')
-        recargar()
-      } else {
-        toast.error(data.mensaje)
+  const activar = (id: string) =>
+    withToast(
+      () => rolesService.activar(id),
+      {
+        successMsg: 'Rol activado correctamente',
+        errorMsg:   'Error al activar el rol',
+        onSuccess:  recargar,
+        onError: (error) => {
+          if (getErrorStatus(error) === 403) { toast.error('No se puede modificar un rol del sistema'); return true }
+          return false
+        },
       }
-    } catch (error: unknown) {
-      if (getErrorStatus(error) === 403) {
-        toast.error('No se puede modificar un rol del sistema')
-        return
-      }
-      toast.error('Error al activar el rol')
-    }
-  }, [recargar])
+    )
 
-  return { roles, loading, recargar, inactivar, activar }
+  const roles = data ?? []
+
+  const exportarCSV = () => {
+    const headers = ['Identificador', 'Nombre', 'Estado']
+    const rows = roles.map((r) => [r.rol, r.nombre, r.estado])
+    downloadCSV(csvFilename('roles'), toCSV(headers, rows))
+  }
+
+  return { roles, loading: isLoading, recargar, inactivar, activar, exportarCSV }
 }

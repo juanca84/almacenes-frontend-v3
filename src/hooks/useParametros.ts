@@ -1,94 +1,97 @@
-import { useState, useEffect, useCallback } from 'react'
-import { toast } from 'sonner'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 import { parametrosService } from '@/services/parametros.service'
 import type { ParametroItem } from '@/types/parametro.types'
-
-const LIMITE_DEFAULT = 10
+import { toCSV, downloadCSV, csvFilename } from '@/lib/export'
+import { usePaginatedResource } from './usePaginatedResource'
 
 export interface UseParametrosReturn {
-  parametros: ParametroItem[]
-  loading: boolean
-  total: number
-  totalPaginas: number
-  pagina: number
-  limite: number
-  gruposSeleccionados: string[]
+  parametros:           ParametroItem[]
+  loading:              boolean
+  total:                number
+  totalPaginas:         number
+  pagina:               number
+  limite:               number
+  gruposSeleccionados:  string[]
   estadosSeleccionados: string[]
-  gruposDisponibles: string[]
-  loadingGrupos: boolean
-  setGrupos: (v: string[]) => void
-  setEstados: (v: string[]) => void
-  setPagina: (v: number) => void
-  setLimite: (v: number) => void
-  recargar: () => void
+  sortBy:               string | null
+  sortDir:              'ASC' | 'DESC'
+  gruposDisponibles:    string[]
+  loadingGrupos:        boolean
+  setGrupos:            (v: string[]) => void
+  setEstados:           (v: string[]) => void
+  setPagina:            (v: number) => void
+  setLimite:            (v: number) => void
+  setSort:              (col: string) => void
+  exportarCSV:          () => Promise<void>
+  recargar:             () => void
 }
 
 export function useParametros(): UseParametrosReturn {
-  const [parametros, setParametros] = useState<ParametroItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [total, setTotal] = useState(0)
-  const [pagina, _setPagina] = useState(1)
-  const [limite, _setLimite] = useState(LIMITE_DEFAULT)
-  const [gruposSeleccionados, _setGrupos] = useState<string[]>([])
+  const [gruposSeleccionados, _setGrupos]   = useState<string[]>([])
   const [estadosSeleccionados, _setEstados] = useState<string[]>([])
-  const [gruposDisponibles, setGruposDisponibles] = useState<string[]>([])
-  const [loadingGrupos, setLoadingGrupos] = useState(true)
-  const [tick, setTick] = useState(0)
-  const [tickGrupos, setTickGrupos] = useState(0)
 
-  const totalPaginas = Math.max(1, Math.ceil(total / limite))
+  const {
+    items: parametros, loading, total, totalPaginas,
+    pagina, limite, sortBy, sortDir, setPagina, setLimite, setSort, recargar,
+  } = usePaginatedResource<ParametroItem>({
+    queryKey: ({ pagina, limite, sortBy, sortDir }) =>
+      ['parametros', 'list', { pagina, limite, gruposSeleccionados, estadosSeleccionados, sortBy, sortDir }],
+    // Prefijo 'parametros' invalida lista + grupos simultáneamente
+    invalidateKey: ['parametros'],
+    queryFn: async ({ pagina, limite, sortBy, sortDir }) => {
+      const { data } = await parametrosService.listar({
+        pagina,
+        limite,
+        grupos: gruposSeleccionados.length > 0 ? gruposSeleccionados.join(',') : undefined,
+        estado: estadosSeleccionados.length > 0 ? estadosSeleccionados.join(',') : undefined,
+        orden:  sortBy ? `${sortBy}:${sortDir}` : undefined,
+      })
+      if (!data.finalizado) throw new Error(data.mensaje)
+      return data.datos
+    },
+    errorMsg: 'Error al cargar los parámetros',
+  })
 
-  const setGrupos  = (v: string[]) => { _setGrupos(v);  _setPagina(1) }
-  const setEstados = (v: string[]) => { _setEstados(v); _setPagina(1) }
-  const setPagina  = (v: number)   => _setPagina(v)
-  const setLimite  = (v: number)   => { _setLimite(v);  _setPagina(1) }
-  const recargar   = useCallback(() => {
-    setTick((t) => t + 1)
-    setTickGrupos((t) => t + 1)
-  }, [])
+  // Grupos disponibles para el filtro — se invalidan junto a 'list' al recargar
+  const { data: gruposData, isLoading: loadingGrupos } = useQuery({
+    queryKey: ['parametros', 'grupos'],
+    queryFn:  async () => {
+      const { data } = await parametrosService.listarGrupos()
+      if (!data.finalizado) throw new Error(data.mensaje)
+      return data.datos
+    },
+    staleTime: 5 * 60 * 1000,
+    meta: { errorMsg: 'Error al cargar los grupos' },
+  })
 
-  // Recarga grupos cuando se crea/edita un parámetro (tickGrupos)
-  useEffect(() => {
-    let cancelled = false
-    setLoadingGrupos(true)
-    parametrosService.listarGrupos()
-      .then(({ data }) => { if (!cancelled && data.finalizado) setGruposDisponibles(data.datos) })
-      .catch(() => { if (!cancelled) toast.error('Error al cargar los grupos') })
-      .finally(() => { if (!cancelled) setLoadingGrupos(false) })
-    return () => { cancelled = true }
-  }, [tickGrupos])
+  const setGrupos  = (v: string[]) => { _setGrupos(v);  setPagina(1) }
+  const setEstados = (v: string[]) => { _setEstados(v); setPagina(1) }
 
-  // Fetch de parámetros cuando cambian los filtros o la paginación
-  useEffect(() => {
-    let cancelled = false
-    const fetch = async () => {
-      setLoading(true)
-      try {
-        const { data } = await parametrosService.listar({
-          pagina,
-          limite,
-          grupos: gruposSeleccionados.length > 0 ? gruposSeleccionados.join(',') : undefined,
-          estado: estadosSeleccionados.length > 0 ? estadosSeleccionados.join(',') : undefined,
-        })
-        if (!cancelled && data.finalizado) {
-          setParametros(data.datos.filas)
-          setTotal(data.datos.total)
-        }
-      } catch {
-        if (!cancelled) toast.error('Error al cargar los parámetros')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    fetch()
-    return () => { cancelled = true }
-  }, [gruposSeleccionados, estadosSeleccionados, pagina, limite, tick])
+  const exportarCSV = async () => {
+    const { data } = await parametrosService.exportar({
+      grupos: gruposSeleccionados.length > 0 ? gruposSeleccionados.join(',') : undefined,
+      estado: estadosSeleccionados.length > 0 ? estadosSeleccionados.join(',') : undefined,
+      orden:  sortBy ? `${sortBy}:${sortDir}` : undefined,
+    })
+    if (!data.finalizado) return
+    const headers = ['Grupo', 'Código', 'Nombre', 'Descripción', 'Estado']
+    const rows = data.datos.map((p) => [
+      p.grupo,
+      p.codigo,
+      p.nombre,
+      p.descripcion,
+      p.estado,
+    ])
+    downloadCSV(csvFilename('parametros'), toCSV(headers, rows))
+  }
 
   return {
     parametros, loading, total, totalPaginas,
-    pagina, limite, gruposSeleccionados, estadosSeleccionados,
-    gruposDisponibles, loadingGrupos,
-    setGrupos, setEstados, setPagina, setLimite, recargar,
+    pagina, limite, gruposSeleccionados, estadosSeleccionados, sortBy, sortDir,
+    gruposDisponibles: gruposData ?? [],
+    loadingGrupos,
+    setGrupos, setEstados, setPagina, setLimite, setSort, exportarCSV, recargar,
   }
 }

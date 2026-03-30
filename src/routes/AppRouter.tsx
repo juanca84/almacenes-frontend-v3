@@ -4,6 +4,9 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthGuard } from '@/auth/guards/AuthGuard'
 import { AuthLayout } from '@/layouts/AuthLayout'
 import { MainLayout } from '@/layouts/MainLayout'
+import { PageSkeleton } from '@/components/PageSkeleton'
+import { AuthPageSkeleton } from '@/components/AuthPageSkeleton'
+import { NotFoundPage } from '@/pages/not-found/NotFoundPage'
 
 const LoginPage                 = lazy(() => import('@/auth/login/LoginPage').then(({ LoginPage })                                     => ({ default: LoginPage })))
 const CambiarContrasenaPage     = lazy(() => import('@/auth/cambiar-contrasena/CambiarContrasenaPage').then(({ CambiarContrasenaPage }) => ({ default: CambiarContrasenaPage })))
@@ -19,25 +22,25 @@ export function AppRouter() {
     <Routes>
       {/* Rutas públicas */}
       <Route element={<AuthLayout />}>
-        <Route path="/login" element={<Suspense fallback={null}><LoginPage /></Suspense>} />
-        <Route path="/cambiar-contrasena" element={<Suspense fallback={null}><CambiarContrasenaPage /></Suspense>} />
+        <Route path="/login" element={<Suspense fallback={<AuthPageSkeleton />}><LoginPage /></Suspense>} />
+        <Route path="/cambiar-contrasena" element={<Suspense fallback={<AuthPageSkeleton />}><CambiarContrasenaPage /></Suspense>} />
       </Route>
 
       {/* Rutas privadas */}
       <Route element={<AuthGuard />}>
         <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<Suspense fallback={null}><DashboardPage /></Suspense>} />
-          <Route path="/usuarios" element={<Suspense fallback={null}><UsuariosPage /></Suspense>} />
-          <Route path="/cuenta/contrasena" element={<Suspense fallback={null}><RestablecerContrasenaPage /></Suspense>} />
-          <Route path="/perfil" element={<Suspense fallback={null}><PerfilPage /></Suspense>} />
-          <Route path="/roles" element={<Suspense fallback={null}><RolesPage /></Suspense>} />
-          <Route path="/parametros" element={<Suspense fallback={null}><ParametrosPage /></Suspense>} />
+          <Route path="/dashboard" element={<Suspense fallback={<PageSkeleton />}><DashboardPage /></Suspense>} />
+          <Route path="/usuarios" element={<Suspense fallback={<PageSkeleton />}><UsuariosPage /></Suspense>} />
+          <Route path="/cuenta/contrasena" element={<Suspense fallback={<PageSkeleton />}><RestablecerContrasenaPage /></Suspense>} />
+          <Route path="/perfil" element={<Suspense fallback={<PageSkeleton />}><PerfilPage /></Suspense>} />
+          <Route path="/roles" element={<Suspense fallback={<PageSkeleton />}><RolesPage /></Suspense>} />
+          <Route path="/parametros" element={<Suspense fallback={<PageSkeleton />}><ParametrosPage /></Suspense>} />
         </Route>
       </Route>
 
-      {/* Redirect raíz */}
+      {/* Redirect raíz y 404 */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

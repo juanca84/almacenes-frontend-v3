@@ -1,31 +1,22 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { usuariosService } from '@/services/usuarios.service'
 import type { UsuarioItem } from '@/types/usuario.types'
 
 export function usePerfil() {
-  const [perfil, setPerfil]   = useState<UsuarioItem | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError]     = useState(false)
+  const queryClient = useQueryClient()
 
-  const cargar = useCallback(async () => {
-    setLoading(true)
-    setError(false)
-    try {
+  const { data: perfil = null, isLoading: loading, isError: error } = useQuery<UsuarioItem>({
+    queryKey: ['perfil'],
+    queryFn:  async () => {
       const { data } = await usuariosService.obtenerPerfil()
-      if (data.finalizado) {
-        setPerfil(data.datos)
-      } else {
-        setError(true)
-      }
-    } catch {
-      setError(true)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+      if (!data.finalizado) throw new Error(data.mensaje)
+      return data.datos
+    },
+    meta: { errorMsg: 'Error al cargar el perfil' },
+  })
 
-  useEffect(() => { cargar() }, [cargar])
+  const recargar = () => queryClient.invalidateQueries({ queryKey: ['perfil'] })
 
-  return { perfil, loading, error, recargar: cargar }
+  return { perfil, loading, error, recargar }
 }

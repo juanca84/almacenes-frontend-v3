@@ -6,9 +6,11 @@ import { esRolSistema } from '@/constants/roles'
 import type { RolItem } from '@/types/roles.types'
 import { ModuloArbol } from './components/ModuloArbol'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -65,6 +67,10 @@ export function RolDetailDialog({ open, onClose, rol }: RolDetailDialogProps) {
             />
           </div>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cerrar</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

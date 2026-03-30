@@ -105,7 +105,7 @@ export function RolFormDialog({ open, onClose, rol, onSuccess }: RolFormDialogPr
                         Nombre legible <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Ej. Supervisor de almacén" {...field} />
+                        <Input placeholder="Ej. Supervisor de almacén" {...field} autoFocus />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -170,6 +170,7 @@ export function RolFormDialog({ open, onClose, rol, onSuccess }: RolFormDialogPr
                         <Input
                           placeholder="Ej. supervisor almacen"
                           {...field}
+                          autoFocus
                         />
                       </FormControl>
                       {preview && (
