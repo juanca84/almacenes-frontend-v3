@@ -75,6 +75,7 @@ export function AppRouter() {
               </Suspense>
             }
           />
+          <Route path="/home" element={<Navigate to="/dashboard" replace />} />
           <Route
             path="/usuarios"
             element={

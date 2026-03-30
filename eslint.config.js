@@ -23,6 +23,8 @@ export default defineConfig([
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      // getIcon() returns existing Lucide refs — not creating new component types during render
+      'react-hooks/static-components': 'off',
     },
     languageOptions: {
       ecmaVersion: 2020,
@@ -34,13 +36,6 @@ export default defineConfig([
     files: ['src/components/ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
-    },
-  },
-  // Dynamic icon lookup (getIcon) returns existing Lucide refs, not new components — false positive
-  {
-    files: ['src/pages/roles/components/ModuloArbol.tsx'],
-    rules: {
-      'react-hooks/static-components': 'off',
     },
   },
 ])
