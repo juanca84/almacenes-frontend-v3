@@ -4,19 +4,19 @@ Frontend del Sistema de Almacenes, construido con React 19, TypeScript y Vite.
 
 ## Stack tecnológico
 
-| Categoría | Tecnología |
-|-----------|-----------|
-| Framework | React 19 |
-| Lenguaje | TypeScript 5.8 |
-| Build tool | Vite 7 |
-| Estilos | Tailwind CSS v4 |
-| Ruteo | React Router DOM v7 |
-| Estado global | Zustand 5 (persistido en `localStorage`) |
-| Formularios | React Hook Form + Zod |
-| HTTP client | Axios |
-| UI components | Radix UI + shadcn/ui |
-| Notificaciones | Sonner |
-| Iconos | Lucide React |
+| Categoría      | Tecnología                               |
+| -------------- | ---------------------------------------- |
+| Framework      | React 19                                 |
+| Lenguaje       | TypeScript 5.8                           |
+| Build tool     | Vite 7                                   |
+| Estilos        | Tailwind CSS v4                          |
+| Ruteo          | React Router DOM v7                      |
+| Estado global  | Zustand 5 (persistido en `localStorage`) |
+| Formularios    | React Hook Form + Zod                    |
+| HTTP client    | Axios                                    |
+| UI components  | Radix UI + shadcn/ui                     |
+| Notificaciones | Sonner                                   |
+| Iconos         | Lucide React                             |
 
 ## Requisitos previos
 
@@ -37,8 +37,8 @@ Copia `.env.example` a `.env` y ajusta los valores:
 cp .env.example .env
 ```
 
-| Variable | Descripción | Valor por defecto |
-|----------|-------------|-------------------|
+| Variable       | Descripción                | Valor por defecto           |
+| -------------- | -------------------------- | --------------------------- |
 | `VITE_API_URL` | URL base de la API backend | `http://localhost:3000/api` |
 
 ## Comandos disponibles
@@ -146,12 +146,8 @@ function UsuariosPage() {
 
   return (
     <>
-      {tieneAccion('usuarios', 'create') && (
-        <Button>Nuevo usuario</Button>
-      )}
-      {tieneAccion('usuarios', 'delete') && (
-        <Button variant="destructive">Eliminar</Button>
-      )}
+      {tieneAccion('usuarios', 'create') && <Button>Nuevo usuario</Button>}
+      {tieneAccion('usuarios', 'delete') && <Button variant="destructive">Eliminar</Button>}
     </>
   )
 }
@@ -159,10 +155,10 @@ function UsuariosPage() {
 
 El hook resuelve la **unión de acciones entre roles**: si un rol tiene `delete` y otro no, `tieneAccion('usuarios', 'delete')` devuelve `true`.
 
-| Función | Descripción |
-|---------|-------------|
+| Función                       | Descripción                                                    |
+| ----------------------------- | -------------------------------------------------------------- |
 | `tieneAccion(nombre, accion)` | `true` si el usuario puede ejecutar la acción en ese submódulo |
-| `getAcciones(nombre)` | Devuelve todas las acciones disponibles para un submódulo |
+| `getAcciones(nombre)`         | Devuelve todas las acciones disponibles para un submódulo      |
 
 ## Componentes reutilizables
 
@@ -172,8 +168,7 @@ Diálogo de confirmación basado en `AlertDialog` de shadcn/ui. Úsalo siempre q
 
 ```tsx
 import { ConfirmDialog } from '@/components/ConfirmDialog'
-
-<ConfirmDialog
+;<ConfirmDialog
   trigger={<Button variant="destructive">Eliminar</Button>}
   title="¿Eliminar registro?"
   description="Esta acción no se puede deshacer."
@@ -182,14 +177,14 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 />
 ```
 
-| Prop | Tipo | Requerida | Descripción |
-|------|------|-----------|-------------|
-| `trigger` | `ReactNode` | Sí | Elemento que abre el diálogo |
-| `title` | `string` | Sí | Título del diálogo |
-| `description` | `string` | No | Texto secundario explicativo |
-| `confirmLabel` | `string` | No | Texto del botón confirmar (default: `"Confirmar"`) |
-| `cancelLabel` | `string` | No | Texto del botón cancelar (default: `"Cancelar"`) |
-| `onConfirm` | `() => void` | Sí | Callback al confirmar |
+| Prop           | Tipo         | Requerida | Descripción                                        |
+| -------------- | ------------ | --------- | -------------------------------------------------- |
+| `trigger`      | `ReactNode`  | Sí        | Elemento que abre el diálogo                       |
+| `title`        | `string`     | Sí        | Título del diálogo                                 |
+| `description`  | `string`     | No        | Texto secundario explicativo                       |
+| `confirmLabel` | `string`     | No        | Texto del botón confirmar (default: `"Confirmar"`) |
+| `cancelLabel`  | `string`     | No        | Texto del botón cancelar (default: `"Cancelar"`)   |
+| `onConfirm`    | `() => void` | Sí        | Callback al confirmar                              |
 
 ## Contrato de la API
 
@@ -215,11 +210,11 @@ Siempre verificar `data.finalizado` (no el status HTTP) para determinar éxito. 
 
 ## Rutas
 
-| Ruta | Acceso | Descripción |
-|------|--------|-------------|
-| `/login` | Público | Formulario de inicio de sesión |
-| `/dashboard` | Privado | Panel principal |
-| `/` | — | Redirige a `/dashboard` |
+| Ruta         | Acceso  | Descripción                    |
+| ------------ | ------- | ------------------------------ |
+| `/login`     | Público | Formulario de inicio de sesión |
+| `/dashboard` | Privado | Panel principal                |
+| `/`          | —       | Redirige a `/dashboard`        |
 
 > Las rutas de nuevos módulos se agregan según los `url` definidos en los submódulos de la API.
 

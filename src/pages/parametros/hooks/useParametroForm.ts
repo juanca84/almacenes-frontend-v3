@@ -11,8 +11,8 @@ import type { ParametroItem } from '@/types/parametro.types'
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
 const baseSchema = z.object({
-  nombre:      z.string().min(1, 'Requerido').max(50, 'Máximo 50 caracteres'),
-  grupo:       z.string().min(1, 'Requerido').max(15, 'Máximo 15 caracteres'),
+  nombre: z.string().min(1, 'Requerido').max(50, 'Máximo 50 caracteres'),
+  grupo: z.string().min(1, 'Requerido').max(15, 'Máximo 15 caracteres'),
   descripcion: z.string().min(1, 'Requerido').max(255, 'Máximo 255 caracteres'),
 })
 
@@ -56,8 +56,8 @@ export function useParametroForm({ open, parametro, onClose, onSuccess }: UsePar
 
     if (parametro) {
       resetEditar({
-        nombre:      parametro.nombre,
-        grupo:       parametro.grupo,
+        nombre: parametro.nombre,
+        grupo: parametro.grupo,
         descripcion: parametro.descripcion,
       })
     } else {

@@ -8,8 +8,6 @@ export function getNombreCompleto(
     .join(' ')
 }
 
-export function formatDocumento(
-  persona: Pick<Persona, 'tipoDocumento' | 'nroDocumento'>
-): string {
+export function formatDocumento(persona: Pick<Persona, 'tipoDocumento' | 'nroDocumento'>): string {
   return `${persona.tipoDocumento}: ${persona.nroDocumento}`
 }

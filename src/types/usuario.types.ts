@@ -65,6 +65,6 @@ export interface ActualizarPerfilResult {
 
 export interface ValidarContrasenaResult {
   valida: boolean
-  score: number   // 0-4
-  nivel: string   // "Muy débil" | "Débil" | "Regular" | "Fuerte" | "Muy fuerte"
+  score: number // 0-4
+  nivel: string // "Muy débil" | "Débil" | "Regular" | "Fuerte" | "Muy fuerte"
 }

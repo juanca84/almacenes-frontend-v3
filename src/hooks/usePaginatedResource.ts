@@ -6,9 +6,9 @@ import type { PaginatedData } from '@/types/api.types'
 const DEFAULT_LIMITE = 10
 
 export interface Pagination {
-  pagina:  number
-  limite:  number
-  sortBy:  string | null
+  pagina: number
+  limite: number
+  sortBy: string | null
   sortDir: 'ASC' | 'DESC'
 }
 
@@ -21,24 +21,24 @@ interface UsePaginatedResourceOptions<TItem> {
   queryFn: (pagination: Pagination) => Promise<PaginatedData<TItem>>
   /** Mensaje de error mostrado por el `QueryCache` global en caso de fallo. */
   errorMsg: string
-  defaultLimite?:  number
-  defaultSortBy?:  string | null
+  defaultLimite?: number
+  defaultSortBy?: string | null
   defaultSortDir?: 'ASC' | 'DESC'
 }
 
 export interface UsePaginatedResourceReturn<TItem> {
-  items:        TItem[]
-  loading:      boolean
-  total:        number
+  items: TItem[]
+  loading: boolean
+  total: number
   totalPaginas: number
-  pagina:       number
-  limite:       number
-  sortBy:       string | null
-  sortDir:      'ASC' | 'DESC'
-  setPagina:    (v: number) => void
-  setLimite:    (v: number) => void
-  setSort:      (col: string) => void
-  recargar:     () => void
+  pagina: number
+  limite: number
+  sortBy: string | null
+  sortDir: 'ASC' | 'DESC'
+  setPagina: (v: number) => void
+  setLimite: (v: number) => void
+  setSort: (col: string) => void
+  recargar: () => void
 }
 
 /**
@@ -62,32 +62,35 @@ export function usePaginatedResource<TItem>({
   invalidateKey,
   queryFn,
   errorMsg,
-  defaultLimite  = DEFAULT_LIMITE,
-  defaultSortBy  = null,
+  defaultLimite = DEFAULT_LIMITE,
+  defaultSortBy = null,
   defaultSortDir = 'ASC',
 }: UsePaginatedResourceOptions<TItem>): UsePaginatedResourceReturn<TItem> {
   const queryClient = useQueryClient()
 
-  const [pagina, setPagina]     = useState(1)
-  const [limite, _setLimite]    = useState(defaultLimite)
-  const [sortBy,  setSortBy]    = useState<string | null>(defaultSortBy)
-  const [sortDir, setSortDir]   = useState<'ASC' | 'DESC'>(defaultSortDir)
+  const [pagina, setPagina] = useState(1)
+  const [limite, _setLimite] = useState(defaultLimite)
+  const [sortBy, setSortBy] = useState<string | null>(defaultSortBy)
+  const [sortDir, setSortDir] = useState<'ASC' | 'DESC'>(defaultSortDir)
 
   const pagination: Pagination = { pagina, limite, sortBy, sortDir }
 
   const { data, isLoading } = useQuery({
-    queryKey:        queryKey(pagination),
-    queryFn:         () => queryFn(pagination),
+    queryKey: queryKey(pagination),
+    queryFn: () => queryFn(pagination),
     placeholderData: keepPreviousData,
-    meta:            { errorMsg },
+    meta: { errorMsg },
   })
 
-  const items        = data?.filas ?? []
-  const total        = data?.total ?? 0
+  const items = data?.filas ?? []
+  const total = data?.total ?? 0
   const totalPaginas = Math.max(1, Math.ceil(total / limite))
 
-  const setLimite = (v: number) => { _setLimite(v); setPagina(1) }
-  const recargar  = () => queryClient.invalidateQueries({ queryKey: invalidateKey })
+  const setLimite = (v: number) => {
+    _setLimite(v)
+    setPagina(1)
+  }
+  const recargar = () => queryClient.invalidateQueries({ queryKey: invalidateKey })
 
   const setSort = (col: string) => {
     if (col === sortBy) {
@@ -100,7 +103,17 @@ export function usePaginatedResource<TItem>({
   }
 
   return {
-    items, loading: isLoading, total, totalPaginas,
-    pagina, limite, sortBy, sortDir, setPagina, setLimite, setSort, recargar,
+    items,
+    loading: isLoading,
+    total,
+    totalPaginas,
+    pagina,
+    limite,
+    sortBy,
+    sortDir,
+    setPagina,
+    setLimite,
+    setSort,
+    recargar,
   }
 }

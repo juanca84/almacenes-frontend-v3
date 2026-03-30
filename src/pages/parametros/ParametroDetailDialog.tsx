@@ -45,7 +45,9 @@ export function ParametroDetailDialog({ open, onClose, parametro }: ParametroDet
         <DialogHeader>
           {/* Icono de grupo + código + nombre + estado */}
           <div className="flex items-center gap-4 pr-6">
-            <div className={`size-14 rounded-full flex items-center justify-center shrink-0 text-lg font-bold ${grupoClases(parametro.grupo)}`}>
+            <div
+              className={`size-14 rounded-full flex items-center justify-center shrink-0 text-lg font-bold ${grupoClases(parametro.grupo)}`}
+            >
               {grupoLetra(parametro.grupo)}
             </div>
             <div className="min-w-0 flex-1">
@@ -94,10 +96,7 @@ export function ParametroDetailDialog({ open, onClose, parametro }: ParametroDet
               titulo="Detalle"
             />
             <div className="space-y-4">
-              <Campo
-                label="Nombre"
-                value={parametro.nombre}
-              />
+              <Campo label="Nombre" value={parametro.nombre} />
               <Campo
                 label="Descripción"
                 value={parametro.descripcion}
@@ -108,7 +107,9 @@ export function ParametroDetailDialog({ open, onClose, parametro }: ParametroDet
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cerrar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cerrar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

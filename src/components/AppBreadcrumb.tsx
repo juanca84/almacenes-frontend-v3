@@ -5,32 +5,33 @@ import { ChevronRight, Home } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ROUTE_LABELS: Record<string, string> = {
-  dashboard:   'Dashboard',
-  usuarios:    'Usuarios',
-  roles:       'Roles',
-  parametros:  'Parámetros',
-  perfil:      'Perfil',
-  cuenta:      'Cuenta',
-  contrasena:  'Contraseña',
+  dashboard: 'Dashboard',
+  usuarios: 'Usuarios',
+  roles: 'Roles',
+  parametros: 'Parámetros',
+  perfil: 'Perfil',
+  cuenta: 'Cuenta',
+  contrasena: 'Contraseña',
 }
 
 // Segmentos que no tienen página propia — se muestran como texto, no como Link
 const NON_NAVIGABLE = new Set(['cuenta'])
 
 interface Crumb {
-  label:      string
-  path:       string
-  last:       boolean
-  navigable:  boolean
+  label: string
+  path: string
+  last: boolean
+  navigable: boolean
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function buildCrumbs(pathname: string): Crumb[] {
   const segments = pathname.split('/').filter(Boolean)
   return segments.map((seg, i) => ({
-    label:       ROUTE_LABELS[seg] ?? seg,
-    path:        '/' + segments.slice(0, i + 1).join('/'),
-    last:        i === segments.length - 1,
-    navigable:   !NON_NAVIGABLE.has(seg),
+    label: ROUTE_LABELS[seg] ?? seg,
+    path: '/' + segments.slice(0, i + 1).join('/'),
+    last: i === segments.length - 1,
+    navigable: !NON_NAVIGABLE.has(seg),
   }))
 }
 
@@ -52,7 +53,12 @@ export function AppBreadcrumb() {
         <span key={crumb.path} className="flex items-center gap-1 min-w-0">
           <ChevronRight className="size-3 text-muted-foreground/40 shrink-0" />
           {crumb.last ? (
-            <span className={cn('font-medium text-foreground truncate', crumbs.length === 1 && 'text-base')}>
+            <span
+              className={cn(
+                'font-medium text-foreground truncate',
+                crumbs.length === 1 && 'text-base'
+              )}
+            >
               {crumb.label}
             </span>
           ) : crumb.navigable ? (

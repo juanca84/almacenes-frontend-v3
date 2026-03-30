@@ -46,7 +46,7 @@ api.interceptors.response.use(
     if (isRefreshing) {
       return new Promise<string>((resolve, reject) => {
         refreshQueue.push({ resolve, reject })
-      }).then(token => {
+      }).then((token) => {
         originalRequest.headers.Authorization = `Bearer ${token}`
         originalRequest._retry = true
         return api(originalRequest)
@@ -60,11 +60,7 @@ api.interceptors.response.use(
     // no errores posteriores del request original.
     let newToken: string | undefined
     try {
-      const { data } = await axios.post(
-        `${BASE_URL}/token`,
-        {},
-        { withCredentials: true },
-      )
+      const { data } = await axios.post(`${BASE_URL}/token`, {}, { withCredentials: true })
       newToken = data.datos.access_token as string
     } catch (refreshError) {
       isRefreshing = false
@@ -86,7 +82,7 @@ api.interceptors.response.use(
     resolveQueue(newToken)
     originalRequest.headers.Authorization = `Bearer ${newToken}`
     return api(originalRequest)
-  },
+  }
 )
 
 export default api

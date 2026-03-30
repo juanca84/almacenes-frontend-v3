@@ -9,12 +9,12 @@ import { toCSV, downloadCSV, csvFilename } from '@/lib/export'
 import type { RolItem } from '@/types/roles.types'
 
 export interface UseRolesReturn {
-  roles:        RolItem[]
-  loading:      boolean
-  recargar:     () => void
-  inactivar:    (id: string) => Promise<boolean>
-  activar:      (id: string) => Promise<boolean>
-  exportarCSV:  () => void
+  roles: RolItem[]
+  loading: boolean
+  recargar: () => void
+  inactivar: (id: string) => Promise<boolean>
+  activar: (id: string) => Promise<boolean>
+  exportarCSV: () => void
 }
 
 export function useRoles(): UseRolesReturn {
@@ -34,14 +34,18 @@ export function useRoles(): UseRolesReturn {
       .catch(() => {
         if (!cancelled) toast.error('Error al cargar los módulos')
       })
-      .finally(() => { setLoadingModulos(false) })
-    return () => { cancelled = true }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+      .finally(() => {
+        setLoadingModulos(false)
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded])
 
   const { data, isLoading } = useQuery({
     queryKey: ['roles'],
-    queryFn:  async () => {
+    queryFn: async () => {
       const { data } = await rolesService.listar()
       if (!data.finalizado) throw new Error(data.mensaje)
       return data.datos
@@ -52,34 +56,37 @@ export function useRoles(): UseRolesReturn {
   const recargar = () => queryClient.invalidateQueries({ queryKey: ['roles'] })
 
   const inactivar = (id: string) =>
-    withToast(
-      () => rolesService.inactivar(id),
-      {
-        successMsg: 'Rol inactivado correctamente',
-        errorMsg:   'Error al inactivar el rol',
-        onSuccess:  recargar,
-        onError: (error) => {
-          const status = getErrorStatus(error)
-          if (status === 412) { recargar(); return true }
-          if (status === 403) { toast.error('No se puede modificar un rol del sistema'); return true }
-          return false
-        },
-      }
-    )
+    withToast(() => rolesService.inactivar(id), {
+      successMsg: 'Rol inactivado correctamente',
+      errorMsg: 'Error al inactivar el rol',
+      onSuccess: recargar,
+      onError: (error) => {
+        const status = getErrorStatus(error)
+        if (status === 412) {
+          recargar()
+          return true
+        }
+        if (status === 403) {
+          toast.error('No se puede modificar un rol del sistema')
+          return true
+        }
+        return false
+      },
+    })
 
   const activar = (id: string) =>
-    withToast(
-      () => rolesService.activar(id),
-      {
-        successMsg: 'Rol activado correctamente',
-        errorMsg:   'Error al activar el rol',
-        onSuccess:  recargar,
-        onError: (error) => {
-          if (getErrorStatus(error) === 403) { toast.error('No se puede modificar un rol del sistema'); return true }
-          return false
-        },
-      }
-    )
+    withToast(() => rolesService.activar(id), {
+      successMsg: 'Rol activado correctamente',
+      errorMsg: 'Error al activar el rol',
+      onSuccess: recargar,
+      onError: (error) => {
+        if (getErrorStatus(error) === 403) {
+          toast.error('No se puede modificar un rol del sistema')
+          return true
+        }
+        return false
+      },
+    })
 
   const roles = data ?? []
 

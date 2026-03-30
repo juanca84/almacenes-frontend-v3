@@ -19,9 +19,7 @@ export function MainLayout() {
   const { usuario, logout } = useAuth()
   const navigate = useNavigate()
   const sidebarKey = `${APP_CONFIG.storagePrefix}-sidebar-collapsed`
-  const [collapsed, setCollapsed] = useState(
-    () => localStorage.getItem(sidebarKey) === 'true'
-  )
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(sidebarKey) === 'true')
 
   const handleLogout = async () => {
     await logout()
@@ -53,7 +51,12 @@ export function MainLayout() {
       >
         {/* Logo + toggle */}
         <div className="h-16 flex items-center border-b border-white/5 px-3 shrink-0">
-          <div className={cn('flex items-center flex-1 min-w-0', collapsed ? 'justify-center' : 'gap-2.5 pl-2')}>
+          <div
+            className={cn(
+              'flex items-center flex-1 min-w-0',
+              collapsed ? 'justify-center' : 'gap-2.5 pl-2'
+            )}
+          >
             <div className="size-8 rounded-md bg-primary/20 flex items-center justify-center shrink-0">
               <APP_CONFIG.icon className="size-4 text-primary" />
             </div>

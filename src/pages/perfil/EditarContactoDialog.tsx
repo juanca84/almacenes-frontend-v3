@@ -62,11 +62,14 @@ export function EditarContactoDialog({
     const payload: ActualizarPerfilPayload = { telefono: values.telefono }
     if (values.correoElectronico) payload.correoElectronico = values.correoElectronico
 
-    const ok = await withToast(
-      () => usuariosService.actualizarPerfil(payload),
-      { successMsg: 'Información de contacto actualizada', errorMsg: 'Error al actualizar el contacto' }
-    )
-    if (ok) { onSuccess(); onClose() }
+    const ok = await withToast(() => usuariosService.actualizarPerfil(payload), {
+      successMsg: 'Información de contacto actualizada',
+      errorMsg: 'Error al actualizar el contacto',
+    })
+    if (ok) {
+      onSuccess()
+      onClose()
+    }
   }
 
   return (
@@ -116,7 +119,9 @@ export function EditarContactoDialog({
               )}
             />
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancelar
+              </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? 'Guardando...' : 'Guardar cambios'}
               </Button>

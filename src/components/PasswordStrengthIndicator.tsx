@@ -27,7 +27,9 @@ export function PasswordStrengthIndicator({
             className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
               !validando && validacion != null && i <= validacion.score
                 ? ''
-                : validando ? 'bg-muted animate-pulse' : 'bg-muted'
+                : validando
+                  ? 'bg-muted animate-pulse'
+                  : 'bg-muted'
             }`}
             style={
               !validando && validacion != null && i <= validacion.score

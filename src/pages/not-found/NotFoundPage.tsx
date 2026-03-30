@@ -17,9 +17,7 @@ export function NotFoundPage() {
           La ruta que buscas no existe o fue movida.
         </p>
       </div>
-      <Button onClick={() => navigate('/dashboard')}>
-        Volver al inicio
-      </Button>
+      <Button onClick={() => navigate('/dashboard')}>Volver al inicio</Button>
     </div>
   )
 }

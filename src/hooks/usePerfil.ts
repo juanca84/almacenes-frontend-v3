@@ -6,9 +6,13 @@ import type { UsuarioItem } from '@/types/usuario.types'
 export function usePerfil() {
   const queryClient = useQueryClient()
 
-  const { data: perfil = null, isLoading: loading, isError: error } = useQuery<UsuarioItem>({
+  const {
+    data: perfil = null,
+    isLoading: loading,
+    isError: error,
+  } = useQuery<UsuarioItem>({
     queryKey: ['perfil'],
-    queryFn:  async () => {
+    queryFn: async () => {
       const { data } = await usuariosService.obtenerPerfil()
       if (!data.finalizado) throw new Error(data.mensaje)
       return data.datos

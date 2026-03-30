@@ -53,15 +53,24 @@ export function RolesPage() {
   const [detailOpen, setDetailOpen] = useState(false)
   const [rolSeleccionado, setRolSeleccionado] = useState<RolItem | null>(null)
 
-  const puedeCrear     = tieneAccion('roles', 'create')
-  const puedeVer       = tieneAccion('roles', 'read')
-  const puedeEditar    = tieneAccion('roles', 'update')
+  const puedeCrear = tieneAccion('roles', 'create')
+  const puedeVer = tieneAccion('roles', 'read')
+  const puedeEditar = tieneAccion('roles', 'update')
   const puedeInactivar = tieneAccion('roles', 'delete')
-  const hayAcciones    = puedeVer || puedeEditar || puedeInactivar
+  const hayAcciones = puedeVer || puedeEditar || puedeInactivar
 
-  const abrirCrear   = () => { setRolSeleccionado(null); setDialogOpen(true) }
-  const abrirVer     = (rol: RolItem) => { setRolSeleccionado(rol); setDetailOpen(true) }
-  const abrirEditar  = (rol: RolItem) => { setRolSeleccionado(rol); setDialogOpen(true) }
+  const abrirCrear = () => {
+    setRolSeleccionado(null)
+    setDialogOpen(true)
+  }
+  const abrirVer = (rol: RolItem) => {
+    setRolSeleccionado(rol)
+    setDetailOpen(true)
+  }
+  const abrirEditar = (rol: RolItem) => {
+    setRolSeleccionado(rol)
+    setDialogOpen(true)
+  }
 
   const handleInactivar = (rol: RolItem) => inactivar(rol.id)
   const handleActivar = (rol: RolItem) => activar(rol.id)
@@ -186,14 +195,16 @@ export function RolesPage() {
                                 className="size-8"
                                 onClick={() => abrirEditar(rol)}
                                 disabled={esSistema}
-                                title={esSistema ? 'No se puede editar un rol del sistema' : 'Editar rol'}
+                                title={
+                                  esSistema ? 'No se puede editar un rol del sistema' : 'Editar rol'
+                                }
                                 aria-label="Editar rol"
                               >
                                 <Pencil className="size-4 text-slate-500 dark:text-slate-400" />
                               </Button>
                             )}
-                            {puedeInactivar && (
-                              rol.estado === 'ACTIVO' ? (
+                            {puedeInactivar &&
+                              (rol.estado === 'ACTIVO' ? (
                                 <ConfirmDialog
                                   trigger={
                                     <Button
@@ -201,7 +212,11 @@ export function RolesPage() {
                                       size="icon"
                                       className="size-8"
                                       disabled={esSistema}
-                                      title={esSistema ? 'No se puede inactivar un rol del sistema' : 'Inactivar rol'}
+                                      title={
+                                        esSistema
+                                          ? 'No se puede inactivar un rol del sistema'
+                                          : 'Inactivar rol'
+                                      }
                                       aria-label="Inactivar rol"
                                     >
                                       <ToggleLeft className="size-4 text-muted-foreground" />
@@ -211,9 +226,9 @@ export function RolesPage() {
                                   title={`¿Inactivar "${rol.nombre}"?`}
                                   description={
                                     <>
-                                      Los usuarios con el rol{' '}
-                                      <strong>{rol.rol}</strong> perderán los permisos
-                                      asociados. Podrás reactivarlo en cualquier momento.
+                                      Los usuarios con el rol <strong>{rol.rol}</strong> perderán
+                                      los permisos asociados. Podrás reactivarlo en cualquier
+                                      momento.
                                     </>
                                   }
                                   confirmLabel="Inactivar"
@@ -237,14 +252,14 @@ export function RolesPage() {
                                   title={`¿Activar "${rol.nombre}"?`}
                                   description={
                                     <>
-                                      El rol <strong>{rol.rol}</strong> volverá a estar disponible para asignarse a usuarios.
+                                      El rol <strong>{rol.rol}</strong> volverá a estar disponible
+                                      para asignarse a usuarios.
                                     </>
                                   }
                                   confirmLabel="Activar"
                                   onConfirm={() => handleActivar(rol)}
                                 />
-                              )
-                            )}
+                              ))}
                           </div>
                         </TableCell>
                       )}

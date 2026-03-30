@@ -1,5 +1,14 @@
 import { useMemo, useState } from 'react'
-import { Calendar, CreditCard, KeyRound, Mail, Pencil, Phone, ShieldCheck, User } from 'lucide-react'
+import {
+  Calendar,
+  CreditCard,
+  KeyRound,
+  Mail,
+  Pencil,
+  Phone,
+  ShieldCheck,
+  User,
+} from 'lucide-react'
 
 import { usePerfil } from '@/hooks/usePerfil'
 import { avatarClases, iniciales } from '@/lib/avatar'
@@ -32,11 +41,11 @@ function PerfilSkeleton() {
 
 export function PerfilPage() {
   const { perfil, loading, recargar } = usePerfil()
-  const [editarContacto, setEditarContacto]       = useState(false)
+  const [editarContacto, setEditarContacto] = useState(false)
   const [cambiarContrasena, setCambiarContrasena] = useState(false)
 
-  const catalogoEstado  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO), [])
-  const catalogoGenero  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
+  const catalogoEstado = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO), [])
+  const catalogoGenero = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
   const catalogoTipoDoc = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO), [])
 
   if (loading) return <PerfilSkeleton />
@@ -52,13 +61,15 @@ export function PerfilPage() {
   const { persona } = perfil
 
   const nombreCompleto = getNombreCompleto(persona)
-  const estadoLabel  = catalogoEstado.find((e)  => e.codigo === perfil.estado)?.nombre  ?? perfil.estado
-  const generoLabel  = catalogoGenero.find((g)  => g.codigo === persona.genero)?.nombre  ?? persona.genero
-  const tipoDocLabel = catalogoTipoDoc.find((t) => t.codigo === persona.tipoDocumento)?.nombre ?? persona.tipoDocumento
+  const estadoLabel =
+    catalogoEstado.find((e) => e.codigo === perfil.estado)?.nombre ?? perfil.estado
+  const generoLabel =
+    catalogoGenero.find((g) => g.codigo === persona.genero)?.nombre ?? persona.genero
+  const tipoDocLabel =
+    catalogoTipoDoc.find((t) => t.codigo === persona.tipoDocumento)?.nombre ?? persona.tipoDocumento
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
-
       {/* ── Header ── */}
       <div className="rounded-xl border bg-gradient-to-br from-background via-primary/5 to-muted/40 p-5">
         <div className="flex items-center gap-4">
@@ -73,7 +84,9 @@ export function PerfilPage() {
             <div className="flex flex-wrap items-center gap-1.5 mt-2">
               <Badge variant={ESTADO_USUARIO_VARIANTE[perfil.estado]}>{estadoLabel}</Badge>
               {(perfil.usuarioRol ?? []).map((r) => (
-                <Badge key={r.rol.id} variant="secondary">{r.rol.rol}</Badge>
+                <Badge key={r.rol.id} variant="secondary">
+                  {r.rol.rol}
+                </Badge>
               ))}
             </div>
           </div>
@@ -138,17 +151,21 @@ export function PerfilPage() {
             <div className="size-8 rounded-lg bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center shrink-0">
               <Mail className="size-3.5 text-sky-500 dark:text-sky-400" />
             </div>
-            {perfil.correoElectronico
-              ? <span className="truncate">{perfil.correoElectronico}</span>
-              : <span className="text-muted-foreground italic">Sin correo registrado</span>}
+            {perfil.correoElectronico ? (
+              <span className="truncate">{perfil.correoElectronico}</span>
+            ) : (
+              <span className="text-muted-foreground italic">Sin correo registrado</span>
+            )}
           </div>
           <div className="flex items-center gap-3 text-sm">
             <div className="size-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center shrink-0">
               <Phone className="size-3.5 text-emerald-500 dark:text-emerald-400" />
             </div>
-            {persona.telefono
-              ? <span>{persona.telefono}</span>
-              : <span className="text-muted-foreground italic">Sin teléfono registrado</span>}
+            {persona.telefono ? (
+              <span>{persona.telefono}</span>
+            ) : (
+              <span className="text-muted-foreground italic">Sin teléfono registrado</span>
+            )}
           </div>
         </CardContent>
       </Card>

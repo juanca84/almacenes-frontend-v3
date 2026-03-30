@@ -25,7 +25,7 @@ import {
 
 const schema = z.object({
   contrasenaActual: z.string().min(1, 'Requerida'),
-  contrasenaNueva:  z.string().min(1, 'Requerida'),
+  contrasenaNueva: z.string().min(1, 'Requerida'),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -47,13 +47,13 @@ export function CambiarContrasenaPage() {
   if (usuario?.estado !== 'PENDIENTE') return <Navigate to="/dashboard" replace />
 
   const puedeGuardar = validacion?.valida === true && !validando
-  const fortaleza    = validacion != null ? FORTALEZA_CONTRASENA[validacion.score] : null
+  const fortaleza = validacion != null ? FORTALEZA_CONTRASENA[validacion.score] : null
 
   const onSubmit = async (values: FormValues) => {
     try {
       const { data } = await usuariosService.cambiarContrasena({
         contrasenaActual: values.contrasenaActual,
-        contrasenaNueva:  values.contrasenaNueva,
+        contrasenaNueva: values.contrasenaNueva,
       })
       if (data.finalizado) {
         updateEstado('ACTIVO')
@@ -63,8 +63,8 @@ export function CambiarContrasenaPage() {
         toast.error(data.mensaje)
       }
     } catch (error: unknown) {
-      const mensaje = (error as { response?: { data?: { mensaje?: string } } })
-        ?.response?.data?.mensaje
+      const mensaje = (error as { response?: { data?: { mensaje?: string } } })?.response?.data
+        ?.mensaje
       toast.error(mensaje ?? 'Error al cambiar la contraseña')
     }
   }
@@ -105,7 +105,11 @@ export function CambiarContrasenaPage() {
                   <FormItem>
                     <FormLabel>Contraseña temporal</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="••••••••" autoComplete="current-password" {...field} />
+                      <PasswordInput
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,7 +122,11 @@ export function CambiarContrasenaPage() {
                   <FormItem>
                     <FormLabel>Nueva contraseña</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="••••••••" autoComplete="new-password" {...field} />
+                      <PasswordInput
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
 
@@ -132,7 +140,9 @@ export function CambiarContrasenaPage() {
                               className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
                                 !validando && validacion != null && i <= validacion.score
                                   ? ''
-                                  : validando ? 'bg-muted animate-pulse' : 'bg-muted'
+                                  : validando
+                                    ? 'bg-muted animate-pulse'
+                                    : 'bg-muted'
                               }`}
                               style={
                                 !validando && validacion != null && i <= validacion.score
@@ -145,7 +155,9 @@ export function CambiarContrasenaPage() {
                         {validando ? (
                           <p className="text-xs text-muted-foreground">Validando...</p>
                         ) : errorValidacion ? (
-                          <p className="text-xs text-destructive">No se pudo validar la contraseña</p>
+                          <p className="text-xs text-destructive">
+                            No se pudo validar la contraseña
+                          </p>
                         ) : fortaleza ? (
                           <p className="text-xs font-medium" style={{ color: fortaleza.hex }}>
                             {validacion!.nivel}

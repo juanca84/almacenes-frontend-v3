@@ -1,5 +1,22 @@
 import { useMemo, useState } from 'react'
-import { ChevronDown, ChevronLeft, ChevronRight, Download, Eye, KeyRound, Loader2, Mail, Pencil, Phone, Plus, Search, ToggleLeft, ToggleRight, Users, X } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Eye,
+  KeyRound,
+  Loader2,
+  Mail,
+  Pencil,
+  Phone,
+  Plus,
+  Search,
+  ToggleLeft,
+  ToggleRight,
+  Users,
+  X,
+} from 'lucide-react'
 
 import { usuariosService } from '@/services/usuarios.service'
 import type { UsuarioItem } from '@/types/usuario.types'
@@ -64,7 +81,7 @@ function FiltroMultiSelect({ label, options, value, onChange }: FiltroMultiSelec
           className={cn(
             'flex items-center gap-1.5 text-sm px-3 h-10 transition-colors',
             'hover:bg-muted/60 focus-visible:outline-none focus-visible:bg-muted/60',
-            active ? 'text-foreground font-medium' : 'text-muted-foreground',
+            active ? 'text-foreground font-medium' : 'text-muted-foreground'
           )}
         >
           {label}
@@ -118,8 +135,12 @@ function SkeletonRow({ cols }: { cols: number }) {
           <div className="h-3 w-20 bg-muted rounded animate-pulse" />
         </div>
       </TableCell>
-      <TableCell><div className="h-5 w-20 bg-muted rounded-full animate-pulse" /></TableCell>
-      <TableCell><div className="h-5 w-16 bg-muted rounded-full animate-pulse" /></TableCell>
+      <TableCell>
+        <div className="h-5 w-20 bg-muted rounded-full animate-pulse" />
+      </TableCell>
+      <TableCell>
+        <div className="h-5 w-16 bg-muted rounded-full animate-pulse" />
+      </TableCell>
       {cols === 6 && <TableCell />}
     </TableRow>
   )
@@ -131,9 +152,26 @@ export function UsuariosPage() {
   const { tieneAccion } = usePermissions()
 
   const {
-    usuarios, loading, total, totalPaginas,
-    pagina, limite, filtro, roles, estados, sortBy, sortDir, rolesDisponibles,
-    setFiltro, setRoles, setEstados, setPagina, setLimite, setSort, exportarCSV, recargar,
+    usuarios,
+    loading,
+    total,
+    totalPaginas,
+    pagina,
+    limite,
+    filtro,
+    roles,
+    estados,
+    sortBy,
+    sortDir,
+    rolesDisponibles,
+    setFiltro,
+    setRoles,
+    setEstados,
+    setPagina,
+    setLimite,
+    setSort,
+    exportarCSV,
+    recargar,
   } = useUsuarios()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -142,9 +180,9 @@ export function UsuariosPage() {
   const [usuarioDetalle, setUsuarioDetalle] = useState<UsuarioItem | null>(null)
   const [exporting, setExporting] = useState(false)
 
-  const puedeEditar     = tieneAccion('usuarios', 'update')
+  const puedeEditar = tieneAccion('usuarios', 'update')
   const puedeDesactivar = tieneAccion('usuarios', 'delete')
-  const hayAcciones     = puedeEditar || puedeDesactivar
+  const hayAcciones = puedeEditar || puedeDesactivar
 
   const { estadoLabels, opcionesEstado } = useMemo(() => {
     const items = getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO)
@@ -156,21 +194,39 @@ export function UsuariosPage() {
     }
   }, [])
 
-  const opcionesRoles = useMemo(() =>
-    rolesDisponibles.map((r) => ({ value: r.id, label: r.nombre })),
-  [rolesDisponibles])
+  const opcionesRoles = useMemo(
+    () => rolesDisponibles.map((r) => ({ value: r.id, label: r.nombre })),
+    [rolesDisponibles]
+  )
 
-  const labelRol    = useMemo(() => new Map(opcionesRoles.map((r) => [r.value, r.label])), [opcionesRoles])
-  const labelEstado = useMemo(() => new Map(opcionesEstado.map((e) => [e.value, e.label])), [opcionesEstado])
+  const labelRol = useMemo(
+    () => new Map(opcionesRoles.map((r) => [r.value, r.label])),
+    [opcionesRoles]
+  )
+  const labelEstado = useMemo(
+    () => new Map(opcionesEstado.map((e) => [e.value, e.label])),
+    [opcionesEstado]
+  )
 
-  const abrirCrear  = () => { setUsuarioSeleccionado(null); setDialogOpen(true) }
-  const abrirEditar = (u: UsuarioItem) => { setUsuarioSeleccionado(u); setDialogOpen(true) }
+  const abrirCrear = () => {
+    setUsuarioSeleccionado(null)
+    setDialogOpen(true)
+  }
+  const abrirEditar = (u: UsuarioItem) => {
+    setUsuarioSeleccionado(u)
+    setDialogOpen(true)
+  }
 
-  const limpiarFiltros = () => { setFiltro(''); setRoles([]); setEstados([]) }
+  const limpiarFiltros = () => {
+    setFiltro('')
+    setRoles([])
+    setEstados([])
+  }
 
   const handleToggleEstado = (u: UsuarioItem) =>
     withToast(
-      () => u.estado === 'ACTIVO' ? usuariosService.inactivar(u.id) : usuariosService.activar(u.id),
+      () =>
+        u.estado === 'ACTIVO' ? usuariosService.inactivar(u.id) : usuariosService.activar(u.id),
       {
         successMsg: u.estado === 'ACTIVO' ? 'Usuario inactivado' : 'Usuario activado',
         errorMsg: 'Error al cambiar el estado del usuario',
@@ -179,10 +235,10 @@ export function UsuariosPage() {
     )
 
   const handleRestaurarContrasena = (id: string) =>
-    withToast(
-      () => usuariosService.restaurarContrasena(id),
-      { successMsg: 'Contraseña restaurada correctamente', errorMsg: 'Error al restaurar la contraseña' }
-    )
+    withToast(() => usuariosService.restaurarContrasena(id), {
+      successMsg: 'Contraseña restaurada correctamente',
+      errorMsg: 'Error al restaurar la contraseña',
+    })
 
   const hayFiltros = !!(filtro || roles.length > 0 || estados.length > 0)
   // columnas: usuario | documento | contacto | roles | estado | (acciones)
@@ -215,12 +271,20 @@ export function UsuariosPage() {
             variant="outline"
             size="sm"
             disabled={total === 0 || exporting}
-            onClick={async () => { setExporting(true); try { await exportarCSV() } finally { setExporting(false) } }}
+            onClick={async () => {
+              setExporting(true)
+              try {
+                await exportarCSV()
+              } finally {
+                setExporting(false)
+              }
+            }}
           >
-            {exporting
-              ? <Loader2 className="size-4 mr-2 animate-spin" />
-              : <Download className="size-4 mr-2" />
-            }
+            {exporting ? (
+              <Loader2 className="size-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="size-4 mr-2" />
+            )}
             {exporting ? 'Exportando...' : 'Exportar CSV'}
           </Button>
           {tieneAccion('usuarios', 'create') && (
@@ -247,9 +311,19 @@ export function UsuariosPage() {
           </div>
 
           <div className="w-px h-5 bg-border shrink-0" />
-          <FiltroMultiSelect label="Roles"  options={opcionesRoles}  value={roles}   onChange={setRoles} />
+          <FiltroMultiSelect
+            label="Roles"
+            options={opcionesRoles}
+            value={roles}
+            onChange={setRoles}
+          />
           <div className="w-px h-5 bg-border shrink-0" />
-          <FiltroMultiSelect label="Estado" options={opcionesEstado} value={estados} onChange={setEstados} />
+          <FiltroMultiSelect
+            label="Estado"
+            options={opcionesEstado}
+            value={estados}
+            onChange={setEstados}
+          />
 
           {hayFiltros && (
             <>
@@ -272,9 +346,15 @@ export function UsuariosPage() {
             {roles.map((id) => {
               const label = labelRol.get(id) ?? id
               return (
-                <span key={id} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium">
+                <span
+                  key={id}
+                  className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium"
+                >
                   {label}
-                  <button onClick={() => setRoles(roles.filter((r) => r !== id))} className="hover:opacity-70">
+                  <button
+                    onClick={() => setRoles(roles.filter((r) => r !== id))}
+                    className="hover:opacity-70"
+                  >
                     <X className="size-3" />
                   </button>
                 </span>
@@ -283,9 +363,15 @@ export function UsuariosPage() {
             {estados.map((codigo) => {
               const label = labelEstado.get(codigo) ?? codigo
               return (
-                <span key={codigo} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium">
+                <span
+                  key={codigo}
+                  className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium"
+                >
                   {label}
-                  <button onClick={() => setEstados(estados.filter((e) => e !== codigo))} className="hover:opacity-70">
+                  <button
+                    onClick={() => setEstados(estados.filter((e) => e !== codigo))}
+                    className="hover:opacity-70"
+                  >
                     <X className="size-3" />
                   </button>
                 </span>
@@ -301,26 +387,48 @@ export function UsuariosPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
-                <SortableTableHead col="nombres" sortBy={sortBy} sortDir={sortDir} onSort={setSort} className="pl-4">Usuario</SortableTableHead>
+                <SortableTableHead
+                  col="nombres"
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={setSort}
+                  className="pl-4"
+                >
+                  Usuario
+                </SortableTableHead>
                 <TableHead className="font-semibold text-foreground">Documento</TableHead>
                 <TableHead className="font-semibold text-foreground">Contacto</TableHead>
                 <TableHead className="font-semibold text-foreground">Roles</TableHead>
-                <SortableTableHead col="estado" sortBy={sortBy} sortDir={sortDir} onSort={setSort}>Estado</SortableTableHead>
-                {hayAcciones && <TableHead className="font-semibold text-foreground text-right pr-4">Acciones</TableHead>}
+                <SortableTableHead col="estado" sortBy={sortBy} sortDir={sortDir} onSort={setSort}>
+                  Estado
+                </SortableTableHead>
+                {hayAcciones && (
+                  <TableHead className="font-semibold text-foreground text-right pr-4">
+                    Acciones
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonRow key={i} cols={colSpan} />
-                ))
+                Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={colSpan} />)
               ) : usuarios.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={colSpan} className="p-0">
                     <EmptyState
                       icon={Users}
-                      title={hayFiltros ? 'No se encontraron usuarios con los filtros aplicados' : 'No hay usuarios registrados'}
-                      action={hayFiltros && <Button variant="outline" size="sm" onClick={limpiarFiltros}>Limpiar filtros</Button>}
+                      title={
+                        hayFiltros
+                          ? 'No se encontraron usuarios con los filtros aplicados'
+                          : 'No hay usuarios registrados'
+                      }
+                      action={
+                        hayFiltros && (
+                          <Button variant="outline" size="sm" onClick={limpiarFiltros}>
+                            Limpiar filtros
+                          </Button>
+                        )
+                      }
                     />
                   </TableCell>
                 </TableRow>
@@ -330,11 +438,15 @@ export function UsuariosPage() {
                     {/* Usuario */}
                     <TableCell className="pl-4">
                       <div className="flex items-center gap-3">
-                        <div className={`size-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${avatarClases(u)}`}>
+                        <div
+                          className={`size-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${avatarClases(u)}`}
+                        >
                           {iniciales(u)}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium leading-none truncate">{getNombreCompleto(u.persona)}</p>
+                          <p className="font-medium leading-none truncate">
+                            {getNombreCompleto(u.persona)}
+                          </p>
                           <p className="text-xs text-muted-foreground mt-0.5">@{u.usuario}</p>
                         </div>
                       </div>
@@ -396,7 +508,10 @@ export function UsuariosPage() {
                             variant="ghost"
                             size="icon"
                             className="size-8"
-                            onClick={() => { setUsuarioDetalle(u); setDetailOpen(true) }}
+                            onClick={() => {
+                              setUsuarioDetalle(u)
+                              setDetailOpen(true)
+                            }}
                             title="Ver detalle"
                           >
                             <Eye className="size-4 text-blue-500 dark:text-blue-400" />
@@ -418,16 +533,35 @@ export function UsuariosPage() {
                               {(u.estado === 'ACTIVO' || u.estado === 'PENDIENTE') && (
                                 <ConfirmDialog
                                   trigger={
-                                    <Button variant="ghost" size="icon" className="size-8" aria-label="Restaurar contraseña" title="Restaurar contraseña">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-8"
+                                      aria-label="Restaurar contraseña"
+                                      title="Restaurar contraseña"
+                                    >
                                       <KeyRound className="size-4 text-amber-500 dark:text-amber-400" />
                                     </Button>
                                   }
-                                  icon={<KeyRound className="size-4 text-amber-500 dark:text-amber-400" />}
+                                  icon={
+                                    <KeyRound className="size-4 text-amber-500 dark:text-amber-400" />
+                                  }
                                   title="¿Restaurar contraseña?"
                                   description={
-                                    u.correoElectronico
-                                      ? <>Se enviará un correo a <strong>{u.correoElectronico}</strong> para que <strong>{getNombreCompleto(u.persona)}</strong> establezca una nueva contraseña.</>
-                                      : <>Se restaurará la contraseña de <strong>{getNombreCompleto(u.persona)}</strong>. El usuario no tiene correo registrado.</>
+                                    u.correoElectronico ? (
+                                      <>
+                                        Se enviará un correo a{' '}
+                                        <strong>{u.correoElectronico}</strong> para que{' '}
+                                        <strong>{getNombreCompleto(u.persona)}</strong> establezca
+                                        una nueva contraseña.
+                                      </>
+                                    ) : (
+                                      <>
+                                        Se restaurará la contraseña de{' '}
+                                        <strong>{getNombreCompleto(u.persona)}</strong>. El usuario
+                                        no tiene correo registrado.
+                                      </>
+                                    )
                                   }
                                   confirmLabel="Restaurar"
                                   onConfirm={() => handleRestaurarContrasena(u.id)}
@@ -443,24 +577,53 @@ export function UsuariosPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="size-8"
-                                  aria-label={u.estado === 'ACTIVO' ? 'Inactivar usuario' : 'Activar usuario'}
+                                  aria-label={
+                                    u.estado === 'ACTIVO' ? 'Inactivar usuario' : 'Activar usuario'
+                                  }
                                   title={u.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
                                 >
-                                  {u.estado === 'ACTIVO'
-                                    ? <ToggleLeft className="size-4 text-muted-foreground" />
-                                    : <ToggleRight className="size-4 text-emerald-600 dark:text-emerald-400" />}
+                                  {u.estado === 'ACTIVO' ? (
+                                    <ToggleLeft className="size-4 text-muted-foreground" />
+                                  ) : (
+                                    <ToggleRight className="size-4 text-emerald-600 dark:text-emerald-400" />
+                                  )}
                                 </Button>
                               }
-                              icon={u.estado === 'ACTIVO'
-                                ? <ToggleLeft className="size-4" />
-                                : <ToggleRight className="size-4" />}
-                              title={u.estado === 'ACTIVO' ? `¿Inactivar a ${getNombreCompleto(u.persona)}?` : `¿Activar a ${getNombreCompleto(u.persona)}?`}
-                              description={
+                              icon={
+                                u.estado === 'ACTIVO' ? (
+                                  <ToggleLeft className="size-4" />
+                                ) : (
+                                  <ToggleRight className="size-4" />
+                                )
+                              }
+                              title={
                                 u.estado === 'ACTIVO'
-                                  ? <>El usuario <strong>{getNombreCompleto(u.persona)}</strong> perderá el acceso al sistema de forma inmediata. Podrás reactivarlo en cualquier momento desde esta misma tabla.</>
-                                  : u.correoElectronico
-                                    ? <>El usuario <strong>{getNombreCompleto(u.persona)}</strong> será activado y recibirá un correo a <strong>{u.correoElectronico}</strong> con una contraseña temporal para que pueda ingresar al sistema y establecer una nueva contraseña.</>
-                                    : <>El usuario <strong>{getNombreCompleto(u.persona)}</strong> será activado y podrá volver a iniciar sesión. No tiene correo registrado, por lo que deberás asignarle una contraseña manualmente.</>
+                                  ? `¿Inactivar a ${getNombreCompleto(u.persona)}?`
+                                  : `¿Activar a ${getNombreCompleto(u.persona)}?`
+                              }
+                              description={
+                                u.estado === 'ACTIVO' ? (
+                                  <>
+                                    El usuario <strong>{getNombreCompleto(u.persona)}</strong>{' '}
+                                    perderá el acceso al sistema de forma inmediata. Podrás
+                                    reactivarlo en cualquier momento desde esta misma tabla.
+                                  </>
+                                ) : u.correoElectronico ? (
+                                  <>
+                                    El usuario <strong>{getNombreCompleto(u.persona)}</strong> será
+                                    activado y recibirá un correo a{' '}
+                                    <strong>{u.correoElectronico}</strong> con una contraseña
+                                    temporal para que pueda ingresar al sistema y establecer una
+                                    nueva contraseña.
+                                  </>
+                                ) : (
+                                  <>
+                                    El usuario <strong>{getNombreCompleto(u.persona)}</strong> será
+                                    activado y podrá volver a iniciar sesión. No tiene correo
+                                    registrado, por lo que deberás asignarle una contraseña
+                                    manualmente.
+                                  </>
+                                )
                               }
                               confirmLabel={u.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
                               variant={u.estado === 'ACTIVO' ? 'destructive' : 'default'}
@@ -479,8 +642,8 @@ export function UsuariosPage() {
           {/* Paginación */}
           <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{total}</span>
-              {' '}{total === 1 ? 'usuario' : 'usuarios'} en total
+              <span className="font-medium text-foreground">{total}</span>{' '}
+              {total === 1 ? 'usuario' : 'usuarios'} en total
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -494,7 +657,8 @@ export function UsuariosPage() {
                 <ChevronLeft className="size-4" />
               </Button>
               <span className="text-sm tabular-nums text-muted-foreground">
-                Página <span className="font-medium text-foreground">{pagina}</span> de <span className="font-medium text-foreground">{totalPaginas}</span>
+                Página <span className="font-medium text-foreground">{pagina}</span> de{' '}
+                <span className="font-medium text-foreground">{totalPaginas}</span>
               </span>
               <Button
                 variant="outline"

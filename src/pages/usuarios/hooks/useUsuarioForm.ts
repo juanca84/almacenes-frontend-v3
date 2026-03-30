@@ -57,7 +57,7 @@ export function useUsuarioForm({ open, usuario, onClose, onSuccess }: UseUsuario
   const [roles, setRoles] = useState<RolDisponible[]>([])
   const [loadingRoles, setLoadingRoles] = useState(false)
 
-  const catalogoGenero  = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
+  const catalogoGenero = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.GENERO), [])
   const catalogoTipoDoc = useMemo(() => getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO), [])
 
   const crearForm = useForm<CrearValues>({
@@ -114,12 +114,22 @@ export function useUsuarioForm({ open, usuario, onClose, onSuccess }: UseUsuario
     }
 
     let cancelled = false
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingRoles(true)
-    usuariosService.listarRoles()
-      .then(({ data }) => { if (!cancelled && data.finalizado) setRoles(data.datos) })
-      .catch(() => { if (!cancelled) toast.error('Error al cargar los roles') })
-      .finally(() => { if (!cancelled) setLoadingRoles(false) })
-    return () => { cancelled = true }
+    usuariosService
+      .listarRoles()
+      .then(({ data }) => {
+        if (!cancelled && data.finalizado) setRoles(data.datos)
+      })
+      .catch(() => {
+        if (!cancelled) toast.error('Error al cargar los roles')
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingRoles(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [usuario, open, resetCrear, resetEditar])
 
   const onSubmitCrear = async (values: CrearValues) => {

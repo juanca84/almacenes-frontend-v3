@@ -49,30 +49,35 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
 
   const { persona } = usuario
 
-  const nombreCompleto  = getNombreCompleto(persona)
-  const catalogoEstado  = getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO)
-  const catalogoGenero  = getCatalogoGrupo(CATALOGO_GRUPOS.GENERO)
+  const nombreCompleto = getNombreCompleto(persona)
+  const catalogoEstado = getCatalogoGrupo(CATALOGO_GRUPOS.ESTADO_USUARIO)
+  const catalogoGenero = getCatalogoGrupo(CATALOGO_GRUPOS.GENERO)
   const catalogoTipoDoc = getCatalogoGrupo(CATALOGO_GRUPOS.TIPO_DOCUMENTO)
 
-  const estadoLabel  = catalogoEstado.find((e)  => e.codigo === usuario.estado)?.nombre  ?? usuario.estado
-  const generoLabel  = catalogoGenero.find((g)  => g.codigo === persona.genero)?.nombre  ?? persona.genero
-  const tipoDocLabel = catalogoTipoDoc.find((t) => t.codigo === persona.tipoDocumento)?.nombre ?? persona.tipoDocumento
+  const estadoLabel =
+    catalogoEstado.find((e) => e.codigo === usuario.estado)?.nombre ?? usuario.estado
+  const generoLabel =
+    catalogoGenero.find((g) => g.codigo === persona.genero)?.nombre ?? persona.genero
+  const tipoDocLabel =
+    catalogoTipoDoc.find((t) => t.codigo === persona.tipoDocumento)?.nombre ?? persona.tipoDocumento
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-4 pr-6">
-            <div className={`size-14 rounded-full flex items-center justify-center shrink-0 text-lg font-bold ${avatarClases(usuario)}`}>
+            <div
+              className={`size-14 rounded-full flex items-center justify-center shrink-0 text-lg font-bold ${avatarClases(usuario)}`}
+            >
               {iniciales(usuario)}
             </div>
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-base leading-snug truncate">{nombreCompleto}</DialogTitle>
+              <DialogTitle className="text-base leading-snug truncate">
+                {nombreCompleto}
+              </DialogTitle>
               <p className="text-sm text-muted-foreground mt-0.5">@{usuario.usuario}</p>
               <div className="mt-1.5">
-                <Badge variant={ESTADO_USUARIO_VARIANTE[usuario.estado]}>
-                  {estadoLabel}
-                </Badge>
+                <Badge variant={ESTADO_USUARIO_VARIANTE[usuario.estado]}>{estadoLabel}</Badge>
               </div>
             </div>
           </div>
@@ -89,17 +94,21 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
                 <div className="size-8 rounded-lg bg-sky-50 dark:bg-sky-950/40 flex items-center justify-center shrink-0">
                   <Mail className="size-3.5 text-sky-500 dark:text-sky-400" />
                 </div>
-                {usuario.correoElectronico
-                  ? <span className="truncate">{usuario.correoElectronico}</span>
-                  : <span className="text-muted-foreground italic">Sin correo registrado</span>}
+                {usuario.correoElectronico ? (
+                  <span className="truncate">{usuario.correoElectronico}</span>
+                ) : (
+                  <span className="text-muted-foreground italic">Sin correo registrado</span>
+                )}
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <div className="size-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center shrink-0">
                   <Phone className="size-3.5 text-emerald-500 dark:text-emerald-400" />
                 </div>
-                {persona.telefono
-                  ? <span>{persona.telefono}</span>
-                  : <span className="text-muted-foreground italic">Sin teléfono registrado</span>}
+                {persona.telefono ? (
+                  <span>{persona.telefono}</span>
+                ) : (
+                  <span className="text-muted-foreground italic">Sin teléfono registrado</span>
+                )}
               </div>
             </div>
           </section>
@@ -122,10 +131,7 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
                 value={persona.nroDocumento}
                 icon={<CreditCard className="size-3 text-blue-500 dark:text-blue-400" />}
               />
-              <Campo
-                label="Género"
-                value={generoLabel}
-              />
+              <Campo label="Género" value={generoLabel} />
               <Campo
                 label="Fecha de nacimiento"
                 value={formatFecha(persona.fechaNacimiento)}
@@ -146,7 +152,9 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
             ) : (
               <div className="flex flex-wrap gap-1.5">
                 {(usuario.usuarioRol ?? []).map((r) => (
-                  <Badge key={r.rol.id} variant="secondary">{r.rol.rol}</Badge>
+                  <Badge key={r.rol.id} variant="secondary">
+                    {r.rol.rol}
+                  </Badge>
                 ))}
               </div>
             )}
@@ -154,7 +162,9 @@ export function UsuarioDetailDialog({ open, onClose, usuario }: UsuarioDetailDia
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cerrar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cerrar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -14,8 +14,8 @@ interface UseValidarContrasenaReturn {
  * Llama a POST /usuarios/cuenta/validar-contrasena en texto plano.
  */
 export function useValidarContrasena(contrasena: string): UseValidarContrasenaReturn {
-  const [validacion, setValidacion]         = useState<ValidarContrasenaResult | null>(null)
-  const [validando, setValidando]           = useState(false)
+  const [validacion, setValidacion] = useState<ValidarContrasenaResult | null>(null)
+  const [validando, setValidando] = useState(false)
   const [errorValidacion, setErrorValidacion] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 

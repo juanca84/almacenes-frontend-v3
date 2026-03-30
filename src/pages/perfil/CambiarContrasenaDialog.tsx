@@ -30,14 +30,16 @@ interface CambiarContrasenaDialogProps {
   onClose: () => void
 }
 
-const schema = z.object({
-  contrasenaActual:    z.string().min(1, 'Requerida'),
-  contrasenaNueva:     z.string().min(1, 'Requerida'),
-  confirmarContrasena: z.string().min(1, 'Requerida'),
-}).refine((d) => d.contrasenaNueva === d.confirmarContrasena, {
-  message: 'Las contraseñas no coinciden',
-  path: ['confirmarContrasena'],
-})
+const schema = z
+  .object({
+    contrasenaActual: z.string().min(1, 'Requerida'),
+    contrasenaNueva: z.string().min(1, 'Requerida'),
+    confirmarContrasena: z.string().min(1, 'Requerida'),
+  })
+  .refine((d) => d.contrasenaNueva === d.confirmarContrasena, {
+    message: 'Las contraseñas no coinciden',
+    path: ['confirmarContrasena'],
+  })
 
 type FormValues = z.infer<typeof schema>
 
@@ -47,11 +49,12 @@ export function CambiarContrasenaDialog({ open, onClose }: CambiarContrasenaDial
     defaultValues: { contrasenaActual: '', contrasenaNueva: '', confirmarContrasena: '' },
   })
 
-  const contrasenaNueva     = form.watch('contrasenaNueva')
+  const contrasenaNueva = form.watch('contrasenaNueva')
   const confirmarContrasena = form.watch('confirmarContrasena')
   const { validacion, validando, errorValidacion } = useValidarContrasena(contrasenaNueva)
 
-  const puedeGuardar = validacion?.valida === true && !validando && contrasenaNueva === confirmarContrasena
+  const puedeGuardar =
+    validacion?.valida === true && !validando && contrasenaNueva === confirmarContrasena
 
   const handleClose = () => {
     form.reset()
@@ -60,11 +63,15 @@ export function CambiarContrasenaDialog({ open, onClose }: CambiarContrasenaDial
 
   const onSubmit = async (values: FormValues) => {
     const ok = await withToast(
-      () => usuariosService.cambiarContrasena({
-        contrasenaActual: values.contrasenaActual,
-        contrasenaNueva:  values.contrasenaNueva,
-      }),
-      { successMsg: 'Contraseña actualizada correctamente', errorMsg: 'Error al cambiar la contraseña' }
+      () =>
+        usuariosService.cambiarContrasena({
+          contrasenaActual: values.contrasenaActual,
+          contrasenaNueva: values.contrasenaNueva,
+        }),
+      {
+        successMsg: 'Contraseña actualizada correctamente',
+        errorMsg: 'Error al cambiar la contraseña',
+      }
     )
     if (ok) handleClose()
   }
@@ -90,7 +97,12 @@ export function CambiarContrasenaDialog({ open, onClose }: CambiarContrasenaDial
                 <FormItem>
                   <FormLabel className="text-xs text-muted-foreground">Contraseña actual</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="••••••••" autoComplete="current-password" autoFocus {...field} />
+                    <PasswordInput
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      autoFocus
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,7 +134,9 @@ export function CambiarContrasenaDialog({ open, onClose }: CambiarContrasenaDial
               name="confirmarContrasena"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs text-muted-foreground">Confirmar nueva contraseña</FormLabel>
+                  <FormLabel className="text-xs text-muted-foreground">
+                    Confirmar nueva contraseña
+                  </FormLabel>
                   <FormControl>
                     <PasswordInput placeholder="••••••••" autoComplete="new-password" {...field} />
                   </FormControl>
@@ -132,7 +146,9 @@ export function CambiarContrasenaDialog({ open, onClose }: CambiarContrasenaDial
             />
 
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={handleClose}>Cancelar</Button>
+              <Button type="button" variant="outline" onClick={handleClose}>
+                Cancelar
+              </Button>
               <Button type="submit" disabled={form.formState.isSubmitting || !puedeGuardar}>
                 {form.formState.isSubmitting ? 'Guardando...' : 'Actualizar contraseña'}
               </Button>

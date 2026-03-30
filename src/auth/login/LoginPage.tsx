@@ -63,12 +63,8 @@ export function LoginPage() {
           <APP_CONFIG.icon className="size-6 text-white" />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">
-            {APP_CONFIG.name}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {APP_CONFIG.description}
-          </p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">{APP_CONFIG.name}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{APP_CONFIG.description}</p>
         </div>
       </div>
 

@@ -1,7 +1,17 @@
 import { useMemo, useState } from 'react'
 import {
-  ChevronDown, ChevronLeft, ChevronRight,
-  Download, Eye, Loader2, Pencil, Plus, Settings, ToggleLeft, ToggleRight, X,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Eye,
+  Loader2,
+  Pencil,
+  Plus,
+  Settings,
+  ToggleLeft,
+  ToggleRight,
+  X,
 } from 'lucide-react'
 
 import { parametrosService } from '@/services/parametros.service'
@@ -52,7 +62,14 @@ interface FiltroMultiSelectProps {
   emptyText?: string
 }
 
-function FiltroMultiSelect({ label, options, value, onChange, loading, emptyText }: FiltroMultiSelectProps) {
+function FiltroMultiSelect({
+  label,
+  options,
+  value,
+  onChange,
+  loading,
+  emptyText,
+}: FiltroMultiSelectProps) {
   const toggle = (v: string) =>
     onChange(value.includes(v) ? value.filter((x) => x !== v) : [...value, v])
 
@@ -66,7 +83,7 @@ function FiltroMultiSelect({ label, options, value, onChange, loading, emptyText
           className={cn(
             'flex items-center gap-1.5 text-sm px-3 h-10 transition-colors',
             'hover:bg-muted/60 focus-visible:outline-none focus-visible:bg-muted/60',
-            active ? 'text-foreground font-medium' : 'text-muted-foreground',
+            active ? 'text-foreground font-medium' : 'text-muted-foreground'
           )}
         >
           {label}
@@ -85,9 +102,7 @@ function FiltroMultiSelect({ label, options, value, onChange, loading, emptyText
             Cargando...
           </div>
         ) : options.length === 0 ? (
-          <p className="px-2 py-3 text-sm text-muted-foreground">
-            {emptyText ?? 'Sin opciones'}
-          </p>
+          <p className="px-2 py-3 text-sm text-muted-foreground">{emptyText ?? 'Sin opciones'}</p>
         ) : (
           options.map((opt) => (
             <DropdownMenuCheckboxItem
@@ -119,9 +134,15 @@ function SkeletonRow({ cols }: { cols: number }) {
           </div>
         </div>
       </TableCell>
-      <TableCell><div className="h-5 w-14 bg-muted rounded-full animate-pulse" /></TableCell>
-      <TableCell><div className="h-4 w-48 bg-muted rounded animate-pulse" /></TableCell>
-      <TableCell><div className="h-5 w-16 bg-muted rounded-full animate-pulse" /></TableCell>
+      <TableCell>
+        <div className="h-5 w-14 bg-muted rounded-full animate-pulse" />
+      </TableCell>
+      <TableCell>
+        <div className="h-4 w-48 bg-muted rounded animate-pulse" />
+      </TableCell>
+      <TableCell>
+        <div className="h-5 w-16 bg-muted rounded-full animate-pulse" />
+      </TableCell>
       {cols === 5 && <TableCell className="text-right pr-4" />}
     </TableRow>
   )
@@ -130,7 +151,7 @@ function SkeletonRow({ cols }: { cols: number }) {
 // ── Constantes locales ────────────────────────────────────────────────────────
 
 const OPCIONES_ESTADO = [
-  { value: 'ACTIVO',   label: 'Activo' },
+  { value: 'ACTIVO', label: 'Activo' },
   { value: 'INACTIVO', label: 'Inactivo' },
 ]
 
@@ -140,10 +161,25 @@ export function ParametrosPage() {
   const { tieneAccion } = usePermissions()
 
   const {
-    parametros, loading, total, totalPaginas,
-    pagina, limite, gruposSeleccionados, estadosSeleccionados, sortBy, sortDir,
-    gruposDisponibles, loadingGrupos,
-    setGrupos, setEstados, setPagina, setLimite, setSort, exportarCSV, recargar,
+    parametros,
+    loading,
+    total,
+    totalPaginas,
+    pagina,
+    limite,
+    gruposSeleccionados,
+    estadosSeleccionados,
+    sortBy,
+    sortDir,
+    gruposDisponibles,
+    loadingGrupos,
+    setGrupos,
+    setEstados,
+    setPagina,
+    setLimite,
+    setSort,
+    exportarCSV,
+    recargar,
   } = useParametros()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -152,27 +188,37 @@ export function ParametrosPage() {
   const [parametroDetalle, setParametroDetalle] = useState<ParametroItem | null>(null)
   const [exporting, setExporting] = useState(false)
 
-  const puedeVer        = tieneAccion('parametros', 'read')
-  const puedeEditar     = tieneAccion('parametros', 'update')
+  const puedeVer = tieneAccion('parametros', 'read')
+  const puedeEditar = tieneAccion('parametros', 'update')
   const puedeDesactivar = tieneAccion('parametros', 'delete')
-  const hayAcciones     = puedeVer || puedeEditar || puedeDesactivar
+  const hayAcciones = puedeVer || puedeEditar || puedeDesactivar
 
   const opcionesGrupo = useMemo(
     () => gruposDisponibles.map((g) => ({ value: g, label: g })),
-    [gruposDisponibles],
+    [gruposDisponibles]
   )
 
-  const abrirCrear  = () => { setParametroSeleccionado(null); setDialogOpen(true) }
-  const abrirEditar = (p: ParametroItem) => { setParametroSeleccionado(p); setDialogOpen(true) }
+  const abrirCrear = () => {
+    setParametroSeleccionado(null)
+    setDialogOpen(true)
+  }
+  const abrirEditar = (p: ParametroItem) => {
+    setParametroSeleccionado(p)
+    setDialogOpen(true)
+  }
 
-  const limpiarFiltros = () => { setGrupos([]); setEstados([]) }
+  const limpiarFiltros = () => {
+    setGrupos([])
+    setEstados([])
+  }
 
   const hayFiltros = gruposSeleccionados.length > 0 || estadosSeleccionados.length > 0
-  const colSpan    = hayAcciones ? 5 : 4
+  const colSpan = hayAcciones ? 5 : 4
 
   const handleToggleEstado = (p: ParametroItem) =>
     withToast(
-      () => p.estado === 'ACTIVO' ? parametrosService.inactivar(p.id) : parametrosService.activar(p.id),
+      () =>
+        p.estado === 'ACTIVO' ? parametrosService.inactivar(p.id) : parametrosService.activar(p.id),
       {
         successMsg: p.estado === 'ACTIVO' ? 'Parámetro inactivado' : 'Parámetro activado',
         errorMsg: 'Error al cambiar el estado del parámetro',
@@ -207,12 +253,20 @@ export function ParametrosPage() {
             variant="outline"
             size="sm"
             disabled={total === 0 || exporting}
-            onClick={async () => { setExporting(true); try { await exportarCSV() } finally { setExporting(false) } }}
+            onClick={async () => {
+              setExporting(true)
+              try {
+                await exportarCSV()
+              } finally {
+                setExporting(false)
+              }
+            }}
           >
-            {exporting
-              ? <Loader2 className="size-4 mr-2 animate-spin" />
-              : <Download className="size-4 mr-2" />
-            }
+            {exporting ? (
+              <Loader2 className="size-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="size-4 mr-2" />
+            )}
             {exporting ? 'Exportando...' : 'Exportar CSV'}
           </Button>
           {tieneAccion('parametros', 'create') && (
@@ -265,17 +319,31 @@ export function ParametrosPage() {
         {hayFiltros && (
           <div className="flex items-center gap-1.5 flex-wrap">
             {gruposSeleccionados.map((g) => (
-              <span key={g} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium font-mono">
+              <span
+                key={g}
+                className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium font-mono"
+              >
                 {g}
-                <button type="button" onClick={() => setGrupos(gruposSeleccionados.filter((x) => x !== g))} className="hover:opacity-70">
+                <button
+                  type="button"
+                  onClick={() => setGrupos(gruposSeleccionados.filter((x) => x !== g))}
+                  className="hover:opacity-70"
+                >
                   <X className="size-3" />
                 </button>
               </span>
             ))}
             {estadosSeleccionados.map((e) => (
-              <span key={e} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium">
+              <span
+                key={e}
+                className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium"
+              >
                 {e === 'ACTIVO' ? 'Activo' : 'Inactivo'}
-                <button type="button" onClick={() => setEstados(estadosSeleccionados.filter((x) => x !== e))} className="hover:opacity-70">
+                <button
+                  type="button"
+                  onClick={() => setEstados(estadosSeleccionados.filter((x) => x !== e))}
+                  className="hover:opacity-70"
+                >
                   <X className="size-3" />
                 </button>
               </span>
@@ -290,28 +358,50 @@ export function ParametrosPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
-                <SortableTableHead col="nombre" sortBy={sortBy} sortDir={sortDir} onSort={setSort} className="pl-4">Parámetro</SortableTableHead>
-                <SortableTableHead col="grupo"  sortBy={sortBy} sortDir={sortDir} onSort={setSort}>Grupo</SortableTableHead>
+                <SortableTableHead
+                  col="nombre"
+                  sortBy={sortBy}
+                  sortDir={sortDir}
+                  onSort={setSort}
+                  className="pl-4"
+                >
+                  Parámetro
+                </SortableTableHead>
+                <SortableTableHead col="grupo" sortBy={sortBy} sortDir={sortDir} onSort={setSort}>
+                  Grupo
+                </SortableTableHead>
                 <TableHead className="font-semibold text-foreground">Descripción</TableHead>
-                <SortableTableHead col="estado" sortBy={sortBy} sortDir={sortDir} onSort={setSort}>Estado</SortableTableHead>
+                <SortableTableHead col="estado" sortBy={sortBy} sortDir={sortDir} onSort={setSort}>
+                  Estado
+                </SortableTableHead>
                 {hayAcciones && (
-                  <TableHead className="font-semibold text-foreground text-right pr-4">Acciones</TableHead>
+                  <TableHead className="font-semibold text-foreground text-right pr-4">
+                    Acciones
+                  </TableHead>
                 )}
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonRow key={i} cols={colSpan} />
-                ))
+                Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={colSpan} />)
               ) : parametros.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={colSpan} className="p-0">
                     <EmptyState
                       icon={Settings}
-                      title={hayFiltros ? 'No se encontraron parámetros con los filtros aplicados' : 'No hay parámetros registrados'}
-                      action={hayFiltros && <Button variant="outline" size="sm" onClick={limpiarFiltros}>Limpiar filtros</Button>}
+                      title={
+                        hayFiltros
+                          ? 'No se encontraron parámetros con los filtros aplicados'
+                          : 'No hay parámetros registrados'
+                      }
+                      action={
+                        hayFiltros && (
+                          <Button variant="outline" size="sm" onClick={limpiarFiltros}>
+                            Limpiar filtros
+                          </Button>
+                        )
+                      }
                     />
                   </TableCell>
                 </TableRow>
@@ -321,19 +411,26 @@ export function ParametrosPage() {
                     {/* Parámetro — icono de color + código + nombre */}
                     <TableCell className="pl-4">
                       <div className="flex items-center gap-3">
-                        <div className={`size-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${grupoClases(p.grupo)}`}>
+                        <div
+                          className={`size-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${grupoClases(p.grupo)}`}
+                        >
                           {grupoLetra(p.grupo)}
                         </div>
                         <div className="min-w-0">
                           <p className="font-mono text-sm font-medium leading-none">{p.codigo}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5 truncate">{p.nombre}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                            {p.nombre}
+                          </p>
                         </div>
                       </div>
                     </TableCell>
 
                     {/* Grupo */}
                     <TableCell>
-                      <Badge variant="outline" className={`font-mono text-xs border-current/30 ${grupoClases(p.grupo)}`}>
+                      <Badge
+                        variant="outline"
+                        className={`font-mono text-xs border-current/30 ${grupoClases(p.grupo)}`}
+                      >
                         {p.grupo}
                       </Badge>
                     </TableCell>
@@ -361,7 +458,10 @@ export function ParametrosPage() {
                               variant="ghost"
                               size="icon"
                               className="size-8"
-                              onClick={() => { setParametroDetalle(p); setDetailOpen(true) }}
+                              onClick={() => {
+                                setParametroDetalle(p)
+                                setDetailOpen(true)
+                              }}
                               title="Ver detalle"
                               aria-label={`Ver ${p.codigo}`}
                             >
@@ -388,27 +488,45 @@ export function ParametrosPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="size-8"
-                                  aria-label={p.estado === 'ACTIVO' ? `Inactivar ${p.codigo}` : `Activar ${p.codigo}`}
+                                  aria-label={
+                                    p.estado === 'ACTIVO'
+                                      ? `Inactivar ${p.codigo}`
+                                      : `Activar ${p.codigo}`
+                                  }
                                   title={p.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
                                 >
-                                  {p.estado === 'ACTIVO'
-                                    ? <ToggleLeft className="size-4 text-muted-foreground" />
-                                    : <ToggleRight className="size-4 text-emerald-600 dark:text-emerald-400" />
-                                  }
+                                  {p.estado === 'ACTIVO' ? (
+                                    <ToggleLeft className="size-4 text-muted-foreground" />
+                                  ) : (
+                                    <ToggleRight className="size-4 text-emerald-600 dark:text-emerald-400" />
+                                  )}
                                 </Button>
                               }
-                              icon={p.estado === 'ACTIVO'
-                                ? <ToggleLeft className="size-4" />
-                                : <ToggleRight className="size-4" />
+                              icon={
+                                p.estado === 'ACTIVO' ? (
+                                  <ToggleLeft className="size-4" />
+                                ) : (
+                                  <ToggleRight className="size-4" />
+                                )
                               }
-                              title={p.estado === 'ACTIVO'
-                                ? `¿Inactivar "${p.nombre}"?`
-                                : `¿Activar "${p.nombre}"?`
+                              title={
+                                p.estado === 'ACTIVO'
+                                  ? `¿Inactivar "${p.nombre}"?`
+                                  : `¿Activar "${p.nombre}"?`
                               }
                               description={
-                                p.estado === 'ACTIVO'
-                                  ? <>El parámetro <strong>{p.codigo}</strong> quedará inactivo y no aparecerá en los selectores del sistema. Los registros que ya lo referencian no se verán afectados.</>
-                                  : <>El parámetro <strong>{p.codigo}</strong> volverá a estar disponible en los selectores del sistema.</>
+                                p.estado === 'ACTIVO' ? (
+                                  <>
+                                    El parámetro <strong>{p.codigo}</strong> quedará inactivo y no
+                                    aparecerá en los selectores del sistema. Los registros que ya lo
+                                    referencian no se verán afectados.
+                                  </>
+                                ) : (
+                                  <>
+                                    El parámetro <strong>{p.codigo}</strong> volverá a estar
+                                    disponible en los selectores del sistema.
+                                  </>
+                                )
                               }
                               confirmLabel={p.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
                               variant={p.estado === 'ACTIVO' ? 'destructive' : 'default'}
@@ -427,8 +545,8 @@ export function ParametrosPage() {
           {/* Paginación */}
           <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{total}</span>
-              {' '}{total === 1 ? 'parámetro' : 'parámetros'} en total
+              <span className="font-medium text-foreground">{total}</span>{' '}
+              {total === 1 ? 'parámetro' : 'parámetros'} en total
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -442,7 +560,8 @@ export function ParametrosPage() {
                 <ChevronLeft className="size-4" />
               </Button>
               <span className="text-sm tabular-nums text-muted-foreground">
-                Página <span className="font-medium text-foreground">{pagina}</span> de <span className="font-medium text-foreground">{totalPaginas}</span>
+                Página <span className="font-medium text-foreground">{pagina}</span> de{' '}
+                <span className="font-medium text-foreground">{totalPaginas}</span>
               </span>
               <Button
                 variant="outline"

@@ -58,19 +58,18 @@ export function RolFormDialog({ open, onClose, rol, onSuccess }: RolFormDialogPr
         <DialogHeader>
           <div className="flex items-center gap-3 pr-6">
             <div className="size-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              {esEdicion
-                ? <ShieldCheck className="size-5 text-primary" />
-                : <ShieldPlus className="size-5 text-primary" />
-              }
+              {esEdicion ? (
+                <ShieldCheck className="size-5 text-primary" />
+              ) : (
+                <ShieldPlus className="size-5 text-primary" />
+              )}
             </div>
             <div className="min-w-0">
               <DialogTitle className="text-base">
                 {esEdicion ? `Editar rol` : 'Nuevo rol'}
               </DialogTitle>
               {esEdicion && (
-                <p className="text-sm text-muted-foreground mt-0.5 font-mono">
-                  {rol!.rol}
-                </p>
+                <p className="text-sm text-muted-foreground mt-0.5 font-mono">{rol!.rol}</p>
               )}
             </div>
           </div>
@@ -81,12 +80,9 @@ export function RolFormDialog({ open, onClose, rol, onSuccess }: RolFormDialogPr
           <Form {...editarForm}>
             <form onSubmit={editarForm.handleSubmit(onSubmitEditar)}>
               <div className="space-y-5 max-h-[65vh] overflow-y-auto px-1">
-
                 {/* Identificador (solo lectura) */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">
-                    Identificador
-                  </label>
+                  <label className="text-xs font-medium text-muted-foreground">Identificador</label>
                   <div className="flex items-center gap-2 rounded-md border bg-muted/40 px-3 h-9">
                     <span className="text-sm font-mono text-muted-foreground">{rol!.rol}</span>
                     <span className="ml-auto text-[10px] bg-muted text-muted-foreground rounded px-1.5 py-0.5">
@@ -156,7 +152,6 @@ export function RolFormDialog({ open, onClose, rol, onSuccess }: RolFormDialogPr
           <Form {...crearForm}>
             <form onSubmit={crearForm.handleSubmit(onSubmitCrear)}>
               <div className="space-y-5 max-h-[65vh] overflow-y-auto px-1">
-
                 {/* Identificador + preview */}
                 <FormField
                   control={crearForm.control}
@@ -167,18 +162,12 @@ export function RolFormDialog({ open, onClose, rol, onSuccess }: RolFormDialogPr
                         Identificador <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Ej. supervisor almacen"
-                          {...field}
-                          autoFocus
-                        />
+                        <Input placeholder="Ej. supervisor almacen" {...field} autoFocus />
                       </FormControl>
                       {preview && (
                         <p className="text-[11px] text-muted-foreground">
                           Se guardará como:{' '}
-                          <span className="font-mono font-semibold text-foreground">
-                            {preview}
-                          </span>
+                          <span className="font-mono font-semibold text-foreground">{preview}</span>
                         </p>
                       )}
                       <FormMessage />
@@ -233,10 +222,7 @@ export function RolFormDialog({ open, onClose, rol, onSuccess }: RolFormDialogPr
                 <Button type="button" variant="outline" onClick={handleClose}>
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={crearForm.formState.isSubmitting || loadingModulos}
-                >
+                <Button type="submit" disabled={crearForm.formState.isSubmitting || loadingModulos}>
                   {crearForm.formState.isSubmitting ? 'Creando...' : 'Crear rol'}
                 </Button>
               </DialogFooter>

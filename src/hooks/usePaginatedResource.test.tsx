@@ -20,8 +20,10 @@ function makeWrapper(queryClient: QueryClient) {
   )
 }
 
-const TEST_KEY     = ({ pagina, limite }: { pagina: number; limite: number }) =>
-  ['test', { pagina, limite }]
+const TEST_KEY = ({ pagina, limite }: { pagina: number; limite: number }) => [
+  'test',
+  { pagina, limite },
+]
 const INVALIDATE_KEY = ['test']
 
 function emptyFn(): Promise<PaginatedData<never>> {
@@ -41,8 +43,14 @@ describe('usePaginatedResource', () => {
 
   it('inicia en pagina=1, limite=10 con datos vacíos', () => {
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn: emptyFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn: emptyFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     expect(result.current.pagina).toBe(1)
@@ -54,8 +62,15 @@ describe('usePaginatedResource', () => {
 
   it('respeta defaultLimite personalizado', () => {
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn: emptyFn, errorMsg: 'Error', defaultLimite: 25 }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn: emptyFn,
+          errorMsg: 'Error',
+          defaultLimite: 25,
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     expect(result.current.limite).toBe(25)
@@ -65,8 +80,14 @@ describe('usePaginatedResource', () => {
 
   it('setPagina actualiza la página', () => {
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn: emptyFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn: emptyFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     act(() => result.current.setPagina(4))
@@ -75,8 +96,14 @@ describe('usePaginatedResource', () => {
 
   it('setLimite actualiza el límite y resetea pagina a 1', () => {
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn: emptyFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn: emptyFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     act(() => result.current.setPagina(3))
@@ -92,8 +119,14 @@ describe('usePaginatedResource', () => {
   it('calcula totalPaginas = ceil(total / limite)', async () => {
     const queryFn = vi.fn().mockResolvedValue({ filas: [], total: 25 } as PaginatedData<never>)
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     await waitFor(() => expect(result.current.total).toBe(25))
@@ -102,8 +135,14 @@ describe('usePaginatedResource', () => {
 
   it('totalPaginas es mínimo 1 aunque total sea 0', async () => {
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn: emptyFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn: emptyFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     await waitFor(() => expect(result.current.loading).toBe(false))
@@ -113,8 +152,14 @@ describe('usePaginatedResource', () => {
   it('totalPaginas exacto cuando total es múltiplo de limite', async () => {
     const queryFn = vi.fn().mockResolvedValue({ filas: [], total: 20 } as PaginatedData<never>)
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     await waitFor(() => expect(result.current.total).toBe(20))
@@ -126,8 +171,14 @@ describe('usePaginatedResource', () => {
   it('recargar invoca invalidateQueries con invalidateKey', () => {
     const spy = vi.spyOn(queryClient, 'invalidateQueries')
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn: emptyFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn: emptyFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     // Sin act(): invalidateQueries es síncrono — solo verificamos que el spy lo captura
@@ -140,8 +191,14 @@ describe('usePaginatedResource', () => {
   it('llama queryFn con pagina y limite correctos', async () => {
     const queryFn = vi.fn().mockResolvedValue({ filas: [], total: 0 } as PaginatedData<never>)
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     await waitFor(() => expect(result.current.loading).toBe(false))
@@ -150,10 +207,18 @@ describe('usePaginatedResource', () => {
 
   it('expone los items retornados por queryFn', async () => {
     const items = [{ id: '1' }, { id: '2' }]
-    const queryFn = vi.fn().mockResolvedValue({ filas: items, total: 2 } as PaginatedData<{ id: string }>)
+    const queryFn = vi
+      .fn()
+      .mockResolvedValue({ filas: items, total: 2 } as PaginatedData<{ id: string }>)
     const { result } = renderHook(
-      () => usePaginatedResource({ queryKey: TEST_KEY, invalidateKey: INVALIDATE_KEY, queryFn, errorMsg: 'Error' }),
-      { wrapper: makeWrapper(queryClient) },
+      () =>
+        usePaginatedResource({
+          queryKey: TEST_KEY,
+          invalidateKey: INVALIDATE_KEY,
+          queryFn,
+          errorMsg: 'Error',
+        }),
+      { wrapper: makeWrapper(queryClient) }
     )
 
     await waitFor(() => expect(result.current.loading).toBe(false))

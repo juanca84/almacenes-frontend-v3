@@ -36,6 +36,6 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         usuario: state.usuario,
         isAuthenticated: state.isAuthenticated,
       }),
-    },
-  ),
+    }
+  )
 )

@@ -5,27 +5,33 @@ import { getNombreCompleto, formatDocumento } from './usuario'
 
 describe('getNombreCompleto', () => {
   it('combina nombres y ambos apellidos', () => {
-    expect(getNombreCompleto({
-      nombres:         'Juan Carlos',
-      primerApellido:  'Pérez',
-      segundoApellido: 'López',
-    })).toBe('Juan Carlos Pérez López')
+    expect(
+      getNombreCompleto({
+        nombres: 'Juan Carlos',
+        primerApellido: 'Pérez',
+        segundoApellido: 'López',
+      })
+    ).toBe('Juan Carlos Pérez López')
   })
 
   it('omite el segundo apellido si está vacío', () => {
-    expect(getNombreCompleto({
-      nombres:         'María',
-      primerApellido:  'García',
-      segundoApellido: '',
-    })).toBe('María García')
+    expect(
+      getNombreCompleto({
+        nombres: 'María',
+        primerApellido: 'García',
+        segundoApellido: '',
+      })
+    ).toBe('María García')
   })
 
   it('funciona con solo nombres y primer apellido', () => {
-    expect(getNombreCompleto({
-      nombres:         'Pedro',
-      primerApellido:  'Quispe',
-      segundoApellido: '',
-    })).toBe('Pedro Quispe')
+    expect(
+      getNombreCompleto({
+        nombres: 'Pedro',
+        primerApellido: 'Quispe',
+        segundoApellido: '',
+      })
+    ).toBe('Pedro Quispe')
   })
 })
 
@@ -33,12 +39,12 @@ describe('getNombreCompleto', () => {
 
 describe('formatDocumento', () => {
   it('formatea CI correctamente', () => {
-    expect(formatDocumento({ tipoDocumento: 'CI', nroDocumento: '12345678' }))
-      .toBe('CI: 12345678')
+    expect(formatDocumento({ tipoDocumento: 'CI', nroDocumento: '12345678' })).toBe('CI: 12345678')
   })
 
   it('formatea PASAPORTE correctamente', () => {
-    expect(formatDocumento({ tipoDocumento: 'PASAPORTE', nroDocumento: 'AB123456' }))
-      .toBe('PASAPORTE: AB123456')
+    expect(formatDocumento({ tipoDocumento: 'PASAPORTE', nroDocumento: 'AB123456' })).toBe(
+      'PASAPORTE: AB123456'
+    )
   })
 })

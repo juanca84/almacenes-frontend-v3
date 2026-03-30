@@ -9,7 +9,12 @@ describe('buildCrumbs', () => {
   it('genera un crumb para rutas de un nivel', () => {
     const crumbs = buildCrumbs('/usuarios')
     expect(crumbs).toHaveLength(1)
-    expect(crumbs[0]).toMatchObject({ label: 'Usuarios', path: '/usuarios', last: true, navigable: true })
+    expect(crumbs[0]).toMatchObject({
+      label: 'Usuarios',
+      path: '/usuarios',
+      last: true,
+      navigable: true,
+    })
   })
 
   it('marca el último segmento como last:true', () => {
@@ -43,11 +48,11 @@ describe('buildCrumbs', () => {
 
   it('traduce correctamente todas las rutas conocidas', () => {
     const casos: [string, string][] = [
-      ['/dashboard',        'Dashboard'],
-      ['/usuarios',         'Usuarios'],
-      ['/roles',            'Roles'],
-      ['/parametros',       'Parámetros'],
-      ['/perfil',           'Perfil'],
+      ['/dashboard', 'Dashboard'],
+      ['/usuarios', 'Usuarios'],
+      ['/roles', 'Roles'],
+      ['/parametros', 'Parámetros'],
+      ['/perfil', 'Perfil'],
     ]
     for (const [path, label] of casos) {
       const crumbs = buildCrumbs(path)

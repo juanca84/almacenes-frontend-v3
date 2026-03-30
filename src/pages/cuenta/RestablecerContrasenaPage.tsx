@@ -19,14 +19,16 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 
-const schema = z.object({
-  contrasenaActual:    z.string().min(1, 'Requerida'),
-  contrasenaNueva:     z.string().min(1, 'Requerida'),
-  confirmarContrasena: z.string().min(1, 'Requerida'),
-}).refine((d) => d.contrasenaNueva === d.confirmarContrasena, {
-  message: 'Las contraseñas no coinciden',
-  path: ['confirmarContrasena'],
-})
+const schema = z
+  .object({
+    contrasenaActual: z.string().min(1, 'Requerida'),
+    contrasenaNueva: z.string().min(1, 'Requerida'),
+    confirmarContrasena: z.string().min(1, 'Requerida'),
+  })
+  .refine((d) => d.contrasenaNueva === d.confirmarContrasena, {
+    message: 'Las contraseñas no coinciden',
+    path: ['confirmarContrasena'],
+  })
 
 type FormValues = z.infer<typeof schema>
 
@@ -36,19 +38,24 @@ export function RestablecerContrasenaPage() {
     defaultValues: { contrasenaActual: '', contrasenaNueva: '', confirmarContrasena: '' },
   })
 
-  const contrasenaNueva     = form.watch('contrasenaNueva')
+  const contrasenaNueva = form.watch('contrasenaNueva')
   const confirmarContrasena = form.watch('confirmarContrasena')
   const { validacion, validando, errorValidacion } = useValidarContrasena(contrasenaNueva)
 
-  const puedeGuardar = validacion?.valida === true && !validando && contrasenaNueva === confirmarContrasena
+  const puedeGuardar =
+    validacion?.valida === true && !validando && contrasenaNueva === confirmarContrasena
 
   const onSubmit = async (values: FormValues) => {
     const ok = await withToast(
-      () => usuariosService.cambiarContrasena({
-        contrasenaActual: values.contrasenaActual,
-        contrasenaNueva:  values.contrasenaNueva,
-      }),
-      { successMsg: 'Contraseña actualizada correctamente', errorMsg: 'Error al cambiar la contraseña' }
+      () =>
+        usuariosService.cambiarContrasena({
+          contrasenaActual: values.contrasenaActual,
+          contrasenaNueva: values.contrasenaNueva,
+        }),
+      {
+        successMsg: 'Contraseña actualizada correctamente',
+        errorMsg: 'Error al cambiar la contraseña',
+      }
     )
     if (ok) form.reset()
   }
@@ -87,7 +94,11 @@ export function RestablecerContrasenaPage() {
                   <FormItem>
                     <FormLabel>Contraseña actual</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="••••••••" autoComplete="current-password" {...field} />
+                      <PasswordInput
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -101,7 +112,11 @@ export function RestablecerContrasenaPage() {
                   <FormItem>
                     <FormLabel>Nueva contraseña</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="••••••••" autoComplete="new-password" {...field} />
+                      <PasswordInput
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                     <PasswordStrengthIndicator
@@ -121,7 +136,11 @@ export function RestablecerContrasenaPage() {
                   <FormItem>
                     <FormLabel>Confirmar nueva contraseña</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="••••••••" autoComplete="new-password" {...field} />
+                      <PasswordInput
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

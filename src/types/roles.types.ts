@@ -28,7 +28,7 @@ export interface ModuloDisponible {
 
 export interface RolItem {
   id: string
-  rol: string    // identificador inmutable, ej: "SUPERVISOR"
+  rol: string // identificador inmutable, ej: "SUPERVISOR"
   nombre: string // nombre legible, ej: "Supervisor de almacén"
   estado: EstadoEntidad
 }

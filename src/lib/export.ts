@@ -26,9 +26,9 @@ export function csvFilename(prefix: string): string {
 /** Triggers a browser download of a CSV file. */
 export function downloadCSV(filename: string, content: string): void {
   const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' })
-  const url  = URL.createObjectURL(blob)
-  const a    = document.createElement('a')
-  a.href     = url
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
   a.download = filename
   a.click()
   // Revoke after a tick so the browser has time to start the download

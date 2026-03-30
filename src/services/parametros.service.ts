@@ -7,8 +7,7 @@ import type {
 } from '@/types/parametro.types'
 
 export const parametrosService = {
-  listarGrupos: () =>
-    api.get<BaseResponse<string[]>>('/parametros/grupos'),
+  listarGrupos: () => api.get<BaseResponse<string[]>>('/parametros/grupos'),
 
   listar: (params?: {
     pagina?: number
@@ -16,14 +15,12 @@ export const parametrosService = {
     grupos?: string
     estado?: string
     orden?: string
-  }) =>
-    api.get<PaginatedResponse<ParametroItem>>('/parametros', { params }),
+  }) => api.get<PaginatedResponse<ParametroItem>>('/parametros', { params }),
 
   exportar: (params?: { grupos?: string; estado?: string; orden?: string }) =>
     api.get<BaseResponse<ParametroItem[]>>('/parametros/exportar', { params }),
 
-  obtener: (id: string) =>
-    api.get<BaseResponse<ParametroItem>>(`/parametros/${id}`),
+  obtener: (id: string) => api.get<BaseResponse<ParametroItem>>(`/parametros/${id}`),
 
   crear: (payload: CreateParametroPayload) =>
     api.post<BaseResponse<ParametroItem>>('/parametros', payload),
@@ -31,9 +28,7 @@ export const parametrosService = {
   actualizar: (id: string, payload: UpdateParametroPayload) =>
     api.patch<BaseResponse<{ id: string }>>(`/parametros/${id}`, payload),
 
-  activar: (id: string) =>
-    api.patch<BaseResponse<null>>(`/parametros/${id}/activacion`),
+  activar: (id: string) => api.patch<BaseResponse<null>>(`/parametros/${id}/activacion`),
 
-  inactivar: (id: string) =>
-    api.patch<BaseResponse<null>>(`/parametros/${id}/inactivacion`),
+  inactivar: (id: string) => api.patch<BaseResponse<null>>(`/parametros/${id}/inactivacion`),
 }

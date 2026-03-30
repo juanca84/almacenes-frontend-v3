@@ -44,14 +44,18 @@ function SeccionHeader({ titulo }: { titulo: string }) {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 
-export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: ParametroFormDialogProps) {
-  const {
-    esEdicion,
-    crearForm,
-    editarForm,
-    onSubmitCrear,
-    onSubmitEditar,
-  } = useParametroForm({ open, parametro, onClose, onSuccess })
+export function ParametroFormDialog({
+  open,
+  onClose,
+  parametro,
+  onSuccess,
+}: ParametroFormDialogProps) {
+  const { esEdicion, crearForm, editarForm, onSubmitCrear, onSubmitEditar } = useParametroForm({
+    open,
+    parametro,
+    onClose,
+    onSuccess,
+  })
 
   // Preview en vivo del icono de grupo mientras se escribe en creación
   const grupoPreview = esEdicion ? parametro?.grupo : crearForm.watch('grupo')
@@ -63,7 +67,9 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
         <DialogHeader>
           <div className="flex items-center gap-3 pr-6">
             {grupoPreview ? (
-              <div className={`size-11 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${grupoClases(grupoPreview)}`}>
+              <div
+                className={`size-11 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${grupoClases(grupoPreview)}`}
+              >
                 {grupoLetra(grupoPreview)}
               </div>
             ) : (
@@ -89,7 +95,6 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
           <Form {...editarForm}>
             <form onSubmit={editarForm.handleSubmit(onSubmitEditar)}>
               <div className="space-y-5 max-h-[60vh] overflow-y-auto px-1">
-
                 <section className="space-y-3">
                   <SeccionHeader titulo="Identificación" />
 
@@ -171,7 +176,7 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
                               'flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm',
                               'ring-offset-background placeholder:text-muted-foreground',
                               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                              'disabled:cursor-not-allowed disabled:opacity-50 resize-none',
+                              'disabled:cursor-not-allowed disabled:opacity-50 resize-none'
                             )}
                           />
                         </FormControl>
@@ -183,7 +188,9 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
               </div>
 
               <DialogFooter className="mt-5">
-                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancelar
+                </Button>
                 <Button type="submit" disabled={editarForm.formState.isSubmitting}>
                   {editarForm.formState.isSubmitting ? 'Guardando...' : 'Guardar cambios'}
                 </Button>
@@ -195,7 +202,6 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
           <Form {...crearForm}>
             <form onSubmit={crearForm.handleSubmit(onSubmitCrear)}>
               <div className="space-y-5 max-h-[60vh] overflow-y-auto px-1">
-
                 <section className="space-y-3">
                   <SeccionHeader titulo="Identificación" />
 
@@ -248,7 +254,8 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground/70">
-                    Convención: <span className="font-mono">GRUPO-DISCRIMINADOR</span> (ej: <span className="font-mono">TD-CI</span>)
+                    Convención: <span className="font-mono">GRUPO-DISCRIMINADOR</span> (ej:{' '}
+                    <span className="font-mono">TD-CI</span>)
                   </p>
                 </section>
 
@@ -293,7 +300,7 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
                               'flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm',
                               'ring-offset-background placeholder:text-muted-foreground',
                               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                              'disabled:cursor-not-allowed disabled:opacity-50 resize-none',
+                              'disabled:cursor-not-allowed disabled:opacity-50 resize-none'
                             )}
                           />
                         </FormControl>
@@ -305,7 +312,9 @@ export function ParametroFormDialog({ open, onClose, parametro, onSuccess }: Par
               </div>
 
               <DialogFooter className="mt-5">
-                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancelar
+                </Button>
                 <Button type="submit" disabled={crearForm.formState.isSubmitting}>
                   {crearForm.formState.isSubmitting ? 'Creando...' : 'Crear parámetro'}
                 </Button>

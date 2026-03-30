@@ -42,7 +42,8 @@ interface RolesCheckboxListProps {
 
 function RolesCheckboxList({ roles, loading, value, onChange }: RolesCheckboxListProps) {
   if (loading) return <p className="text-sm text-muted-foreground">Cargando roles...</p>
-  if (roles.length === 0) return <p className="text-sm text-muted-foreground">No hay roles disponibles</p>
+  if (roles.length === 0)
+    return <p className="text-sm text-muted-foreground">No hay roles disponibles</p>
 
   return (
     <>
@@ -118,7 +119,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
         <DialogHeader>
           <div className="flex items-center gap-3 pr-6">
             {esEdicion ? (
-              <div className={`size-11 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${avatarClases(usuario!)}`}>
+              <div
+                className={`size-11 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${avatarClases(usuario!)}`}
+              >
                 {iniciales(usuario!)}
               </div>
             ) : (
@@ -144,25 +147,35 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
           <Form {...editarForm}>
             <form onSubmit={editarForm.handleSubmit(onSubmitEditar)}>
               <div className="space-y-5 max-h-[60vh] overflow-y-auto px-1">
-
                 {/* Información personal */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<UserPen className="size-3.5 text-blue-500 dark:text-blue-400" />} titulo="Información personal" />
+                  <SeccionHeader
+                    icon={<UserPen className="size-3.5 text-blue-500 dark:text-blue-400" />}
+                    titulo="Información personal"
+                  />
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2 space-y-1.5">
                       <label className="text-xs text-muted-foreground flex items-center gap-1">
                         <CreditCard className="size-3 text-blue-500 dark:text-blue-400 opacity-60" />
                         Tipo / Nro. documento
                       </label>
-                      <Input value={formatDocumento(usuario!.persona)} disabled className="bg-muted/40" />
+                      <Input
+                        value={formatDocumento(usuario!.persona)}
+                        disabled
+                        className="bg-muted/40"
+                      />
                     </div>
                     <FormField
                       control={editarForm.control}
                       name="nombres"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Nombres <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input {...field} autoFocus /></FormControl>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Nombres <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} autoFocus />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -172,8 +185,12 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="primerApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Primer apellido <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Primer apellido <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -183,8 +200,13 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="segundoApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Segundo apellido{' '}
+                            <span className="text-muted-foreground/60">(opcional)</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -198,7 +220,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             <Calendar className="size-3 text-blue-500 dark:text-blue-400" />
                             Fecha de nacimiento <span className="text-destructive">*</span>
                           </FormLabel>
-                          <FormControl><Input type="date" {...field} /></FormControl>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -208,7 +232,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="genero"
                       render={({ field }) => (
                         <FormItem className="col-span-2">
-                          <FormLabel className="text-xs text-muted-foreground">Género <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Género <span className="text-muted-foreground/60">(opcional)</span>
+                          </FormLabel>
                           <Select value={field.value ?? ''} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger>
@@ -217,7 +243,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             </FormControl>
                             <SelectContent>
                               {catalogoGenero.map((g) => (
-                                <SelectItem key={g.codigo} value={g.codigo}>{g.nombre}</SelectItem>
+                                <SelectItem key={g.codigo} value={g.codigo}>
+                                  {g.nombre}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -232,7 +260,10 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Contacto */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<Mail className="size-3.5 text-sky-500 dark:text-sky-400" />} titulo="Contacto" />
+                  <SeccionHeader
+                    icon={<Mail className="size-3.5 text-sky-500 dark:text-sky-400" />}
+                    titulo="Contacto"
+                  />
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={editarForm.control}
@@ -243,7 +274,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             <Mail className="size-3 text-sky-500 dark:text-sky-400" />
                             Correo electrónico <span className="text-destructive">*</span>
                           </FormLabel>
-                          <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
+                          <FormControl>
+                            <Input type="email" placeholder="correo@ejemplo.com" {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -257,7 +290,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             <Phone className="size-3 text-emerald-500 dark:text-emerald-400" />
                             Teléfono <span className="text-muted-foreground/60">(opcional)</span>
                           </FormLabel>
-                          <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
+                          <FormControl>
+                            <Input type="tel" placeholder="Ej. 70012345" {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -269,7 +304,10 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Roles */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />} titulo="Roles asignados" />
+                  <SeccionHeader
+                    icon={<ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />}
+                    titulo="Roles asignados"
+                  />
                   <FormField
                     control={editarForm.control}
                     name="roles"
@@ -293,7 +331,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
               </div>
 
               <DialogFooter className="mt-5">
-                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancelar
+                </Button>
                 <Button type="submit" disabled={editarForm.formState.isSubmitting}>
                   {editarForm.formState.isSubmitting ? 'Guardando...' : 'Guardar cambios'}
                 </Button>
@@ -305,18 +345,24 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
           <Form {...crearForm}>
             <form onSubmit={crearForm.handleSubmit(onSubmitCrear)}>
               <div className="space-y-5 max-h-[60vh] overflow-y-auto px-1">
-
                 {/* Información personal */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<UserPlus className="size-3.5 text-blue-500 dark:text-blue-400" />} titulo="Información personal" />
+                  <SeccionHeader
+                    icon={<UserPlus className="size-3.5 text-blue-500 dark:text-blue-400" />}
+                    titulo="Información personal"
+                  />
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={crearForm.control}
                       name="persona.nombres"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Nombres <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input {...field} autoFocus /></FormControl>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Nombres <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} autoFocus />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -326,8 +372,12 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="persona.primerApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Primer apellido <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Primer apellido <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -337,8 +387,13 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="persona.segundoApellido"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Segundo apellido <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Segundo apellido{' '}
+                            <span className="text-muted-foreground/60">(opcional)</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -360,7 +415,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             </FormControl>
                             <SelectContent>
                               {catalogoTipoDoc.map((t) => (
-                                <SelectItem key={t.codigo} value={t.codigo}>{t.nombre}</SelectItem>
+                                <SelectItem key={t.codigo} value={t.codigo}>
+                                  {t.nombre}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -377,7 +434,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             <CreditCard className="size-3 text-blue-500 dark:text-blue-400" />
                             Nro. documento <span className="text-destructive">*</span>
                           </FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -391,7 +450,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             <Calendar className="size-3 text-blue-500 dark:text-blue-400" />
                             Fecha de nacimiento <span className="text-destructive">*</span>
                           </FormLabel>
-                          <FormControl><Input type="date" {...field} /></FormControl>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -401,7 +462,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                       name="persona.genero"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-muted-foreground">Género <span className="text-muted-foreground/60">(opcional)</span></FormLabel>
+                          <FormLabel className="text-xs text-muted-foreground">
+                            Género <span className="text-muted-foreground/60">(opcional)</span>
+                          </FormLabel>
                           <Select value={field.value ?? ''} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger>
@@ -410,7 +473,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             </FormControl>
                             <SelectContent>
                               {catalogoGenero.map((g) => (
-                                <SelectItem key={g.codigo} value={g.codigo}>{g.nombre}</SelectItem>
+                                <SelectItem key={g.codigo} value={g.codigo}>
+                                  {g.nombre}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -425,7 +490,10 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Contacto */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<Mail className="size-3.5 text-sky-500 dark:text-sky-400" />} titulo="Contacto" />
+                  <SeccionHeader
+                    icon={<Mail className="size-3.5 text-sky-500 dark:text-sky-400" />}
+                    titulo="Contacto"
+                  />
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={crearForm.control}
@@ -436,7 +504,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             <Mail className="size-3 text-sky-500 dark:text-sky-400" />
                             Correo electrónico <span className="text-destructive">*</span>
                           </FormLabel>
-                          <FormControl><Input type="email" placeholder="correo@ejemplo.com" {...field} /></FormControl>
+                          <FormControl>
+                            <Input type="email" placeholder="correo@ejemplo.com" {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -450,7 +520,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
                             <Phone className="size-3 text-emerald-500 dark:text-emerald-400" />
                             Teléfono <span className="text-muted-foreground/60">(opcional)</span>
                           </FormLabel>
-                          <FormControl><Input type="tel" placeholder="Ej. 70012345" {...field} /></FormControl>
+                          <FormControl>
+                            <Input type="tel" placeholder="Ej. 70012345" {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -462,7 +534,10 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
 
                 {/* Roles */}
                 <section className="space-y-3">
-                  <SeccionHeader icon={<ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />} titulo="Roles asignados" />
+                  <SeccionHeader
+                    icon={<ShieldCheck className="size-3.5 text-amber-500 dark:text-amber-400" />}
+                    titulo="Roles asignados"
+                  />
                   <FormField
                     control={crearForm.control}
                     name="roles"
@@ -486,7 +561,9 @@ export function UsuarioFormDialog({ open, onClose, usuario, onSuccess }: Usuario
               </div>
 
               <DialogFooter className="mt-5">
-                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancelar
+                </Button>
                 <Button type="submit" disabled={crearForm.formState.isSubmitting || loadingRoles}>
                   {crearForm.formState.isSubmitting ? 'Creando...' : 'Crear usuario'}
                 </Button>

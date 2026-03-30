@@ -23,9 +23,7 @@ interface RolDetailDialogProps {
 
 export function RolDetailDialog({ open, onClose, rol }: RolDetailDialogProps) {
   const { modulos, loading: loadingModulos } = useModulosStore()
-  const { modulosRol, loading: loadingModulosRol } = useRolModulos(
-    rol && open ? rol.id : null,
-  )
+  const { modulosRol, loading: loadingModulosRol } = useRolModulos(rol && open ? rol.id : null)
 
   if (!rol) return null
 
@@ -46,17 +44,13 @@ export function RolDetailDialog({ open, onClose, rol }: RolDetailDialogProps) {
                   </Badge>
                 )}
               </DialogTitle>
-              <p className="text-sm text-muted-foreground mt-0.5 font-mono">
-                {rol.rol}
-              </p>
+              <p className="text-sm text-muted-foreground mt-0.5 font-mono">{rol.rol}</p>
             </div>
           </div>
         </DialogHeader>
 
         <div className="space-y-3">
-          <p className="text-xs font-medium text-muted-foreground">
-            Permisos por módulo
-          </p>
+          <p className="text-xs font-medium text-muted-foreground">Permisos por módulo</p>
           <div className="border rounded-lg px-2 pb-2 bg-muted/10 max-h-[60vh] overflow-y-auto">
             <ModuloArbol
               modulos={modulos}
@@ -69,7 +63,9 @@ export function RolDetailDialog({ open, onClose, rol }: RolDetailDialogProps) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cerrar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cerrar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -6,6 +6,7 @@ Existen carpetas globales `constants/` y `types/` que deben reutilizarse.
 Frontend ligero y performance-first.
 
 Reglas obligatorias:
+
 - Principios SOLID.
 - Arquitectura modular por feature.
 - DRY: no duplicar lógica.
@@ -15,6 +16,7 @@ Reglas obligatorias:
 - Evitar renders y dependencias innecesarias.
 
 Al responder:
+
 - Explica brevemente la arquitectura.
 - Justifica decisiones clave.
 - Muestra código modularizado.

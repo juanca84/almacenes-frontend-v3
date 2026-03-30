@@ -45,7 +45,7 @@ export function useRolForm({ open, rol, onClose, onSuccess }: UseRolFormProps) {
 
   // Precarga los módulos actuales del rol solo en modo edición
   const { modulosRol, loading: loadingModulosRol } = useRolModulos(
-    esEdicion && open ? (rol?.id ?? null) : null,
+    esEdicion && open ? (rol?.id ?? null) : null
   )
 
   const crearForm = useForm<CrearRolValues>({

@@ -10,12 +10,10 @@ import type {
 
 export const rolesService = {
   // ── Módulos disponibles (árbol completo) ───────────────────────────────────
-  listarModulos: () =>
-    api.get<PaginatedResponse<ModuloDisponible>>('/autorizacion/modulos'),
+  listarModulos: () => api.get<PaginatedResponse<ModuloDisponible>>('/autorizacion/modulos'),
 
   // ── CRUD de roles ──────────────────────────────────────────────────────────
-  listar: () =>
-    api.get<BaseResponse<RolItem[]>>('/autorizacion/roles'),
+  listar: () => api.get<BaseResponse<RolItem[]>>('/autorizacion/roles'),
 
   crear: (payload: CreateRolPayload) =>
     api.post<BaseResponse<RolItem>>('/autorizacion/roles', payload),
@@ -29,7 +27,9 @@ export const rolesService = {
 
   // ── Cambios de estado ──────────────────────────────────────────────────────
   inactivar: (id: string) =>
-    api.patch<BaseResponse<{ id: string; estado: string }>>(`/autorizacion/roles/${id}/inactivacion`),
+    api.patch<BaseResponse<{ id: string; estado: string }>>(
+      `/autorizacion/roles/${id}/inactivacion`
+    ),
 
   activar: (id: string) =>
     api.patch<BaseResponse<{ id: string; estado: string }>>(`/autorizacion/roles/${id}/activacion`),

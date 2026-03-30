@@ -39,7 +39,7 @@ export function NavSidebar({ modulos, collapsed = false }: NavSidebarProps) {
                         collapsed ? 'justify-center px-2' : 'gap-3 px-3',
                         isActive
                           ? 'bg-white/10 text-white shadow-sm'
-                          : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
+                          : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
                       )
                     }
                   >

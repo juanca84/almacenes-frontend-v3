@@ -80,7 +80,7 @@ describe('getErrorCodigo', () => {
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
-    error:   vi.fn(),
+    error: vi.fn(),
   },
 }))
 

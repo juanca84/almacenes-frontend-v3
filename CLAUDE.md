@@ -47,6 +47,7 @@ Always check `data.finalizado` (not HTTP status) to determine success. For pagin
 ### Routing
 
 Two layout branches in `AppRouter`:
+
 - **Public** → `AuthLayout` (centered card, no sidebar)
 - **Private** → `AuthGuard` → `MainLayout` (sidebar + header shell)
 

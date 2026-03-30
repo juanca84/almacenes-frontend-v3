@@ -27,6 +27,7 @@ export function useRolModulos(rolId: string | null) {
 
   useEffect(() => {
     if (!rolId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setModulosRol([])
       return
     }
@@ -48,7 +49,9 @@ export function useRolModulos(rolId: string | null) {
         if (!cancelled) setLoading(false)
       })
 
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [rolId])
 
   return { modulosRol, loading }

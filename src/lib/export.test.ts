@@ -25,7 +25,13 @@ describe('escapeCsvCell', () => {
 
 describe('toCSV', () => {
   it('genera cabecera + filas separadas por CRLF', () => {
-    const result = toCSV(['Nombre', 'Estado'], [['Alice', 'ACTIVO'], ['Bob', 'INACTIVO']])
+    const result = toCSV(
+      ['Nombre', 'Estado'],
+      [
+        ['Alice', 'ACTIVO'],
+        ['Bob', 'INACTIVO'],
+      ]
+    )
     expect(result).toBe('Nombre,Estado\r\nAlice,ACTIVO\r\nBob,INACTIVO')
   })
 

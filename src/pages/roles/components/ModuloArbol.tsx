@@ -78,7 +78,7 @@ function ModuloHoja({
         'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
         tieneAlguna && 'bg-primary/5',
         !disabled && !tieneAlguna && 'hover:bg-muted/40',
-        indented && 'ml-6',
+        indented && 'ml-6'
       )}
     >
       {/* Icono */}
@@ -94,7 +94,7 @@ function ModuloHoja({
         <p
           className={cn(
             'flex-1 text-sm font-medium leading-none',
-            tieneAlguna ? 'text-foreground' : 'text-muted-foreground',
+            tieneAlguna ? 'text-foreground' : 'text-muted-foreground'
           )}
         >
           {label}
@@ -107,7 +107,7 @@ function ModuloHoja({
           className={cn(
             'flex-1 text-left text-sm font-medium leading-none transition-colors',
             tieneAlguna ? 'text-foreground' : 'text-muted-foreground',
-            'hover:text-primary cursor-pointer',
+            'hover:text-primary cursor-pointer'
           )}
         >
           {label}
@@ -126,7 +126,7 @@ function ModuloHoja({
               checked={acciones.has(accion)}
               onChange={() => onToggleAccion(id, accion)}
             />
-          ),
+          )
         )}
       </div>
     </div>
@@ -143,7 +143,13 @@ interface ModuloGrupoProps {
   disabled?: boolean
 }
 
-function ModuloGrupo({ modulo, accionesMap, onToggleAccion, onToggleTodos, disabled }: ModuloGrupoProps) {
+function ModuloGrupo({
+  modulo,
+  accionesMap,
+  onToggleAccion,
+  onToggleTodos,
+  disabled,
+}: ModuloGrupoProps) {
   const Icon = getIcon(modulo.propiedades.icono)
   const colorLight = modulo.propiedades.color_light
 
@@ -191,7 +197,7 @@ function AccionesHeader() {
           key={accion}
           className={cn(
             COL_W,
-            'text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground',
+            'text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground'
           )}
         >
           {ACCION_LABEL[accion]}
@@ -235,10 +241,7 @@ interface ModuloArbolProps {
 
 export function ModuloArbol({ modulos, value, onChange, loading, disabled }: ModuloArbolProps) {
   // Map id → Set<Accion> para O(1) lookup sin recalcular en cada render
-  const accionesMap = useMemo(
-    () => new Map(value.map((m) => [m.id, new Set(m.acciones)])),
-    [value],
-  )
+  const accionesMap = useMemo(() => new Map(value.map((m) => [m.id, new Set(m.acciones)])), [value])
 
   const toggleAccion = useCallback(
     (id: string, accion: Accion) => {
@@ -250,7 +253,7 @@ export function ModuloArbol({ modulos, value, onChange, loading, disabled }: Mod
       const rest = value.filter((m) => m.id !== id)
       onChange(next.size === 0 ? rest : [...rest, { id, acciones: Array.from(next) }])
     },
-    [accionesMap, value, onChange],
+    [accionesMap, value, onChange]
   )
 
   const toggleTodos = useCallback(
@@ -259,11 +262,9 @@ export function ModuloArbol({ modulos, value, onChange, loading, disabled }: Mod
       const tieneTodas = ACCIONES_MODULO.every((a) => current.has(a))
 
       const rest = value.filter((m) => m.id !== id)
-      onChange(
-        tieneTodas ? rest : [...rest, { id, acciones: [...ACCIONES_MODULO] }],
-      )
+      onChange(tieneTodas ? rest : [...rest, { id, acciones: [...ACCIONES_MODULO] }])
     },
-    [accionesMap, value, onChange],
+    [accionesMap, value, onChange]
   )
 
   if (loading) return <ModuloArbolSkeleton />
@@ -302,7 +303,7 @@ export function ModuloArbol({ modulos, value, onChange, loading, disabled }: Mod
             onToggleTodos={toggleTodos}
             disabled={disabled}
           />
-        ),
+        )
       )}
     </div>
   )

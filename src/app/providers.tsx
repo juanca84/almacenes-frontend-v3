@@ -12,25 +12,26 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  const [queryClient] = useState(() =>
-    new QueryClient({
-      defaultOptions: {
-        queries: {
-          refetchOnWindowFocus: false,
-          retry: 1,
-          staleTime: 0,
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
+            staleTime: 0,
+          },
         },
-      },
-      queryCache: new QueryCache({
-        onError: (error, query) => {
-          const msg =
-            (query.meta?.errorMsg as string | undefined) ??
-            getErrorMensaje(error) ??
-            'Error al cargar datos'
-          toast.error(msg)
-        },
-      }),
-    })
+        queryCache: new QueryCache({
+          onError: (error, query) => {
+            const msg =
+              (query.meta?.errorMsg as string | undefined) ??
+              getErrorMensaje(error) ??
+              'Error al cargar datos'
+            toast.error(msg)
+          },
+        }),
+      })
   )
 
   return (

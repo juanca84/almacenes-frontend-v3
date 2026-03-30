@@ -13,18 +13,22 @@ import type {
 
 export const usuariosService = {
   // ── Roles disponibles ──────────────────────────────────────────────────────
-  listarRoles: () =>
-    api.get<BaseResponse<RolDisponible[]>>('/autorizacion/roles'),
+  listarRoles: () => api.get<BaseResponse<RolDisponible[]>>('/autorizacion/roles'),
 
   // ── CRUD principal ─────────────────────────────────────────────────────────
-  listar: (params?: { pagina?: number; limite?: number; filtro?: string; rol?: string; estado?: string; orden?: string }) =>
-    api.get<PaginatedResponse<UsuarioItem>>('/usuarios', { params }),
+  listar: (params?: {
+    pagina?: number
+    limite?: number
+    filtro?: string
+    rol?: string
+    estado?: string
+    orden?: string
+  }) => api.get<PaginatedResponse<UsuarioItem>>('/usuarios', { params }),
 
   exportar: (params?: { filtro?: string; rol?: string; estado?: string; orden?: string }) =>
     api.get<BaseResponse<UsuarioItem[]>>('/usuarios/exportar', { params }),
 
-  obtener: (id: string) =>
-    api.get<BaseResponse<UsuarioItem>>(`/usuarios/${id}`),
+  obtener: (id: string) => api.get<BaseResponse<UsuarioItem>>(`/usuarios/${id}`),
 
   crear: (payload: CreateUsuarioPayload) =>
     api.post<BaseResponse<UsuarioItem>>('/usuarios', payload),
@@ -33,24 +37,23 @@ export const usuariosService = {
     api.patch<BaseResponse<UsuarioItem>>(`/usuarios/${id}`, payload),
 
   // ── Cambios de estado ──────────────────────────────────────────────────────
-  activar: (id: string) =>
-    api.patch<BaseResponse<null>>(`/usuarios/${id}/activacion`),
+  activar: (id: string) => api.patch<BaseResponse<null>>(`/usuarios/${id}/activacion`),
 
-  inactivar: (id: string) =>
-    api.patch<BaseResponse<null>>(`/usuarios/${id}/inactivacion`),
+  inactivar: (id: string) => api.patch<BaseResponse<null>>(`/usuarios/${id}/inactivacion`),
 
   restaurarContrasena: (id: string) =>
     api.patch<BaseResponse<null>>(`/usuarios/${id}/restauracion`),
 
   // ── Cuenta propia ──────────────────────────────────────────────────────────
-  obtenerPerfil: () =>
-    api.get<BaseResponse<UsuarioItem>>('/usuarios/cuenta/perfil'),
+  obtenerPerfil: () => api.get<BaseResponse<UsuarioItem>>('/usuarios/cuenta/perfil'),
 
   actualizarPerfil: (payload: ActualizarPerfilPayload) =>
     api.patch<BaseResponse<ActualizarPerfilResult>>('/usuarios/cuenta/perfil', payload),
 
   validarContrasena: (contrasena: string) =>
-    api.post<BaseResponse<ValidarContrasenaResult>>('/usuarios/cuenta/validar-contrasena', { contrasena }),
+    api.post<BaseResponse<ValidarContrasenaResult>>('/usuarios/cuenta/validar-contrasena', {
+      contrasena,
+    }),
 
   cambiarContrasena: (payload: CambiarContrasenaPayload) =>
     api.patch<BaseResponse<null>>('/usuarios/cuenta/contrasena', payload),

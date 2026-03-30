@@ -4,15 +4,15 @@ import type { UsuarioItem } from '@/types/usuario.types'
 
 function makeUsuario(nombres: string, primerApellido: string): UsuarioItem {
   return {
-    id:      '1',
+    id: '1',
     usuario: 'test',
-    estado:  'ACTIVO',
+    estado: 'ACTIVO',
     persona: {
       nombres,
       primerApellido,
       segundoApellido: '',
-      tipoDocumento:   'CI',
-      nroDocumento:    '00000000',
+      tipoDocumento: 'CI',
+      nroDocumento: '00000000',
       fechaNacimiento: '1990-01-01',
     },
   }
@@ -48,7 +48,7 @@ describe('avatarClases', () => {
   })
 
   it('retorna clases distintas para usuarios con nombres distintos (en general)', () => {
-    const u1 = makeUsuario('Ana',  'Lopez')
+    const u1 = makeUsuario('Ana', 'Lopez')
     const u2 = makeUsuario('Zara', 'Quispe')
     // No garantizamos que sean distintas (colisión de hash posible), pero
     // verificamos que la función no lanza y retorna un string de tailwind

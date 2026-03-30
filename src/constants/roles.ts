@@ -5,7 +5,7 @@ export const ROLES_SISTEMA = ['ADMINISTRADOR', 'TECNICO'] as const
 export const ACCIONES_MODULO = ['read', 'create', 'update', 'delete'] as const satisfies Accion[]
 
 export const ACCION_LABEL: Record<Accion, string> = {
-  read:   'Ver',
+  read: 'Ver',
   create: 'Crear',
   update: 'Editar',
   delete: 'Eliminar',

@@ -19,9 +19,7 @@ export function DashboardPage() {
         {(['Entradas', 'Salidas', 'Stock Total', 'Alertas'] as const).map((titulo) => (
           <Card key={titulo}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {titulo}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{titulo}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">—</p>

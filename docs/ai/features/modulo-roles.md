@@ -65,9 +65,7 @@ GET /api/autorizacion/roles
 {
   "finalizado": true,
   "mensaje": "Registro(s) obtenido(s) con exito!",
-  "datos": [
-    { "id": "uuid", "rol": "SUPERVISOR", "nombre": "Supervisor de almacén" }
-  ]
+  "datos": [{ "id": "uuid", "rol": "SUPERVISOR", "nombre": "Supervisor de almacén" }]
 }
 ```
 
@@ -95,13 +93,13 @@ Content-Type: application/json
 }
 ```
 
-| Campo | Tipo | Reglas |
-|---|---|---|
-| `rol` | string | Requerido, máx 50 chars. El backend lo convierte automáticamente a `MAYUSCULAS_CON_GUION_BAJO` |
-| `nombre` | string | Requerido, máx 100 chars |
-| `modulos` | array | Requerido. Puede ser `[]` si aún no se asignan módulos |
-| `modulos[].id` | UUID | ID del módulo obtenido de `GET /modulos` |
-| `modulos[].acciones` | string[] | Solo valores: `"read"`, `"create"`, `"update"`, `"delete"` |
+| Campo                | Tipo     | Reglas                                                                                         |
+| -------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `rol`                | string   | Requerido, máx 50 chars. El backend lo convierte automáticamente a `MAYUSCULAS_CON_GUION_BAJO` |
+| `nombre`             | string   | Requerido, máx 100 chars                                                                       |
+| `modulos`            | array    | Requerido. Puede ser `[]` si aún no se asignan módulos                                         |
+| `modulos[].id`       | UUID     | ID del módulo obtenido de `GET /modulos`                                                       |
+| `modulos[].acciones` | string[] | Solo valores: `"read"`, `"create"`, `"update"`, `"delete"`                                     |
 
 **Response 201:**
 
@@ -127,9 +125,7 @@ Content-Type: application/json
 ```json
 {
   "nombre": "Nuevo nombre",
-  "modulos": [
-    { "id": "uuid-modulo", "acciones": ["read", "update"] }
-  ]
+  "modulos": [{ "id": "uuid-modulo", "acciones": ["read", "update"] }]
 }
 ```
 
@@ -171,13 +167,13 @@ Sin body.
 
 ## Errores
 
-| HTTP | Cuándo ocurre |
-|---|---|
-| 401 | Sin token o token expirado |
-| 403 | Intento de editar/inactivar un rol del sistema (`ADMINISTRADOR`, `TECNICO`, `*`) |
-| 404 | El `id` del rol no existe |
-| 412 | Ya existe un rol con el mismo identificador `rol` |
-| 400 | Validación fallida (campo requerido, acciones con valor inválido, etc.) |
+| HTTP | Cuándo ocurre                                                                    |
+| ---- | -------------------------------------------------------------------------------- |
+| 401  | Sin token o token expirado                                                       |
+| 403  | Intento de editar/inactivar un rol del sistema (`ADMINISTRADOR`, `TECNICO`, `*`) |
+| 404  | El `id` del rol no existe                                                        |
+| 412  | Ya existe un rol con el mismo identificador `rol`                                |
+| 400  | Validación fallida (campo requerido, acciones con valor inválido, etc.)          |
 
 **Formato de error estándar:**
 
@@ -223,24 +219,28 @@ Al inactivar:
 ## Reglas de negocio para la UI
 
 ### Roles del sistema no editables
+
 Si `rol ∈ ["ADMINISTRADOR", "TECNICO"]`, deshabilitar botones de editar e inactivar en la tabla.
 
 ### El campo `rol` es inmutable
+
 En el formulario de edición, mostrarlo como texto de solo lectura (no como input).
 
 ### Acciones válidas para módulos
 
-| Valor | Significado |
-|---|---|
-| `read` | Ver / listar |
-| `create` | Crear registros |
-| `update` | Editar registros |
+| Valor    | Significado        |
+| -------- | ------------------ |
+| `read`   | Ver / listar       |
+| `create` | Crear registros    |
+| `update` | Editar registros   |
 | `delete` | Eliminar registros |
 
 ### Módulos padre con submódulos
+
 Al seleccionar un módulo padre que tiene `subModulo.length > 0`, las acciones se asignan a cada submódulo por separado, no al padre. El padre actúa como agrupador visual.
 
 ### El campo `rol` se auto-formatea
+
 El usuario puede escribir `"supervisor almacén"` y el backend guardará `"SUPERVISOR_ALMACÉN"`. Mostrar una preview en tiempo real de cómo quedará.
 
 ---
@@ -255,12 +255,12 @@ Alta. El stack actual (React + Zustand + React Hook Form + Zod + shadcn/ui) cubr
 
 ### Gaps del spec — todos resueltos ✅
 
-| Gap original | Solución |
-|---|---|
-| Endpoint para precargar módulos de un rol | `GET /api/autorizacion/roles/:id/modulos` |
-| Ambigüedad del `*` en roles del sistema | `*` es el wildcard interno de Casbin, **nunca aparece** en `GET /roles` — no necesita manejo en UI |
-| Inactivación irreversible | `PATCH /api/autorizacion/roles/:id/activacion` — completamente reversible, módulos y usuarios se conservan |
-| Payload ambiguo con módulos padre | Regla simple: si `subModulo.length > 0` → enviar IDs de hijos; si `subModulo.length === 0` → enviar el propio ID. El backend aplana la jerarquía internamente |
+| Gap original                              | Solución                                                                                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Endpoint para precargar módulos de un rol | `GET /api/autorizacion/roles/:id/modulos`                                                                                                                     |
+| Ambigüedad del `*` en roles del sistema   | `*` es el wildcard interno de Casbin, **nunca aparece** en `GET /roles` — no necesita manejo en UI                                                            |
+| Inactivación irreversible                 | `PATCH /api/autorizacion/roles/:id/activacion` — completamente reversible, módulos y usuarios se conservan                                                    |
+| Payload ambiguo con módulos padre         | Regla simple: si `subModulo.length > 0` → enviar IDs de hijos; si `subModulo.length === 0` → enviar el propio ID. El backend aplana la jerarquía internamente |
 
 ---
 
@@ -278,7 +278,7 @@ El tipo queda donde está. El nuevo `roles.service.ts` importa desde `usuario.ty
 ```ts
 interface RolDisponible {
   id: string
-  rol: string    // identificador inmutable, ej: "SUPERVISOR"
+  rol: string // identificador inmutable, ej: "SUPERVISOR"
   nombre: string // nombre legible, ej: "Supervisor de almacén"
 }
 ```
@@ -289,10 +289,10 @@ interface RolDisponible {
 
 ```ts
 interface PropiedadesModulo {
-  icono: string          // siempre presente
-  descripcion?: string   // opcional
-  color_light?: string   // opcional — no todos los módulos lo tienen
-  color_dark?: string    // opcional
+  icono: string // siempre presente
+  descripcion?: string // opcional
+  color_light?: string // opcional — no todos los módulos lo tienen
+  color_dark?: string // opcional
 }
 ```
 
